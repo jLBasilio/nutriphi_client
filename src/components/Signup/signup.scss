@@ -1,13 +1,13 @@
-@import 'src/Constants/screen';
-@import 'src/Constants/color';
-@import 'src/Constants/header';
+@import 'src/constants/screen';
+@import 'src/constants/color';
+@import 'src/constants/header';
 
 
 .signup {
   .signup-body {
+    overflow: hidden;
     padding: 4rem 3rem;
     top: 10rem;
-    overflow: hidden;
 
     .middle-col {
 

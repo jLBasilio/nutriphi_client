@@ -2,13 +2,6 @@ import React, { Component } from 'react';
 import {
   Row,
   Col,
-  Button,
-  Input,
-  Form,
-  Select,
-  Icon,
-  DatePicker,
-  Timeline
 } from 'antd';
 
 import './signup.scss';
@@ -64,4 +57,5 @@ class Signup extends Component {
     );
   }
 }
+
 export default Signup;
