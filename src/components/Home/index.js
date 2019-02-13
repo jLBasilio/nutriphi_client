@@ -11,15 +11,16 @@ class Home extends Component {
     super(props);
 
     this.state = {
-      temp: '',
       redirect: false
     };
   }
 
   handleLogout = async () => {
-    const { data: { status } } = await auth.logout();
-    if (status === 200) {
-      this.setState({ redirect: true });
+    try {
+      await auth.logout();
+      this.props.updateUser(null);
+    } catch (err) {
+      console.log(err);
     }
   }
 

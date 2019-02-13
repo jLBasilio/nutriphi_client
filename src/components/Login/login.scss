@@ -41,12 +41,15 @@
 
 
     .right-col {
-      padding-top: 15rem;
+      @include for-tablet-portrait-up {
+        padding-top: 14rem;
+      }
+      padding-top: 9rem;
       text-align: center;
 
       h2 {
-        color: $white;
-        font-size: 3.5rem;
+        color: $white-pale;
+        font-size: 3rem;
       }
 
       .login-box {

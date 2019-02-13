@@ -19,16 +19,27 @@ class App extends Component {
 
     this.state = {
       isLoading: true,
-      user: ''
+      user: null
     };
   }
 
   async componentDidMount() {
-    const { data: { user } } = await auth.getSession();
-    if (user) {
-      this.setState({ user });
+    try {
+      const { data: { user } } = await auth.getSession();
+      this.setState({ user }, () => {
+        this.setState({ isLoading: false });
+      });
+    } catch (err) {
+      console.log(err);
     }
-    setTimeout(() => this.setState({ isLoading: false }), 1500);
+  }
+
+  updateUser = (user) => {
+    this.setState({ user });
+  }
+
+  updateLoader = (isLoading) => {
+    this.setState({ isLoading });
   }
 
   render() {
@@ -40,12 +51,16 @@ class App extends Component {
             <Loader />
           ) : user ? (
             <Switch>
-              <Route exact path="/" component={Home} />
+              <Route
+                exact
+                path="/"
+                render={() =>
+                <Home updateUser={this.updateUser} updateLoader={this.updateLoader} />}/>
               <Redirect to="/" />
             </Switch>
           ) : (
             <Switch>
-              <Route exact path="/login" component={Login} />
+              <Route exact path="/login" render={() => <Login updateUser={this.updateUser} />}/>
               <Route exact path="/signup" component={Signup} />
               <Redirect to="/login" />
             </Switch>
