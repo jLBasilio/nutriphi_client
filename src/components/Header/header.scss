@@ -1,0 +1,30 @@
+@import 'src/constants/screen';
+@import 'src/constants/color';
+
+.header {
+  background: $base-green;
+  height: 5rem;
+  position: fixed;
+  text-align: left;
+  width: 100%;
+  z-index: 30;
+
+  h3 {
+    color: $white;
+  }
+
+  .menu-button {
+    background: 0;
+    border: 0;
+    height: 3.5rem;
+    left: .5rem;
+    padding: 0;
+    top: .5rem;
+
+    .menu-icon {
+      height: 65px;
+      width: 65px;
+    }
+  }
+
+}
