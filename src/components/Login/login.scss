@@ -1,18 +1,15 @@
 @import 'src/constants/screen';
 @import 'src/constants/color';
-@import 'src/constants/header';
 
 // sass-lint:disable nesting-depth, no-ids
 .login {
-
-
   .login-body {
 
     @include for-tablet-portrait-up {
       height: auto;
     }
 
-    background-image: url('/mainBackground.jpg');
+    background-image: url('/mainBackground2.jpg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -40,9 +37,9 @@
     }
 
 
-    .right-col {
+    .middle-col {
       @include for-tablet-portrait-up {
-        padding-top: 14rem;
+        padding-top: 11rem;
       }
       padding-top: 9rem;
       text-align: center;
@@ -55,7 +52,7 @@
       .login-box {
         background-color: $white-pale;
         border-radius: 10px;
-        padding: 1.5rem;
+        padding: 1.5rem 1.5rem 0 1.5rem;
 
         .ant-form-item-label {
           display: block;
@@ -84,8 +81,10 @@
         }
 
         #signup-button {
-          background-color: $secondary-kahel;
-          color: $white;
+          background-color: $greywhite;
+          bottom: 2rem;
+          color: $black;
+          line-height: 2.5rem;
         }
       }
     }

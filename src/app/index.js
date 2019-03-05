@@ -7,62 +7,41 @@ import {
 } from 'react-router-dom';
 import 'antd/dist/antd.css';
 
-import Home from '../components/Home';
+import Home from '../components/Home/HomeContainer';
 import Loader from '../components/Loader';
-import Login from '../components/Login';
-import Signup from '../components/Signup';
-import * as auth from '../api/auth';
+import Login from '../components/Login/LoginContainer';
+import Signup from '../components/Signup/SignupContainer';
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      isLoading: true,
-      user: null
-    };
-  }
-
-  async componentDidMount() {
-    try {
-      const { data: { user } } = await auth.getSession();
-      this.setState({ user }, () => {
-        this.setState({ isLoading: false });
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  updateUser = (user) => {
-    this.setState({ user });
-  }
-
-  updateLoader = (isLoading) => {
-    this.setState({ isLoading });
+  componentDidMount() {
+    const {
+      user,
+      getSession
+    } = this.props;
+    if (!user) getSession();
   }
 
   render() {
-    const { user, isLoading } = this.state;
+    const {
+      user,
+      isLoggingIn,
+      isGettingSession,
+      logout
+    } = this.props;
     return (
       <Router>
         {
-          isLoading ? (
+          isGettingSession || isLoggingIn ? (
             <Loader />
           ) : user ? (
             <Switch>
-              <Route
-                exact
-                path="/"
-                render={() =>
-                <Home updateUser={this.updateUser} updateLoader={this.updateLoader} />}/>
+              <Route exact path="/" render={() => <Home logout={logout} />} />
               <Redirect to="/" />
             </Switch>
           ) : (
             <Switch>
-              <Route exact path="/login" render={() => <Login updateUser={this.updateUser} />}/>
+              <Route exact path="/" component={Login} />
               <Route exact path="/signup" component={Signup} />
-              <Redirect to="/login" />
             </Switch>
           )
         }

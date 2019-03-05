@@ -1,46 +1,47 @@
 @import 'src/constants/screen';
 @import 'src/constants/color';
-@import 'src/constants/header';
 
-
+// sass-lint:disable nesting-depth, no-ids
 .signup {
   .signup-body {
-    overflow: hidden;
-    padding: 4rem 3rem;
-    top: 10rem;
+    padding: 3.5rem 3rem 0;
 
     .middle-col {
-
       @include for-tablet-portrait-up {
-        padding: 10rem 6rem;
+        padding: 5rem 6rem 0;
       }
 
-      @include for-small-desktop-up {
-        padding: 10rem 2rem;
-      }
-
-      padding: 5rem 15rem;
-      margin: 0;
-
-      .logo-container {
-
-        text-align: center;
-
-      }
-
-      .form-bar {
-
-      }
+      padding: 3.5rem 15rem;
 
       .ant-form-item-label {
         line-height: 1rem;
-
+        padding: 0;
       }
 
-      .next-button {
+      .ant-form-item {
+        margin-bottom: 1rem;
+      }
 
-        width: 100%;
+      .submit-button {
+        text-align: right;
 
+        .back-button {
+          @include for-tablet-portrait-up {
+            width: 20%;
+          }
+          background-color: $greywhite;
+          color: $black;
+          width: 100%;
+        }
+
+        .next-button {
+          @include for-tablet-portrait-up {
+            margin-left: 1rem;
+            width: 20%;
+          }
+          background-color: $base-kahel;
+          width: 100%;
+        }
       }
 
     }
