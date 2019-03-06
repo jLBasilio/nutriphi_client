@@ -6,6 +6,7 @@
     "no-use-before-define": ["error", { "functions": false }],
     "no-underscore-dangle": "off",
     "comma-dangle": ["error", "never"],
-    "react/prop-types": 0
+    "react/prop-types": 0,
+    "no-nested-ternary": "off"
   }
 }

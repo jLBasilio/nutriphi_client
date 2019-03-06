@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { Redirect } from 'react-router-dom';
 import {
   Button,
   Col,
@@ -13,9 +14,10 @@ import {
   Row,
   Select
 } from 'antd';
+import Header from '../Header/HeaderContainer';
 import './signup.scss';
 
-import Header from '../Header/HeaderContainer';
+import * as signupConst from '../../constants';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -44,9 +46,7 @@ class Signup extends Component {
 
       lifestyleMultiplier: null,
       target: null,
-      endDate: null,
-
-      showModal: false
+      endDate: null
 
     };
   }
@@ -65,7 +65,6 @@ class Signup extends Component {
 
   handleWeight = (e) => {
     const weight = e.target.value;
-
     if (e.target.name === 'weightKg') {
       this.setState({ weightKg: weight, weightLbs: parseFloat((weight * 2.2).toFixed(2)) });
     } else if (e.target.name === 'weightLbs') {
@@ -97,9 +96,7 @@ class Signup extends Component {
   }
 
   handlelifestyleMultiplier = (lifestyleMultiplier) => {
-    this.setState({
-      lifestyleMultiplier
-    });
+    this.setState({ lifestyleMultiplier });
   }
 
   handleTarget = (target) => {
@@ -148,10 +145,11 @@ class Signup extends Component {
       heightInch
     };
 
+    const subsetObjVal = Object.values(subsetObj);
     if (
-      Object.values(subsetObj).includes(null)
-      || Object.values(subsetObj).includes('')
-      || Object.values(subsetObj).includes(0)) {
+      subsetObjVal.includes(null)
+      || subsetObjVal.includes('')
+      || subsetObjVal.includes(0)) {
       message.error('Please fill out the fields correctly.');
       return false;
     }
@@ -205,7 +203,11 @@ class Signup extends Component {
       endDate
     };
 
-    if (Object.values(subsetObj).includes(null) || Object.values(subsetObj).includes('')) {
+    const subsetObjVal = Object.values(subsetObj);
+    if (
+      subsetObjVal.includes(null)
+      || subsetObjVal.includes('')
+      || subsetObjVal.includes(0)) {
       message.error('Please fill out the fields correctly.');
       return false;
     }
@@ -225,10 +227,7 @@ class Signup extends Component {
     if (this.validateSignup()) {
       const { dbwKg, signup } = this.props;
       const { lifestyleMultiplier } = this.state;
-      signup({
-        dbwKg,
-        lifestyleMultiplier
-      });
+      signup({ dbwKg, lifestyleMultiplier });
     }
   }
 
@@ -274,6 +273,11 @@ class Signup extends Component {
     });
   }
 
+  handleCancel = () => {
+    const { toggleModal } = this.props;
+    toggleModal();
+  }
+
   render() {
     const {
       firstName,
@@ -289,22 +293,26 @@ class Signup extends Component {
       heightInch,
       goalKg,
       goalLbs,
-      showModal
+      target
     } = this.state;
 
     const {
-      isGettingDBW,
       isCheckingExisting,
+      isConfirming,
       dbwKg,
       dbwLbs,
-      isConfirming,
       isSigningUp,
       choPerDay,
       proPerDay,
-      fatPerDay
+      fatPerDay,
+      showConfirmModal,
+      successSigningUp
     } = this.props;
 
     const recommended = goalLbs - weightLbs;
+    if (successSigningUp) {
+      return <Redirect to="/" />;
+    }
 
     return (
       <div className="signup">
@@ -523,11 +531,11 @@ class Signup extends Component {
                         <Col xs={24} md={12}>
                           <FormItem required label="Lifestyle">
                             <Select placeholder="Select current lifestyle" onChange={this.handlelifestyleMultiplier}>
-                              <Option value={27.5}>Bed rest</Option>
-                              <Option value={30}>Sedentary</Option>
-                              <Option value={35}>Light</Option>
-                              <Option value={40}>Moderate</Option>
-                              <Option value={45}>Very Active</Option>
+                              <Option value={signupConst.BED_REST}>Bed rest</Option>
+                              <Option value={signupConst.SEDENTARY}>Sedentary</Option>
+                              <Option value={signupConst.LIGHT}>Light</Option>
+                              <Option value={signupConst.MODERATE}>Moderate</Option>
+                              <Option value={signupConst.VERY_ACTIVE}>Very Active</Option>
                             </Select>
                           </FormItem>
                         </Col>
@@ -559,12 +567,22 @@ class Signup extends Component {
                 }
               </Form>
               <Modal
-                title="Title"
-                visible={showModal}
-                onOk={this.handleOk}
+                title="Summary"
+                visible={showConfirmModal}
+                onOk={this.handleConfirm}
                 onCancel={this.handleCancel}
+                confirmLoading={isConfirming}
               >
-                <p> Info </p>
+                <h2>{`${firstName} ${lastName}`}</h2>
+                <h2>{`Initial Weight: ${weightKg}kg | ${weightLbs}lbs`}</h2>
+                <h2>{`Goal: ${target === 1 ? 'Lose' : target === 2 ? 'Gain' : 'Maintain'}`}</h2>
+                <h2>You will need to consume:</h2>
+                <h3>{`${choPerDay} grams of carbohydrates,`}</h3>
+                <h3>{`${proPerDay} grams of proteins;`}</h3>
+                <h3>{`and ${fatPerDay} grams of fat everyday`}</h3>
+                <br />
+                <h2>Click OK to sign up</h2>
+
               </Modal>
             </Col>
             <Col xs={2} md={4} lg={6} />

@@ -1,6 +1,7 @@
 import { handle } from 'redux-pack';
 import { message } from 'antd';
 import * as auth from '../../api/user';
+import * as signupConst from '../../utils/signup.util';
 
 const actions = {
   CHECK_EXISTING: 'SIGNUP/CHECK_EXISTING',
@@ -13,7 +14,7 @@ const actions = {
 
 export const getDBW = ({ sex, heightCm }) => ({
   type: actions.GETDBW,
-  promise: auth.getDBW({ sex, heightCm })
+  promise: signupConst.getDBW({ sex, heightCm })
 });
 
 export const checkExistingUser = ({ userName, sex, heightCm }) => (dispatch) => {
@@ -27,6 +28,8 @@ export const checkExistingUser = ({ userName, sex, heightCm }) => (dispatch) => 
       onFailure: (response) => {
         if (response.response.data.status === 404) {
           dispatch(getDBW({ sex, heightCm }));
+        } else {
+          message.error('Server error.');
         }
       }
     }
@@ -37,10 +40,17 @@ export const toggleModal = () => ({
   type: actions.TOGGLE_MODAL
 });
 
-export const signup = userInfo => ({
-  type: actions.SIGNUP,
-  promise: auth.getNutridist(userInfo)
-});
+export const signup = ({ dbwKg, lifestyleMultiplier }) => (dispatch) => {
+  dispatch({
+    type: actions.SIGNUP,
+    promise: signupConst.getNutriDist({ dbwKg, lifestyleMultiplier }),
+    meta: {
+      onSuccess: () => {
+        dispatch(toggleModal());
+      }
+    }
+  });
+};
 
 export const confirmSignup = body => ({
   type: actions.CONFIRM,
@@ -59,16 +69,19 @@ export const confirmSignup = body => ({
 
 
 const initialState = {
+  existingUser: false,
+  isCheckingExisting: false,
+
   dbwKg: null,
   dbwLbs: null,
-  isConfirming: false,
-  isSigningUp: false,
-  toggleModal: false,
   choPerDay: null,
   proPerDay: null,
   fatPerDay: null,
-  existingUser: false,
-  isCheckingExisting: false
+
+  isConfirming: false,
+  isSigningUp: false,
+  showConfirmModal: false,
+  successSigningUp: false
 };
 
 const reducer = (state = initialState, action) => {
@@ -93,34 +106,20 @@ const reducer = (state = initialState, action) => {
 
     case actions.GETDBW:
       return handle(state, action, {
-        start: prevState => ({
-          ...prevState
-        }),
         success: prevState => ({
           ...prevState,
-          dbwKg: payload.data.data.dbwKg,
-          dbwLbs: payload.data.data.dbwLbs
-        }),
-        finish: prevState => ({
-          ...prevState
+          dbwKg: payload.dbwKg,
+          dbwLbs: payload.dbwLbs
         })
       });
 
     case actions.SIGNUP:
       return handle(state, action, {
-        start: prevState => ({
-          ...prevState,
-          isSigningUp: true
-        }),
         success: prevState => ({
           ...prevState,
-          choPerDay: payload.data.data.choPerDay,
-          proPerDay: payload.data.data.proPerDay,
-          fatPerDay: payload.data.data.fatPerDay
-        }),
-        finish: prevState => ({
-          ...prevState,
-          isSigningUp: false
+          choPerDay: payload.choPerDay,
+          proPerDay: payload.proPerDay,
+          fatPerDay: payload.fatPerDay
         })
       });
 
@@ -131,7 +130,9 @@ const reducer = (state = initialState, action) => {
           isConfirming: true
         }),
         success: prevState => ({
-          ...prevState
+          ...prevState,
+          showConfirmModal: !state.showConfirmModal,
+          successSigningUp: true
         }),
         finish: prevState => ({
           ...prevState,
@@ -140,19 +141,10 @@ const reducer = (state = initialState, action) => {
       });
 
     case actions.TOGGLE_MODAL:
-      return handle(state, action, {
-        start: prevState => ({
-          ...prevState,
-          toggleModal: true
-        }),
-        success: prevState => ({
-          ...prevState
-        }),
-        finish: prevState => ({
-          ...prevState,
-          isSigningUp: false
-        })
-      });
+      return {
+        ...state,
+        showConfirmModal: !state.showConfirmModal
+      };
 
 
     default:

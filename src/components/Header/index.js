@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Divider, Drawer, Button
 } from 'antd';
@@ -20,6 +21,11 @@ const divstyle = {
 };
 
 class Header extends Component {
+
+  clickedLink = () => {
+    const { toggleDrawer } = this.props;
+    toggleDrawer();
+  }
 
   render() {
     const {
@@ -53,7 +59,9 @@ class Header extends Component {
                 </div>
               ) : (
                 <div style={divstyle}>
-                  <p style={pStyle}> Log In or Sign Up </p>
+                  <p style={pStyle}>
+                    <Link to="/" onClick={this.clickedLink}>Log In</Link>
+                  </p>
                 </div>
               )
           }

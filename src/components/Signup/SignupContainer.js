@@ -19,7 +19,11 @@ const mapStateToProps = (state) => {
     isSigningUp,
     choPerDay,
     proPerDay,
-    fatPerDay
+    fatPerDay,
+
+    showConfirmModal,
+    successSigningUp
+
   } = state.signup;
 
   return {
@@ -31,7 +35,10 @@ const mapStateToProps = (state) => {
     isSigningUp,
     choPerDay,
     proPerDay,
-    fatPerDay
+    fatPerDay,
+
+    showConfirmModal,
+    successSigningUp
   };
 };
 
