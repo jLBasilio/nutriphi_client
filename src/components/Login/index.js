@@ -25,7 +25,7 @@ class Login extends Component {
   render() {
     return (
       <div className="login">
-        <Header title="LOG IN"/>
+        <Header title="LOG IN" />
         <div className="login-body">
           <Row gutter={24}>
             <Col xs={2} md={6} lg={8} />

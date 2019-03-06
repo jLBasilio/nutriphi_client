@@ -43,25 +43,23 @@ const mapStateToProps = (state) => {
 };
 
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getDBW: (userInfo) => {
-      dispatch(getDBW(userInfo));
-    },
-    toggleModal: () => {
-      dispatch(toggleModal());
-    },
-    signup: (userInfo) => {
-      dispatch(signup(userInfo));
-    },
-    confirmSignup: (credentials) => {
-      dispatch(confirmSignup(credentials));
-    },
-    checkExistingUser: (credentials) => {
-      dispatch(checkExistingUser(credentials));
-    }
-  };
-};
+const mapDispatchToProps = dispatch => ({
+  getDBW: (userInfo) => {
+    dispatch(getDBW(userInfo));
+  },
+  toggleModal: () => {
+    dispatch(toggleModal());
+  },
+  signup: (userInfo) => {
+    dispatch(signup(userInfo));
+  },
+  confirmSignup: (credentials) => {
+    dispatch(confirmSignup(credentials));
+  },
+  checkExistingUser: (credentials) => {
+    dispatch(checkExistingUser(credentials));
+  }
+});
 
 const SignupContainer = connect(mapStateToProps, mapDispatchToProps)(Signup);
 export default SignupContainer;

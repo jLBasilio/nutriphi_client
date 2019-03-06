@@ -51,3 +51,17 @@
     }
   }
 }
+
+#recommended {
+  @include for-tablet-portrait-up {
+    right: 0;
+  }
+  right: 2rem;
+
+  span {
+    @include for-tablet-portrait-up {
+      padding: 0 24px;
+    }
+    padding: 0;
+  }
+}

@@ -8,7 +8,6 @@ import Header from '../Header/HeaderContainer';
 
 class Home extends Component {
   render() {
-    const { logout } = this.props;
     return (
       <div className="home">
         <Header title="Home" />
@@ -16,9 +15,6 @@ class Home extends Component {
           <br />
           <br />
           <h1> HOME PAGE </h1>
-          <Button type="primary" name="login" onClick={logout}>
-            LOGOUT
-          </Button>
         </div>
       </div>
     );

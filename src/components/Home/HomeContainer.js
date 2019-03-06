@@ -10,13 +10,11 @@ const mapStateToProps = (state) => {
 };
 
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    logout: () => {
-      dispatch(logout());
-    }
-  };
-};
+const mapDispatchToProps = dispatch => ({
+  logout: () => {
+    dispatch(logout());
+  }
+});
 
 const HomeContainer = connect(mapStateToProps, mapDispatchToProps)(Home);
 export default HomeContainer;

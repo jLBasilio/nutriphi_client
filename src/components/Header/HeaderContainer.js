@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import Header from '.';
 
 import { toggleDrawer } from './duck';
+import { logout } from '../Login/duck';
 
 const mapStateToProps = (state) => {
   const { showDrawer } = state.header;
@@ -13,13 +14,14 @@ const mapStateToProps = (state) => {
 };
 
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    toggleDrawer: () => {
-      dispatch(toggleDrawer());
-    }
-  };
-};
+const mapDispatchToProps = dispatch => ({
+  toggleDrawer: () => {
+    dispatch(toggleDrawer());
+  },
+  logout: () => {
+    dispatch(logout());
+  }
+});
 
 const HeaderContainer = connect(mapStateToProps, mapDispatchToProps)(Header);
 export default HeaderContainer;

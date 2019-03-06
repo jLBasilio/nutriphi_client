@@ -4,10 +4,16 @@ import App from './index';
 import { login, getSession } from '../components/Login/duck';
 
 const mapStateToProps = (state) => {
-  const { user, isLoggingIn, isGettingSession } = state.login;
+  const {
+    user,
+    isLoggingIn,
+    isLoggingOut,
+    isGettingSession
+  } = state.login;
   return {
     user,
     isLoggingIn,
+    isLoggingOut,
     isGettingSession
   };
 };

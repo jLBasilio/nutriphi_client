@@ -1,4 +1,7 @@
 import { handle } from 'redux-pack';
+import {
+  message
+} from 'antd';
 import * as auth from '../../api/user';
 
 const actions = {
@@ -9,11 +12,23 @@ const actions = {
 
 export const login = ({ userName, password }) => ({
   type: actions.LOGIN,
-  promise: auth.login({ userName, password })
+  promise: auth.login({ userName, password }),
+  meta: {
+    onFailure: (response) => {
+      switch (response.response.data.status) {
+        case 401:
+          message.error('Invalid credentials');
+          break;
+        default:
+          message.error('Server error');
+          break;
+      }
+    }
+  }
 });
 
 export const logout = () => ({
-  type: actions.LOGIN,
+  type: actions.LOGOUT,
   promise: auth.logout()
 });
 
@@ -25,6 +40,7 @@ export const getSession = () => ({
 
 const initialState = {
   isLoggingIn: false,
+  isLoggingOut: false,
   isGettingSession: false,
   user: null
 };
@@ -53,7 +69,7 @@ const reducer = (state = initialState, action) => {
       return handle(state, action, {
         start: prevState => ({
           ...prevState,
-          isGettingSession: true
+          isLoggingOut: true
         }),
         success: prevState => ({
           ...prevState,
@@ -61,7 +77,7 @@ const reducer = (state = initialState, action) => {
         }),
         finish: prevState => ({
           ...prevState,
-          isGettingSession: false
+          isLoggingOut: false
         })
       });
 

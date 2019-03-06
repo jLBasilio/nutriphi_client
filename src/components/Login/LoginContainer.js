@@ -12,13 +12,11 @@ const mapStateToProps = (state) => {
 };
 
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    login: (credentials) => {
-      dispatch(login(credentials));
-    }
-  };
-};
+const mapDispatchToProps = dispatch => ({
+  login: (credentials) => {
+    dispatch(login(credentials));
+  }
+});
 
 const LoginContainer = connect(mapStateToProps, mapDispatchToProps)(Login);
 export default LoginContainer;

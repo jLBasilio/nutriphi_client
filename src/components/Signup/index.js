@@ -232,7 +232,14 @@ class Signup extends Component {
   }
 
   handleConfirm = () => {
-    const { dbwKg, confirmSignup } = this.props;
+    const {
+      dbwKg,
+      confirmSignup,
+      choPerDay,
+      proPerDay,
+      fatPerDay
+    } = this.props;
+    
     const {
       firstName,
       lastName,
@@ -269,7 +276,10 @@ class Signup extends Component {
       target,
       dbwKg,
       lifestyleMultiplier,
-      endDate
+      endDate,
+      choPerDay,
+      proPerDay,
+      fatPerDay
     });
   }
 
@@ -489,9 +499,11 @@ class Signup extends Component {
                 {
                   dbwKg || dbwLbs ? (
                     <Fragment>
-                      <Divider>
-                        {`Recommended Weight: ${dbwKg} kg or ${dbwLbs} lbs`}
-                      </Divider>
+                      <Row>
+                        <Divider id="recommended">
+                          {`Recommended Weight: ${dbwKg} kg or ${dbwLbs} lbs`}
+                        </Divider>
+                      </Row>
                       <Row gutter={24}>
                         <Col xs={24} md={8}>
                           <FormItem required label="User Goal">

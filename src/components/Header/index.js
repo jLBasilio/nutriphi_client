@@ -21,10 +21,15 @@ const divstyle = {
 };
 
 class Header extends Component {
-
   clickedLink = () => {
     const { toggleDrawer } = this.props;
     toggleDrawer();
+  }
+
+  handleLogout = () => {
+    const { toggleDrawer, logout } = this.props;
+    toggleDrawer();
+    logout();
   }
 
   render() {
@@ -53,14 +58,22 @@ class Header extends Component {
             user
               ? (
                 <div style={divstyle}>
-                  <p style={pStyle}> user is logged in </p>
+                  <p style={pStyle}>
+                    <Link to="/">Home</Link>
+                  </p>
                   <Divider />
-                  <p style={pStyle}> user is logged in </p>
+                  <p style={pStyle}>
+                    <Link to="/" onClick={this.handleLogout}>Log Out</Link>
+                  </p>
                 </div>
               ) : (
                 <div style={divstyle}>
                   <p style={pStyle}>
                     <Link to="/" onClick={this.clickedLink}>Log In</Link>
+                  </p>
+                  <Divider />
+                  <p style={pStyle}>
+                    <Link to="/signup" onClick={this.clickedLink}>Sign Up</Link>
                   </p>
                 </div>
               )

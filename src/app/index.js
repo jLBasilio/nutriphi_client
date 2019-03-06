@@ -26,12 +26,13 @@ class App extends Component {
       user,
       isLoggingIn,
       isGettingSession,
+      isLoggingOut,
       logout
     } = this.props;
     return (
       <Router>
         {
-          isGettingSession || isLoggingIn ? (
+          isGettingSession || isLoggingIn || isLoggingOut ? (
             <Loader />
           ) : user ? (
             <Switch>
