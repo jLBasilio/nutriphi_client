@@ -3,13 +3,16 @@ import Header from '.';
 
 import { toggleDrawer } from './duck';
 import { logout } from '../Login/duck';
+import { toggleCalendar } from '../Home/duck';
 
 const mapStateToProps = (state) => {
   const { showDrawer } = state.header;
   const { user } = state.login;
+  const { showCalendar } = state.home;
   return {
     showDrawer,
-    user
+    user,
+    showCalendar
   };
 };
 
@@ -20,6 +23,9 @@ const mapDispatchToProps = dispatch => ({
   },
   logout: () => {
     dispatch(logout());
+  },
+  toggleCalendar: () => {
+    dispatch(toggleCalendar());
   }
 });
 

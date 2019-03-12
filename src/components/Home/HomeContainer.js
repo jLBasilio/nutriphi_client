@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import Home from '.';
 
 import { logout } from '../Login/duck';
+import { setLabel } from '../Entry/duck';
 
 const mapStateToProps = (state) => {
   return {
@@ -13,6 +14,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => ({
   logout: () => {
     dispatch(logout());
+  },
+  setLabel: (periodLabel) => {
+    dispatch(setLabel(periodLabel));
   }
 });
 

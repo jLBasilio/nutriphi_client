@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 import 'antd/dist/antd.css';
 
+import Entry from '../components/Entry/EntryContainer';
 import Home from '../components/Home/HomeContainer';
 import Loader from '../components/Loader';
 import Login from '../components/Login/LoginContainer';
@@ -37,6 +38,7 @@ class App extends Component {
           ) : user ? (
             <Switch>
               <Route exact path="/" render={() => <Home logout={logout} />} />
+              <Route exact path="/entry" component={Entry} />
               <Redirect to="/" />
             </Switch>
           ) : (

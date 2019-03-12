@@ -10,6 +10,7 @@ import {
 import './login.scss';
 
 import Header from '../Header/HeaderContainer';
+import * as pageTitles from '../../constants/pages';
 
 class Login extends Component {
   handleSubmit = (e) => {
@@ -25,7 +26,7 @@ class Login extends Component {
   render() {
     return (
       <div className="login">
-        <Header title="LOG IN" />
+        <Header title={pageTitles.LOGIN_TITLE} />
         <div className="login-body">
           <Row gutter={24}>
             <Col xs={2} md={6} lg={8} />

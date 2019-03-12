@@ -5,23 +5,6 @@
 // sass-lint:disable nesting-depth, no-ids
 .home {
 
-  .header {
-
-    .menu-button {
-      background: 0;
-      border: 0;
-      height: 3.5rem;
-      left: .5rem;
-      padding: 0;
-      top: .5rem;
-
-      .menu-icon {
-        height: 65px;
-        width: 65px;
-      }
-    }
-  }
-
   .home-body {
 
     @include for-tablet-portrait-up {
@@ -29,5 +12,30 @@
     }
   }
 
+  .absolute-button {
+    @include for-tablet-portrait-up {
+      bottom: 4rem;
+      right: 4rem;
+    }
+    bottom: 2.5rem;
+    position: absolute;
+    right: 2rem;
+
+    .add-button {
+      background: none;
+      border: 0;
+      border-radius: 4rem;
+      box-shadow: none;
+      height: 100px;
+      padding: 0;
+      text-shadow: none;
+      width: 100px;
+
+      .add-img {
+        height: 100px;
+        width: 100px;
+      }
+    }
+  }
 
 }

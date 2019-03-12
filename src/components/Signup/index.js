@@ -14,9 +14,10 @@ import {
   Row,
   Select
 } from 'antd';
-import Header from '../Header/HeaderContainer';
 import './signup.scss';
 
+import Header from '../Header/HeaderContainer';
+import * as pageTitles from '../../constants/pages';
 import * as signupConst from '../../constants';
 
 const FormItem = Form.Item;
@@ -326,7 +327,7 @@ class Signup extends Component {
 
     return (
       <div className="signup">
-        <Header title="SIGN UP" />
+        <Header title={pageTitles.SIGNUP_TITLE} />
         <div className="signup-body">
           <Row gutter={24}>
             <Col xs={2} md={4} lg={6} />

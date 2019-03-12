@@ -2,7 +2,8 @@ import { handle } from 'redux-pack';
 import * as auth from '../../api/user';
 
 const actions = {
-  LOGOUT: 'AUTH/LOGOUT'
+  LOGOUT: 'AUTH/LOGOUT',
+  TOGGLE_CALENDAR: 'HOME_TOGGLE_CALENDAR'
 };
 
 export const logout = () => ({
@@ -10,8 +11,12 @@ export const logout = () => ({
   promise: auth.logout()
 });
 
-const initialState = {
+export const toggleCalendar = () => ({
+  type: actions.TOGGLE_CALENDAR
+});
 
+const initialState = {
+  showCalendar: false
 };
 
 const reducer = (state = initialState, action) => {
@@ -34,10 +39,10 @@ const reducer = (state = initialState, action) => {
         })
       });
 
-    case actions.TOGGLE_DRAWER:
+    case actions.TOGGLE_CALENDAR:
       return {
         ...state,
-        showDrawer: !state.showDrawer
+        showCalendar: !state.showCalendar
       };
 
     default:
