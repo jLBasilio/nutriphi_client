@@ -7,26 +7,14 @@ import {
   Divider,
   Drawer,
   Icon,
+  Menu,
   Row
 } from 'antd';
 import './header.scss';
 
 import * as pageTitles from '../../constants/pages';
 
-const pStyle = {
-  fontSize: 16,
-  color: 'rgba(0,0,0,0.85)',
-  lineHeight: '24px',
-  display: 'block',
-  marginBottom: 16
-};
-
-const divstyle = {
-  fontSize: 14,
-  lineHeight: '22px',
-  marginBottom: 7,
-  color: 'rgba(0,0,0,0.65)'
-};
+const { SubMenu } = Menu;
 
 class Header extends Component {
   clickedLink = () => {
@@ -96,31 +84,78 @@ class Header extends Component {
           visible={showDrawer}
         >
           {
-            user
-              ? (
-                <div style={divstyle}>
-                  <p style={pStyle}>
-                    <Link to="/">Home</Link>
-                  </p>
-                  <Divider />
-                  <p style={pStyle}>
-                    <Link to="/" onClick={this.handleLogout}>Log Out</Link>
-                  </p>
-                </div>
-              ) : (
-                <div style={divstyle}>
-                  <p style={pStyle}>
-                    <Link to="/" onClick={this.clickedLink}>Log In</Link>
-                  </p>
-                  <Divider />
-                  <p style={pStyle}>
-                    <Link to="/signup" onClick={this.clickedLink}>Sign Up</Link>
-                  </p>
-                </div>
-              )
+            user ? (
+              <Menu
+                className="sidebar-menu"
+                defaultSelectedKeys={['1']}
+                mode="inline"
+              >
+
+                <Menu.Item key="1" onClick={this.clickedLink}>
+                  <Link to="/">
+                    <Icon type="home" />
+                    Home
+                  </Link>
+                </Menu.Item>
+
+                <Menu.Item key="2" onClick={this.clickedLink}>
+                  <Link to="/progress">
+                    <Icon type="home" />
+                    Progress
+                  </Link>
+                </Menu.Item>
+
+                <SubMenu
+                  key="3"
+                  title={(
+                    <span>
+                      <Icon type="heart" />
+                      <span>Food List</span>
+                    </span>
+                  )}
+                >
+                  <Menu.Item key="31">Meat</Menu.Item>
+                  <Menu.Item key="32">Fish</Menu.Item>
+                  <Menu.Item key="33">Vegetable</Menu.Item>
+                  <Menu.Item key="34">Fruit</Menu.Item>
+                  <Menu.Item key="35">Beverage</Menu.Item>
+                </SubMenu>
+
+                <Menu.Item key="5" onClick={this.handleLogout}>
+                  <Link to="/">
+                    <Icon type="logout" />
+                    Log Out
+                  </Link>
+                </Menu.Item>
+              </Menu>
+
+
+            ) : (
+
+
+              <Menu
+                className="sidebar-menu"
+                defaultSelectedKeys={['1']}
+                mode="inline"
+              >
+                <Menu.Item key="1" onClick={this.clickedLink}>
+                  <Link to="/">
+                    <Icon type="login" />
+                    Log In
+                  </Link>
+                </Menu.Item>
+
+                <Menu.Item key="2" onClick={this.clickedLink}>
+                  <Link to="/signup">
+                    <Icon type="user-add" />
+                    Sign Up
+                  </Link>
+                </Menu.Item>
+
+              </Menu>
+            )
           }
         </Drawer>
-
         <Drawer
           title="Select Date"
           placement="right"

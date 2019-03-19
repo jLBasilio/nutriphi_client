@@ -47,4 +47,35 @@
     }
   }
 
+
+}
+
+.ant-drawer-body {
+  padding: 1rem 0;
+}
+
+.ant-menu-item {
+
+  &.ant-menu-item-active,
+  &.ant-menu-item-selected {
+    a {
+      color: $base-green;
+    }
+
+  }
+
+  &::after {
+    border-right: 3px solid $base-green !important;
+  }
+}
+
+.ant-menu-item, .ant-menu-item-active {
+
+}
+
+
+.ant-menu-submenu-title {
+  &:hover {
+    color: $base-green;
+  }
 }
