@@ -6,6 +6,7 @@ export const toggleDrawer = () => ({
   type: actions.TOGGLE_DRAWER
 });
 
+
 const initialState = {
   showDrawer: false
 };

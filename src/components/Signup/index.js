@@ -240,7 +240,7 @@ class Signup extends Component {
       proPerDay,
       fatPerDay
     } = this.props;
-    
+
     const {
       firstName,
       lastName,

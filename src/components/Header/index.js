@@ -46,13 +46,13 @@ class Header extends Component {
 
         <Row gutter={24}>
 
-          <Col xs={5} md={8} lg={2}>
+          <Col xs={5} md={3} lg={2}>
             <Button className="menu-button" onClick={toggleDrawer}>
               <img className="menu-icon" src="/header/burger-menu.png" alt="burger-menu" />
             </Button>
           </Col>
 
-          <Col xs={13} md={13} lg={19}>
+          <Col xs={13} md={18} lg={19}>
             <div className="header-title">
               {title}
             </div>
