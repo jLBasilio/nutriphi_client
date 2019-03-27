@@ -9,10 +9,15 @@ import {
 } from 'antd';
 import './login.scss';
 
-import Header from '../Header/HeaderContainer';
 import * as pageTitles from '../../constants/pages';
 
 class Login extends Component {
+
+  componentDidMount() {
+    const { changePage } = this.props;
+    changePage(pageTitles.LOGIN);
+  }
+
   handleSubmit = (e) => {
     e.preventDefault();
     const { userName, password } = e.target;
@@ -26,7 +31,6 @@ class Login extends Component {
   render() {
     return (
       <div className="login">
-        <Header title={pageTitles.LOGIN_TITLE} />
         <div className="login-body">
           <Row gutter={24}>
             <Col xs={2} md={6} lg={8} />

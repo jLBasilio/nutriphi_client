@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import App from './index';
+import App from '.';
 
 import { login, getSession } from '../components/Login/duck';
 

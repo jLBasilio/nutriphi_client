@@ -8,7 +8,9 @@ import {
 import 'antd/dist/antd.css';
 
 import Entry from '../components/Entry/EntryContainer';
+import Food from '../components/Food/FoodContainer';
 import Home from '../components/Home/HomeContainer';
+import Header from '../components/Header/HeaderContainer';
 import Loader from '../components/Loader';
 import Login from '../components/Login/LoginContainer';
 import Signup from '../components/Signup/SignupContainer';
@@ -36,16 +38,24 @@ class App extends Component {
           isGettingSession || isLoggingIn || isLoggingOut ? (
             <Loader />
           ) : user ? (
-            <Switch>
-              <Route exact path="/" render={() => <Home logout={logout} />} />
-              <Route exact path="/entry" component={Entry} />
-              <Redirect to="/" />
-            </Switch>
+
+            <React.Fragment>
+              <Header />
+              <Switch>
+                <Route exact path="/" render={() => <Home logout={logout} />} />
+                <Route exact path="/food" component={Food} />
+                <Route exact path="/entry" component={Entry} />
+                <Redirect to="/" />
+              </Switch>
+            </React.Fragment>
           ) : (
-            <Switch>
-              <Route exact path="/" component={Login} />
-              <Route exact path="/signup" component={Signup} />
-            </Switch>
+            <React.Fragment>
+              <Header />
+              <Switch>
+                <Route exact path="/" component={Login} />
+                <Route exact path="/signup" component={Signup} />
+              </Switch>
+            </React.Fragment>
           )
         }
       </Router>

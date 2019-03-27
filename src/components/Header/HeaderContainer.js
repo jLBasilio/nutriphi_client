@@ -1,18 +1,19 @@
 import { connect } from 'react-redux';
 import Header from '.';
 
-import { toggleDrawer } from './duck';
+import { toggleDrawer, changePage } from './duck';
 import { logout } from '../Login/duck';
 import { toggleCalendar } from '../Home/duck';
 
 const mapStateToProps = (state) => {
-  const { showDrawer } = state.header;
+  const { showDrawer, currentPage } = state.header;
   const { user } = state.login;
   const { showCalendar } = state.home;
   return {
     showDrawer,
     user,
-    showCalendar
+    showCalendar,
+    currentPage
   };
 };
 
@@ -20,6 +21,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => ({
   toggleDrawer: () => {
     dispatch(toggleDrawer());
+  },
+  changePage: (newPage) => {
+    dispatch(changePage(newPage));
   },
   logout: () => {
     dispatch(logout());

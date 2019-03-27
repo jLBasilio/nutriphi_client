@@ -13,7 +13,6 @@ class Entry extends Component {
     const { periodLabel } = this.props;
     return (
       <div className="home">
-        <Header title={pageTitles.ENTRY_TITLE} />
         <div className="home-body">
           <br />
           <br />

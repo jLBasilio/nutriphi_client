@@ -6,7 +6,6 @@ import {
 } from 'antd';
 import './home.scss';
 
-import Header from '../Header/HeaderContainer';
 import * as pageTitles from '../../constants/pages';
 
 class Home extends Component {
@@ -16,6 +15,11 @@ class Home extends Component {
     this.state = {
       showPopups: false
     };
+  }
+
+  componentDidMount() {
+    const { changePage } = this.props;
+    changePage(pageTitles.HOME);
   }
 
   handleAddClick = () => {
@@ -39,7 +43,6 @@ class Home extends Component {
     } = this.state;
     return (
       <div className="home">
-        <Header title={pageTitles.HOME_TITLE} />
         <div className="home-body">
           <br />
           <br />

@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import Login from '.';
 
 import { login } from './duck';
+import { changePage } from '../Header/duck';
 
 const mapStateToProps = (state) => {
   const { isLoggingIn, user } = state.login;
@@ -15,6 +16,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => ({
   login: (credentials) => {
     dispatch(login(credentials));
+  },
+  changePage: (newPage) => {
+    dispatch(changePage(newPage));
   }
 });
 

@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 
 import entry from './Entry/duck';
+import food from './Food/duck';
 import header from './Header/duck';
 import home from './Home/duck';
 import login from './Login/duck';
@@ -11,7 +12,8 @@ const reducers = combineReducers({
   header,
   home,
   login,
-  signup
+  signup,
+  food
 });
 
 export default reducers;
