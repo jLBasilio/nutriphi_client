@@ -9,6 +9,8 @@ import {
   checkExistingUser
 } from './duck';
 
+import { changePage } from '../Header/duck';
+
 const mapStateToProps = (state) => {
   const {
     dbwKg,
@@ -58,6 +60,9 @@ const mapDispatchToProps = dispatch => ({
   },
   checkExistingUser: (credentials) => {
     dispatch(checkExistingUser(credentials));
+  },
+  changePage: (newPage) => {
+    dispatch(changePage(newPage));
   }
 });
 

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Button,
   Col,
@@ -12,7 +13,6 @@ import './login.scss';
 import * as pageTitles from '../../constants/pages';
 
 class Login extends Component {
-
   componentDidMount() {
     const { changePage } = this.props;
     changePage(pageTitles.LOGIN);
@@ -35,7 +35,6 @@ class Login extends Component {
           <Row gutter={24}>
             <Col xs={2} md={6} lg={8} />
             <Col xs={20} md={12} lg={8} className="middle-col">
-              <h2>Log In to NutriPhi</h2>
               <div className="login-box">
                 <Form onSubmit={this.handleSubmit} className="login-form">
                   <Form.Item label="Username">
@@ -71,9 +70,10 @@ class Login extends Component {
                   id="signup-button"
                   type="primary"
                   name="signup"
-                  href="/signup"
                 >
-                  Sign Up
+                  <Link to="/signup">
+                    Sign Up
+                  </Link>
                 </Button>
               </div>
             </Col>

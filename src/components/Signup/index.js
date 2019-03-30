@@ -16,7 +16,6 @@ import {
 } from 'antd';
 import './signup.scss';
 
-import Header from '../Header/HeaderContainer';
 import * as pageTitles from '../../constants/pages';
 import * as signupConst from '../../constants';
 
@@ -50,6 +49,11 @@ class Signup extends Component {
       endDate: null
 
     };
+  }
+
+  componentDidMount() {
+    const { changePage } = this.props;
+    changePage(pageTitles.SIGNUP);
   }
 
   handleChange = (e) => {

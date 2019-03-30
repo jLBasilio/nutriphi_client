@@ -1,7 +1,7 @@
 import React from 'react';
-
+import { Spin } from 'antd';
 import './loader.scss';
 
-const Loader = () => <h1>Loader Page</h1>;
+const Loader = () => <Spin />;
 
 export default Loader;

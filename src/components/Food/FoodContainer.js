@@ -1,16 +1,28 @@
 import { connect } from 'react-redux';
 import Food from '.';
 
-import { getFoodClass, getFoodAll } from './duck';
+import {
+  getFoodClass,
+  getFoodCount,
+  toggleModal
+} from './duck';
 import { changePage } from '../Header/duck';
 
 const mapStateToProps = (state) => {
   const { currentPage } = state.header;
-  const { isFetching, food } = state.food;
+  const {
+    isFetching,
+    food,
+    showModal,
+    foodCount
+  } = state.food;
+
   return {
     currentPage,
     isFetching,
-    food
+    food,
+    showModal,
+    foodCount
   };
 };
 
@@ -22,8 +34,11 @@ const mapDispatchToProps = dispatch => ({
   getFoodClass: ({ skip, take, foodClass }) => {
     dispatch(getFoodClass({ skip, take, foodClass }));
   },
-  getFoodAll: ({ skip, take }) => {
-    dispatch(getFoodAll({ skip, take }));
+  getFoodCount: (foodClass) => {
+    dispatch(getFoodCount(foodClass));
+  },
+  toggleModal: () => {
+    dispatch(toggleModal());
   }
 });
 

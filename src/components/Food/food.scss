@@ -1,0 +1,48 @@
+@import 'src/constants/screen';
+@import 'src/constants/color';
+
+// sass-lint:disable nesting-depth, no-ids
+.food {
+  .food-body {
+    @include for-tablet-portrait-up {
+      padding: 0 4rem;
+      padding-top: 8rem;
+    }
+    padding: 0 2.5rem;
+    padding-top: 7rem;
+
+
+    .food-col {
+      display: inline;
+      padding: 1rem 0;
+
+    }
+
+    .pagination-div {
+      display: flex;
+      justify-content: center;
+      padding: 2rem;
+    }
+  }
+}
+
+.ant-card-head {
+  .ant-card-head-title {
+    max-width: 70%;
+  }
+}
+
+.ant-modal {
+  padding-top: 2rem;
+
+  .ant-modal-footer {
+    .ant-btn {
+      display: none;
+    }
+  }
+
+
+  .label {
+    font-size: 1.4rem;
+  }
+}

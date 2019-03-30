@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import {
-  Button,
-  Popover
+  Card,
+  Col,
+  Modal,
+  Pagination,
+  Row
 } from 'antd';
 import './food.scss';
-
-import * as pageTitles from '../../constants/pages';
-import Loader from '../Loader';
 
 class Food extends Component {
   constructor(props) {
@@ -14,56 +14,173 @@ class Food extends Component {
 
     this.state = {
       skip: 0,
-      take: 10
+      take: 16,
+      defaultSize: 16,
+      currentFood: 'sad',
     };
   }
 
   componentDidMount() {
-    const { currentPage, getFoodAll, getFoodClass } = this.props;
+    const {
+      changePage,
+      getFoodClass,
+      toFetch,
+      getFoodCount,
+      title
+    } = this.props;
     const { skip, take } = this.state;
+    changePage(title);
 
-    if (currentPage === pageTitles.ALL) getFoodAll({ skip, take });
-    else if (currentPage === pageTitles.VEGETABLE) getFoodClass({ skip, take, foodClass: 'vegetable' });
-    // else if (currentPage === pageTitles.FRUIT) this.setState({ foodClassToFetch: 'fruit' });
-    // else if (currentPage === pageTitles.MILK) this.setState({ foodClassToFetch: 'milk' });
-    // else if (currentPage === pageTitles.RICE) this.setState({ foodClassToFetch: 'rice' });
-    // else if (currentPage === pageTitles.MEAT) this.setState({ foodClassToFetch: 'meat' });
-    // else if (currentPage === pageTitles.FATS) this.setState({ foodClassToFetch: 'fat' });
-    // else if (currentPage === pageTitles.SUGAR) this.setState({ foodClassToFetch: 'sugar' });
-    // else if (currentPage === pageTitles.FREE) this.setState({ foodClassToFetch: 'free' });
-    // else if (currentPage === pageTitles.BEVERAGE) this.setState({ foodClassToFetch: 'beverage' });
+    // Fetch food
+    if (toFetch === 'all') {
+      getFoodClass({ skip, take });
+      getFoodCount('');
+    } else {
+      getFoodClass({ skip, take, foodClass: toFetch });
+      getFoodCount(toFetch);
+    }
+  }
 
+  componentDidUpdate(previousProps) {
+    const { title } = this.props;
+    if (title !== previousProps.title) {
+      const {
+        changePage,
+        getFoodClass,
+        toFetch,
+        getFoodCount
+      } = this.props;
 
+      const { skip, take } = this.state;
+      changePage(title);
+
+      // Fetch food
+      if (toFetch === 'all') {
+        getFoodClass({ skip, take });
+        getFoodCount('');
+      } else {
+        getFoodClass({ skip, take, foodClass: toFetch });
+        getFoodCount(toFetch);
+      }
+    }
+  }
+
+  showFoodModal = (foodIndex) => {
+    const { food, toggleModal } = this.props;
+    toggleModal();
+    this.setState({ currentFood: food[foodIndex] });
+  }
+
+  handleModalClose = () => {
+    const { toggleModal } = this.props;
+    toggleModal();
+  }
+
+  handlePageChange = (page) => {
+    const { getFoodClass, toFetch } = this.props;
+    const { defaultSize, take } = this.state;
+    const skip = (page - 1) * defaultSize;
+
+    if (toFetch === 'all') {
+      getFoodClass({ skip, take });
+    } else {
+      getFoodClass({ skip, take, foodClass: toFetch });
+    }
   }
 
   render() {
-    const { currentPage, food, isFetching } = this.props;
-    return (
+    const {
+      food,
+      isFetching,
+      showModal,
+      foodCount
+    } = this.props;
 
+    const { defaultSize, currentFood } = this.state;
+    const emptyCards = [...'abcdefghijkl'];
+    return (
       <div className="food">
-        {
-          isFetching ? (
-            <Loader />
-          ) : (
-            <div>
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
-              {currentPage}
+        <div className="food-body">
+          <Row gutter={24}>
+            {
+              isFetching ? (
+                emptyCards.map(element => (
+                  <Col
+                    key={element}
+                    className="food-col"
+                    xs={24}
+                    md={8}
+                    lg={6}
+                  >
+                    <Card className="food-card" loading />
+                  </Col>
+                ))
+              ) : (
+                food.map((foodElement, index) => (
+                  <Col
+                    key={foodElement.id}
+                    className="food-col"
+                    xs={24}
+                    md={8}
+                    lg={6}
+                  >
+                    <Card
+                      className="food-card"
+                      title={
+                        foodElement.filipinoName
+                          ? foodElement.filipinoName
+                          : foodElement.englishName
+                      }
+                      hoverable
+                      extra={foodElement.primaryClassification.split('-')[0]}
+                      loading={isFetching}
+                      onClick={() => this.showFoodModal(index)}
+                    >
+                      Card content
+                    </Card>
+                  </Col>
+                ))
+              )
+            }
+          </Row>
+
+          <div className="pagination-div">
+            <Pagination
+              className="pagination"
+              pageSize={defaultSize}
+              total={foodCount}
+              hideOnSinglePage
+              size="small"
+              onChange={this.handlePageChange}
+            />
+          </div>
+          <Modal
+            title={
+              currentFood.filipinoName
+                ? currentFood.filipinoName
+                : currentFood.englishName
+            }
+            visible={showModal}
+            onCancel={this.handleModalClose}
+            onOk={this.handleModalClose}
+          >
+
+            <div className="label">
+              {
+                currentFood.filipinoName ? (
+                  currentFood.englishName ? (
+                    currentFood.englishName
+                  ) : 'N/A'
+                ) : null
+              }
             </div>
-          )
-        }
+
+            <div className="macronuts">
+              
+            </div>
+
+          </Modal>
+        </div>
       </div>
     );
   }

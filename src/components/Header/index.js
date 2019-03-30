@@ -14,12 +14,23 @@ import './header.scss';
 import * as pageTitles from '../../constants/pages';
 
 const { SubMenu } = Menu;
+const foodSections = [
+  'All',
+  'Vegetable',
+  'Fruit',
+  'Milk',
+  'Rice',
+  'Meat',
+  'Fat',
+  'Sugar',
+  'Free',
+  'Beverage'
+];
 
 class Header extends Component {
-  clickedLink = (pageName) => {
-    const { toggleDrawer, changePage } = this.props;
+  clickedLink = () => {
+    const { toggleDrawer } = this.props;
     toggleDrawer();
-    if (pageName.length) changePage(pageName);
   }
 
   handleLogout = () => {
@@ -112,20 +123,17 @@ class Header extends Component {
                     </span>
                   )}
                 >
-                  <Menu.Item key="all">All</Menu.Item>
-                  <Menu.Item key="vegetable" onClick={() => this.clickedLink(pageTitles.VEGETABLE)}>
-                    <Link to="/food">
-                      Vegetable
-                    </Link>
-                  </Menu.Item>
-                  <Menu.Item key="fruit">Fruit</Menu.Item>
-                  <Menu.Item key="milk">Milk</Menu.Item>
-                  <Menu.Item key="rice">Rice</Menu.Item>
-                  <Menu.Item key="meat">Meat and Fish</Menu.Item>
-                  <Menu.Item key="fat">Fats</Menu.Item>
-                  <Menu.Item key="sugar">Sugars</Menu.Item>
-                  <Menu.Item key="free">Free foods</Menu.Item>
-                  <Menu.Item key="beverage">Beverage</Menu.Item>
+
+                  {
+                    foodSections.map(element => (
+                      <Menu.Item key={element.toLowerCase()} onClick={this.clickedLink}>
+                        <Link to={`/food/${element.toLowerCase()}`}>
+                          {element}
+                        </Link>
+                      </Menu.Item>
+                    ))
+                  }
+
                 </SubMenu>
 
                 <Menu.Item key="logout" onClick={this.handleLogout}>

@@ -1,12 +1,7 @@
 import React, { Component } from 'react';
-import {
-  Button,
-  Popover
-} from 'antd';
+
 import './entry.scss';
 
-import Header from '../Header/HeaderContainer';
-import * as pageTitles from '../../constants/pages';
 
 class Entry extends Component {
   render() {

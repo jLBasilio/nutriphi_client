@@ -3,10 +3,10 @@ export const ENTRY = 'HOME - ENTRY';
 export const LOGIN = 'LOG IN';
 export const SIGNUP = 'SIGN UP';
 
-export const ALL = 'ALL';
+export const ALL = 'ALL FOODS';
 export const VEGETABLE = 'VEGETABLE';
 export const FRUIT = 'FRUIT';
-export const MEAT = 'MEAT AND FISH';
+export const MEAT = 'MEAT | FISH';
 export const MILK = 'MILK';
 export const RICE = 'RICE';
 export const FATS = 'FATS';
