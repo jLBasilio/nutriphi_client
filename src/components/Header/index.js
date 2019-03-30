@@ -123,7 +123,6 @@ class Header extends Component {
                     </span>
                   )}
                 >
-
                   {
                     foodSections.map(element => (
                       <Menu.Item key={element.toLowerCase()} onClick={this.clickedLink}>
@@ -133,8 +132,14 @@ class Header extends Component {
                       </Menu.Item>
                     ))
                   }
-
                 </SubMenu>
+
+                <Menu.Item key="about" onClick={this.clickedLink}>
+                  <Link to="/about">
+                    <Icon type="question-circle" />
+                    About
+                  </Link>
+                </Menu.Item>
 
                 <Menu.Item key="logout" onClick={this.handleLogout}>
                   <Link to="/">

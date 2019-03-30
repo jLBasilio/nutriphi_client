@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import Home from '.';
 
 import { logout } from '../Login/duck';
-import { setLabel } from '../Entry/duck';
+import { setPeriod } from '../Entry/duck';
 import { changePage } from '../Header/duck';
 
 const mapStateToProps = (state) => {
@@ -16,8 +16,8 @@ const mapDispatchToProps = dispatch => ({
   logout: () => {
     dispatch(logout());
   },
-  setLabel: (periodLabel) => {
-    dispatch(setLabel(periodLabel));
+  setPeriod: (period) => {
+    dispatch(setPeriod(period));
   },
   changePage: (newPage) => {
     dispatch(changePage(newPage));

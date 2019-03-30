@@ -6,6 +6,7 @@ import {
 } from 'antd';
 import './home.scss';
 
+import * as constants from '../../constants';
 import * as pageTitles from '../../constants/pages';
 
 class Home extends Component {
@@ -29,12 +30,10 @@ class Home extends Component {
     });
   }
 
-
   /* Stopped here, add entry functionality, send bfast, lunch or dinner to /entry component */
-  handleAddEntry = (periodLabel) => {
-    const { setLabel } = this.props;
-    console.log(periodLabel);
-    setLabel(periodLabel);
+  handleAddEntry = (period) => {
+    const { setPeriod } = this.props;
+    setPeriod(period);
   }
 
   render() {
@@ -53,18 +52,18 @@ class Home extends Component {
             content={(
               <div>
                 <h5>
-                  <Link to="/entry" onClick={() => this.handleAddEntry('Breakfast')}>Breakfast</Link>
+                  <Link to="/entry" onClick={() => this.handleAddEntry(constants.BREAKFAST)}>Breakfast</Link>
                 </h5>
                 <h5>
-                  <Link to="/entry" onClick={() => this.handleAddEntry('Lunch')}>Lunch</Link>
+                  <Link to="/entry" onClick={() => this.handleAddEntry(constants.LUNCH)}>Lunch</Link>
                 </h5>
                 <h5>
-                  <Link to="/entry" onClick={() => this.handleAddEntry('Dinner')}>Dinner</Link>
+                  <Link to="/entry" onClick={() => this.handleAddEntry(constants.DINNER)}>Dinner</Link>
                 </h5>
               </div>
             )}
             placement="topLeft"
-            title="Select Period"
+            title="Add Log"
             trigger="click"
             visible={showPopups}
             onVisibleChange={this.handleAddClick}

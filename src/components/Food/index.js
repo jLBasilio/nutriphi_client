@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   Card,
   Col,
+  Divider,
   Modal,
   Pagination,
   Row
@@ -135,9 +136,7 @@ class Food extends Component {
                       extra={foodElement.primaryClassification.split('-')[0]}
                       loading={isFetching}
                       onClick={() => this.showFoodModal(index)}
-                    >
-                      Card content
-                    </Card>
+                    />
                   </Col>
                 ))
               )
@@ -165,18 +164,78 @@ class Food extends Component {
             onOk={this.handleModalClose}
           >
 
-            <div className="label">
-              {
-                currentFood.filipinoName ? (
-                  currentFood.englishName ? (
-                    currentFood.englishName
+            <div className="label-container">
+              <div className="label-title">
+                Other Term
+              </div>
+              <div className="label">
+                {
+                  currentFood.filipinoName ? (
+                    currentFood.englishName ? (
+                      currentFood.englishName
+                    ) : 'N/A'
                   ) : 'N/A'
-                ) : null
-              }
+                }
+              </div>
             </div>
 
-            <div className="macronuts">
-              
+            <Divider />
+
+            <div className="nut-info">
+              Nutritional Info
+              <div className="nut-subinfo">
+                (Per exchange)
+              </div>
+            </div>
+
+            <Divider />
+            <div className="info-row">
+              <div className="macros">
+                Carbohydrate
+              </div>
+              <div className="macros-value">
+                {`${currentFood.choPerExchange}g`}
+              </div>
+            </div>
+
+            <Divider />
+            <div className="info-row">
+              <div className="macros">
+                Protein
+              </div>
+              <div className="macros-value">
+                {`${currentFood.proPerExchange}g`}
+              </div>
+            </div>
+
+            <Divider />
+            <div className="info-row">
+              <div className="macros">
+                Fat
+              </div>
+              <div className="macros-value">
+                {`${currentFood.fatPerExchange}g`}
+              </div>
+            </div>
+
+            <Divider />
+            <div className="info-row">
+              <div className="macros">
+                EP Weight
+              </div>
+              <div className="macros-value">
+                {`${currentFood.gramsEPPerExchange}g`}
+              </div>
+            </div>
+
+            <Divider />
+            <div className="info-row">
+              <div className="macros">
+                Measurement
+              </div>
+              <div className="macros-value">
+                {currentFood.servingMeasurement}
+              </div>
             </div>
 
           </Modal>

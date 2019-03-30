@@ -1,23 +1,25 @@
 import { connect } from 'react-redux';
 import Entry from '.';
 
-import { setLabel } from './duck';
+import { setPeriod } from './duck';
+import { changePage } from '../Header/duck';
 
 const mapStateToProps = (state) => {
-  const { periodLabel } = state.entry;
+  const { period } = state.entry;
 
   return {
-    periodLabel
+    period
   };
 };
 
 
 const mapDispatchToProps = dispatch => ({
-
-  setLabel: (periodLabel) => {
-    dispatch(setLabel(periodLabel));
+  setPeriod: (period) => {
+    dispatch(setPeriod(period));
+  },
+  changePage: (newPage) => {
+    dispatch(changePage(newPage));
   }
-
 });
 
 const EntryContainer = connect(mapStateToProps, mapDispatchToProps)(Entry);

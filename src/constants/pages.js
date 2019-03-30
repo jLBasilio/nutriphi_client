@@ -1,5 +1,5 @@
 export const HOME = 'HOME';
-export const ENTRY = 'HOME - ENTRY';
+export const ENTRY = 'ADD LOG';
 export const LOGIN = 'LOG IN';
 export const SIGNUP = 'SIGN UP';
 

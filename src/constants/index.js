@@ -15,3 +15,7 @@ export const FAT_PER_KCAL = 9;
 export const CHO_MUL = 0.15;
 export const PRO_MUL = 0.6;
 export const FAT_MUL = 0.25;
+
+export const BREAKFAST = 'breakfast';
+export const LUNCH = 'lunch';
+export const DINNER = 'dinner';

@@ -1,24 +1,24 @@
 const actions = {
-  SET_LABEL: 'ENTRY/SET_LABEL'
+  SET_PERIOD: 'ENTRY/SET_PERIOD'
 };
 
-export const setLabel = periodLabel => ({
-  type: actions.SET_LABEL,
-  payload: periodLabel
+export const setPeriod = period => ({
+  type: actions.SET_PERIOD,
+  payload: period
 });
 
 const initialState = {
-  periodLabel: null
+  period: null
 };
 
 const reducer = (state = initialState, action) => {
   const { type, payload } = action;
 
   switch (type) {
-    case actions.SET_LABEL:
+    case actions.SET_PERIOD:
       return {
         ...state,
-        periodLabel: payload
+        period: payload
       };
 
     default:

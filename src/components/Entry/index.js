@@ -2,8 +2,14 @@ import React, { Component } from 'react';
 
 import './entry.scss';
 
+import * as pageTitles from '../../constants/pages';
 
 class Entry extends Component {
+  componentDidMount() {
+    const { changePage } = this.props;
+    changePage(pageTitles.ENTRY);
+  }
+
   render() {
     const { periodLabel } = this.props;
     return (
