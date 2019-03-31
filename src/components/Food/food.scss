@@ -20,7 +20,18 @@
     .pagination-div {
       display: flex;
       justify-content: center;
-      padding: 2rem;
+      padding: 1.5rem 0 2rem;
+    }
+
+    .showing {
+      padding-top: 1rem;
+      text-align: center;
+    }
+
+    .search {
+      @include for-tablet-portrait-up {
+        padding: 0 10rem;
+      }
     }
   }
 }
@@ -29,6 +40,10 @@
   .ant-card-head-title {
     max-width: 70%;
   }
+}
+
+.ant-card-body {
+  padding: 16px 24px;
 }
 
 .ant-modal {

@@ -3,6 +3,8 @@ import Food from '.';
 
 import {
   getFoodClass,
+  searchFood,
+  resetSearch,
   toggleModal
 } from './duck';
 import { changePage } from '../Header/duck';
@@ -12,14 +14,22 @@ const mapStateToProps = (state) => {
   const {
     isFetching,
     food,
-    showModal
+    foodCount,
+    showModal,
+    searchedFood,
+    searchedFoodCount,
+    hasSearched
   } = state.food;
 
   return {
     currentPage,
     isFetching,
     food,
-    showModal
+    foodCount,
+    showModal,
+    searchedFood,
+    searchedFoodCount,
+    hasSearched
   };
 };
 
@@ -30,6 +40,12 @@ const mapDispatchToProps = dispatch => ({
   },
   getFoodClass: ({ skip, take, foodClass }) => {
     dispatch(getFoodClass({ skip, take, foodClass }));
+  },
+  searchFood: ({ skip, take, q, foodClass }) => {
+    dispatch(searchFood({ skip, take, q, foodClass }));
+  },
+  resetSearch: () => {
+    dispatch(resetSearch());
   },
   toggleModal: () => {
     dispatch(toggleModal());
