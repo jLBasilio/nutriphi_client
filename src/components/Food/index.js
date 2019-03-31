@@ -5,9 +5,25 @@ import {
   Divider,
   Modal,
   Pagination,
-  Row
+  Row,
+  Tag
 } from 'antd';
 import './food.scss';
+
+const emptyCards = [...'abcdefghijkl'];
+const tagColors = {
+  all: '#fff',
+  vegetable: 'green',
+  fruit: 'purple',
+  rice: 'orange',
+  milk: 'cyan',
+  meat: 'red',
+  sugar: 'magenta',
+  fat: 'volcano',
+  free: 'blue',
+  beverage: 'lime'
+};
+
 
 class Food extends Component {
   constructor(props) {
@@ -17,7 +33,8 @@ class Food extends Component {
       skip: 0,
       take: 16,
       defaultSize: 16,
-      currentFood: 'sad',
+      currentFood: 'default',
+      foodCount: 16
     };
   }
 
@@ -26,7 +43,7 @@ class Food extends Component {
       changePage,
       getFoodClass,
       toFetch,
-      getFoodCount,
+      foodCount,
       title
     } = this.props;
     const { skip, take } = this.state;
@@ -35,10 +52,10 @@ class Food extends Component {
     // Fetch food
     if (toFetch === 'all') {
       getFoodClass({ skip, take });
-      getFoodCount('');
+      this.setState({ foodCount });
     } else {
       getFoodClass({ skip, take, foodClass: toFetch });
-      getFoodCount(toFetch);
+      this.setState({ foodCount });
     }
   }
 
@@ -49,7 +66,7 @@ class Food extends Component {
         changePage,
         getFoodClass,
         toFetch,
-        getFoodCount
+        foodCount
       } = this.props;
 
       const { skip, take } = this.state;
@@ -58,10 +75,10 @@ class Food extends Component {
       // Fetch food
       if (toFetch === 'all') {
         getFoodClass({ skip, take });
-        getFoodCount('');
+        this.setState({ foodCount });
       } else {
         getFoodClass({ skip, take, foodClass: toFetch });
-        getFoodCount(toFetch);
+        this.setState({ foodCount });
       }
     }
   }
@@ -89,16 +106,15 @@ class Food extends Component {
     }
   }
 
+
   render() {
     const {
       food,
       isFetching,
-      showModal,
-      foodCount
+      showModal
     } = this.props;
 
-    const { defaultSize, currentFood } = this.state;
-    const emptyCards = [...'abcdefghijkl'];
+    const { defaultSize, currentFood, foodCount } = this.state;
     return (
       <div className="food">
         <div className="food-body">
@@ -133,10 +149,26 @@ class Food extends Component {
                           : foodElement.englishName
                       }
                       hoverable
-                      extra={foodElement.primaryClassification.split('-')[0]}
                       loading={isFetching}
                       onClick={() => this.showFoodModal(index)}
-                    />
+                    >
+                      <Tag
+                        color={
+                          tagColors[foodElement.primaryClassification.split('-')[0]]
+                        }
+                      >
+                        {foodElement.primaryClassification.split('-')[0]}
+                      </Tag>
+                      {
+                        foodElement.secondaryClassification ? (
+                          <Tag
+                            color={tagColors[foodElement.secondaryClassification]}
+                          >
+                            {foodElement.secondaryClassification}
+                          </Tag>
+                        ) : null
+                      }
+                    </Card>
                   </Col>
                 ))
               )

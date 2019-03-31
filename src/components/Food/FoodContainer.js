@@ -3,7 +3,6 @@ import Food from '.';
 
 import {
   getFoodClass,
-  getFoodCount,
   toggleModal
 } from './duck';
 import { changePage } from '../Header/duck';
@@ -13,16 +12,14 @@ const mapStateToProps = (state) => {
   const {
     isFetching,
     food,
-    showModal,
-    foodCount
+    showModal
   } = state.food;
 
   return {
     currentPage,
     isFetching,
     food,
-    showModal,
-    foodCount
+    showModal
   };
 };
 
@@ -33,9 +30,6 @@ const mapDispatchToProps = dispatch => ({
   },
   getFoodClass: ({ skip, take, foodClass }) => {
     dispatch(getFoodClass({ skip, take, foodClass }));
-  },
-  getFoodCount: (foodClass) => {
-    dispatch(getFoodCount(foodClass));
   },
   toggleModal: () => {
     dispatch(toggleModal());

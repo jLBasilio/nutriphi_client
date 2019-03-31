@@ -16,6 +16,7 @@ import Login from '../components/Login/LoginContainer';
 import Signup from '../components/Signup/SignupContainer';
 
 import * as pageTitles from '../constants/pages';
+import * as constants from '../constants';
 
 class App extends Component {
   componentDidMount() {
@@ -45,16 +46,56 @@ class App extends Component {
               <Header />
               <Switch>
                 <Route exact path="/" render={() => <Home logout={logout} />} />
-                <Route exact path="/food/all" render={() => <Food toFetch="all" title={pageTitles.ALL} />} />
-                <Route exact path="/food/vegetable" render={() => <Food toFetch="vegetable" title={pageTitles.VEGETABLE} />} />
-                <Route exact path="/food/fruit" render={() => <Food toFetch="fruit" title={pageTitles.FRUIT} />} />
-                <Route exact path="/food/milk" render={() => <Food toFetch="milk" title={pageTitles.MILK} />} />
-                <Route exact path="/food/rice" render={() => <Food toFetch="rice" title={pageTitles.RICE} />} />
-                <Route exact path="/food/meat" render={() => <Food toFetch="meat" title={pageTitles.MEAT} />} />
-                <Route exact path="/food/fat" render={() => <Food toFetch="fat" title={pageTitles.FATS} />} />
-                <Route exact path="/food/sugar" render={() => <Food toFetch="sugar" title={pageTitles.SUGAR} />} />
-                <Route exact path="/food/free" render={() => <Food toFetch="free" title={pageTitles.FREE} />} />
-                <Route exact path="/food/beverage" render={() => <Food toFetch="beverage" title={pageTitles.BEVERAGE} />} />
+                <Route
+                  exact
+                  path="/food/all"
+                  render={() => <Food toFetch="all" foodCount={constants.ALL_COUNT} foo title={pageTitles.ALL} />}
+                />
+                <Route
+                  exact
+                  path="/food/vegetable"
+                  render={() => <Food toFetch="vegetable" foodCount={constants.VEG_COUNT} title={pageTitles.VEGETABLE} />}
+                />
+                <Route
+                  exact
+                  path="/food/fruit"
+                  render={() => <Food toFetch="fruit" foodCount={constants.FRUIT_COUNT} title={pageTitles.FRUIT} />}
+                />
+                <Route
+                  exact
+                  path="/food/milk"
+                  render={() => <Food toFetch="milk" foodCount={constants.MILK_COUNT} title={pageTitles.MILK} />}
+                />
+                <Route
+                  exact
+                  path="/food/rice"
+                  render={() => <Food toFetch="rice" foodCount={constants.RICE_COUNT} title={pageTitles.RICE} />}
+                />
+                <Route
+                  exact
+                  path="/food/meat"
+                  render={() => <Food toFetch="meat" foodCount={constants.MEAT_COUNT} title={pageTitles.MEAT} />}
+                />
+                <Route
+                  exact
+                  path="/food/fat"
+                  render={() => <Food toFetch="fat" foodCount={constants.FAT_COUNT} title={pageTitles.FATS} />}
+                />
+                <Route
+                  exact
+                  path="/food/sugar"
+                  render={() => <Food toFetch="sugar" foodCount={constants.SUGAR_COUNT} title={pageTitles.SUGAR} />}
+                />
+                <Route
+                  exact
+                  path="/food/free"
+                  render={() => <Food toFetch="free" foodCount={constants.FREE_COUNT} title={pageTitles.FREE} />}
+                />
+                <Route
+                  exact
+                  path="/food/beverage"
+                  render={() => <Food toFetch="beverage" foodCount={constants.BEV_COUNT} title={pageTitles.BEVERAGE} />}
+                />
                 <Route exact path="/entry" component={Entry} />
                 <Redirect to="/" />
               </Switch>

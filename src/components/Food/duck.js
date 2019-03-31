@@ -4,7 +4,6 @@ import * as api from '../../api/food';
 
 const actions = {
   FETCH_FOOD: 'FOOD/FETCH_FOOD',
-  FETCH_FOODCOUNT: 'FOOD/FETCH_FOODCOUNT',
   SHOW_MODAL: 'FOOD/SHOW_MODAL'
 };
 
@@ -16,13 +15,6 @@ export const getFoodClass = ({ skip, take, foodClass }) => ({
   }
 });
 
-export const getFoodCount = foodClass => ({
-  type: actions.FETCH_FOODCOUNT,
-  promise: api.getFoodCount(foodClass),
-  meta: {
-    onFailure: () => message.error('Server error')
-  }
-});
 
 export const toggleModal = () => ({
   type: actions.SHOW_MODAL
@@ -31,8 +23,7 @@ export const toggleModal = () => ({
 const initialState = {
   food: [],
   isFetching: false,
-  showModal: false,
-  foodCount: null
+  showModal: false
 };
 
 const reducer = (state = initialState, action) => {
@@ -48,22 +39,6 @@ const reducer = (state = initialState, action) => {
         success: prevState => ({
           ...prevState,
           food: payload.data.data
-        }),
-        finish: prevState => ({
-          ...prevState,
-          isFetching: false
-        })
-      });
-
-    case actions.FETCH_FOODCOUNT:
-      return handle(state, action, {
-        start: prevState => ({
-          ...prevState,
-          isFetching: true
-        }),
-        success: prevState => ({
-          ...prevState,
-          foodCount: payload.data.data.count
         }),
         finish: prevState => ({
           ...prevState,

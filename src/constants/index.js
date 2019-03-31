@@ -19,3 +19,14 @@ export const FAT_MUL = 0.25;
 export const BREAKFAST = 'breakfast';
 export const LUNCH = 'lunch';
 export const DINNER = 'dinner';
+
+export const ALL_COUNT = 549;
+export const VEG_COUNT = 27;
+export const FRUIT_COUNT = 79;
+export const RICE_COUNT = 129;
+export const MILK_COUNT = 16;
+export const MEAT_COUNT = 135;
+export const FAT_COUNT = 50;
+export const SUGAR_COUNT = 66;
+export const FREE_COUNT = 39;
+export const BEV_COUNT = 64;
