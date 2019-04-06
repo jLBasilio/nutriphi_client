@@ -11,7 +11,7 @@ class Entry extends Component {
   }
 
   render() {
-    const { periodLabel } = this.props;
+    const { period } = this.props;
     return (
       <div className="home">
         <div className="home-body">
@@ -21,7 +21,7 @@ class Entry extends Component {
           <h1> ENTRY PAGE </h1>
           <h1> ENTRY PAGE </h1>
           <h1> ENTRY PAGE </h1>
-          <h1>{periodLabel}</h1>
+          <h1>{period}</h1>
         </div>
       </div>
     );

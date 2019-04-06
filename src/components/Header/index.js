@@ -100,17 +100,17 @@ class Header extends Component {
                 defaultSelectedKeys={['1']}
                 mode="inline"
               >
-                <Menu.Item key="home" onClick={() => this.clickedLink('')}>
+                <Menu.Item key="home" onClick={this.clickedLink}>
                   <Link to="/">
                     <Icon type="home" />
                     Home
                   </Link>
                 </Menu.Item>
 
-                <Menu.Item key="progress" onClick={() => this.clickedLink('')}>
-                  <Link to="/progress">
+                <Menu.Item key="profile" onClick={this.clickedLink}>
+                  <Link to="/profile">
                     <Icon type="home" />
-                    Progress
+                    Profile
                   </Link>
                 </Menu.Item>
 

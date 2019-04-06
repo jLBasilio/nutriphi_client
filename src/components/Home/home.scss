@@ -2,11 +2,9 @@
 @import 'src/constants/color';
 
 
-// sass-lint:disable nesting-depth, no-ids
+// sass-lint:disable nesting-depth, no-ids, class-name-format
 .home {
-
   .home-body {
-
     @include for-tablet-portrait-up {
       height: auto;
     }
@@ -26,10 +24,10 @@
       border: 0;
       border-radius: 4rem;
       box-shadow: none;
-      height: 100px;
+      height: 80px;
       padding: 0;
       text-shadow: none;
-      width: 100px;
+      width: 80px;
 
       .add-img {
         height: 80px;
@@ -37,5 +35,4 @@
       }
     }
   }
-
 }

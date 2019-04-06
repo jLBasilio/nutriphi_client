@@ -366,6 +366,7 @@ class Food extends Component {
             </div>
 
             <Divider />
+
             <div className="info-row">
               <div className="macros">
                 Carbohydrate
@@ -376,6 +377,7 @@ class Food extends Component {
             </div>
 
             <Divider />
+
             <div className="info-row">
               <div className="macros">
                 Protein
@@ -386,6 +388,7 @@ class Food extends Component {
             </div>
 
             <Divider />
+
             <div className="info-row">
               <div className="macros">
                 Fat
@@ -396,6 +399,7 @@ class Food extends Component {
             </div>
 
             <Divider />
+
             <div className="info-row">
               <div className="macros">
                 EP Weight
@@ -406,6 +410,7 @@ class Food extends Component {
             </div>
 
             <Divider />
+
             <div className="info-row">
               <div className="macros">
                 Measurement
@@ -414,7 +419,6 @@ class Food extends Component {
                 {currentFood.food_servingMeasurement}
               </div>
             </div>
-
           </Modal>
         </div>
       </div>
