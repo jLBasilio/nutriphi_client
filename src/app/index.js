@@ -14,6 +14,8 @@ import Header from '../components/Header/HeaderContainer';
 import Loader from '../components/Loader';
 import Login from '../components/Login/LoginContainer';
 import Signup from '../components/Signup/SignupContainer';
+import Profile from '../components/Profile/ProfileContainer';
+import About from '../components/About/AboutContainer';
 
 import * as pageTitles from '../constants/pages';
 
@@ -56,6 +58,8 @@ class App extends Component {
                 <Route exact path="/food/free" render={() => <Food toFetch="free" title={pageTitles.FREE} />} />
                 <Route exact path="/food/beverage" render={() => <Food toFetch="beverage" title={pageTitles.BEVERAGE} />} />
                 <Route exact path="/entry" component={Entry} />
+                <Route exact path="/about" component={About} />
+                <Route exact path="/profile" component={Profile} />
                 <Redirect to="/" />
               </Switch>
             </React.Fragment>

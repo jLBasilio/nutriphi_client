@@ -48,26 +48,31 @@ class Home extends Component {
           <h1> HOME PAGE </h1>
         </div>
         <div className="absolute-button">
-          <Popover
-            content={(
-              <div>
-                <h5>
-                  <Link to="/entry" onClick={() => this.handleAddEntry(constants.BREAKFAST)}>Breakfast</Link>
-                </h5>
-                <h5>
-                  <Link to="/entry" onClick={() => this.handleAddEntry(constants.LUNCH)}>Lunch</Link>
-                </h5>
-                <h5>
-                  <Link to="/entry" onClick={() => this.handleAddEntry(constants.DINNER)}>Dinner</Link>
-                </h5>
-              </div>
-            )}
-            placement="topLeft"
-            title="Add Log"
-            trigger="click"
-            visible={showPopups}
-            onVisibleChange={this.handleAddClick}
-          />
+          <div className="popoverzzz">
+            <Popover
+              content={(
+                <div>
+                  <h5>
+                    <Link to="/entry" onClick={() => this.handleAddEntry(constants.BREAKFAST)}>Breakfast</Link>
+                  </h5>
+                  <h5>
+                    <Link to="/entry" onClick={() => this.handleAddEntry(constants.LUNCH)}>Lunch</Link>
+                  </h5>
+                  <h5>
+                    <Link to="/entry" onClick={() => this.handleAddEntry(constants.DINNER)}>Dinner</Link>
+                  </h5>
+                  <h5>
+                    Exercise
+                  </h5>
+                </div>
+              )}
+              placement="topLeft"
+              title="Add Log"
+              trigger="click"
+              visible={showPopups}
+              onVisibleChange={this.handleAddClick}
+            />
+          </div>
           <Button className="add-button" onClick={this.handleAddClick}>
             <img className="add-img" src="/home/addbutton.png" alt="add-entry" />
           </Button>

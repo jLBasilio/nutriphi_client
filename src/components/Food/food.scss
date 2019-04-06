@@ -32,6 +32,11 @@
       @include for-tablet-portrait-up {
         padding: 0 10rem;
       }
+
+      .ant-btn-primary {
+        background-color: $base-kahel;
+        border: 2px solid $base-kahel;
+      }
     }
   }
 }

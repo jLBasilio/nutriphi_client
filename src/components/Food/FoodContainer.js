@@ -41,8 +41,12 @@ const mapDispatchToProps = dispatch => ({
   getFoodClass: ({ skip, take, foodClass }) => {
     dispatch(getFoodClass({ skip, take, foodClass }));
   },
-  searchFood: ({ skip, take, q, foodClass }) => {
-    dispatch(searchFood({ skip, take, q, foodClass }));
+  searchFood: ({
+    skip, take, q, foodClass
+  }) => {
+    dispatch(searchFood({
+      skip, take, q, foodClass
+    }));
   },
   resetSearch: () => {
     dispatch(resetSearch());
