@@ -403,7 +403,6 @@ class Food extends Component {
                 {currentFood.food_servingMeasurement}
               </div>
             </div>
-
             <Divider />
           </Modal>
         </div>
