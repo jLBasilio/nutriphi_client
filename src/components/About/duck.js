@@ -1,15 +1,15 @@
-import * as pageTitles from '../../constants/pages';
+// import * as pageTitles from '../../constants/pages';
 
-const actions = {
+// const actions = {
 
-};
+// };
 
 
 const initialState = {
 };
 
 const reducer = (state = initialState, action) => {
-  const { type, payload } = action;
+  const { type } = action;
 
   switch (type) {
 

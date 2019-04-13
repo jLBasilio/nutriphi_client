@@ -30,3 +30,18 @@ export const FAT_COUNT = 50;
 export const SUGAR_COUNT = 66;
 export const FREE_COUNT = 39;
 export const BEV_COUNT = 64;
+
+export const emptyCards = [...'abcdefghijkl'];
+
+export const tagColors = {
+  all: '#fff',
+  vegetable: 'green',
+  fruit: 'purple',
+  rice: 'orange',
+  milk: 'cyan',
+  meat: 'red',
+  sugar: 'magenta',
+  fat: 'volcano',
+  free: 'blue',
+  beverage: 'lime'
+};

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import {
-  Button
-} from 'antd';
+// import {
+//   Button
+// } from 'antd';
 import './profile.scss';
 
 import * as pageTitles from '../../constants/pages';
@@ -18,7 +18,6 @@ class Profile extends Component {
   }
 
   render() {
-    const { user } = this.props;
     return (
       <div className="profile">
         <div className="profile-body">

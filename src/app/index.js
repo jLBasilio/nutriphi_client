@@ -42,7 +42,6 @@ class App extends Component {
           isGettingSession || isLoggingIn || isLoggingOut ? (
             <Loader />
           ) : user ? (
-
             <React.Fragment>
               <Header />
               <Switch>
@@ -69,6 +68,7 @@ class App extends Component {
               <Switch>
                 <Route exact path="/" component={Login} />
                 <Route exact path="/signup" component={Signup} />
+                <Redirect to="/" />
               </Switch>
             </React.Fragment>
           )

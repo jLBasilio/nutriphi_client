@@ -1,14 +1,37 @@
 import { connect } from 'react-redux';
 import Entry from '.';
 
-import { setPeriod } from './duck';
+import {
+  resetSearch,
+  searchFood,
+  setPeriod,
+  toggleModal,
+  addToLog
+} from './duck';
 import { changePage } from '../Header/duck';
 
 const mapStateToProps = (state) => {
-  const { period } = state.entry;
+  const {
+    period,
+    searchedFood,
+    searchedFoodCount,
+    isFetching,
+    hasSearched,
+    showModal,
+    isAddingLog
+  } = state.entry;
+  const { user: { id: user } } = state.login;
+
 
   return {
-    period
+    period,
+    searchedFood,
+    searchedFoodCount,
+    isFetching,
+    hasSearched,
+    showModal,
+    isAddingLog,
+    user
   };
 };
 
@@ -17,8 +40,24 @@ const mapDispatchToProps = dispatch => ({
   setPeriod: (period) => {
     dispatch(setPeriod(period));
   },
+  searchFood: ({
+    skip, take, q, foodClass
+  }) => {
+    dispatch(searchFood({
+      skip, take, q, foodClass
+    }));
+  },
+  addToLog: (foodInfo) => {
+    dispatch(addToLog(foodInfo));
+  },
   changePage: (newPage) => {
     dispatch(changePage(newPage));
+  },
+  resetSearch: () => {
+    dispatch(resetSearch());
+  },
+  toggleModal: () => {
+    dispatch(toggleModal());
   }
 });
 

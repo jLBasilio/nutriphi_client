@@ -109,7 +109,7 @@ class Header extends Component {
 
                 <Menu.Item key="profile" onClick={this.clickedLink}>
                   <Link to="/profile">
-                    <Icon type="home" />
+                    <Icon type="user" />
                     Profile
                   </Link>
                 </Menu.Item>

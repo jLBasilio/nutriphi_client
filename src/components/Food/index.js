@@ -12,19 +12,7 @@ import {
 } from 'antd';
 import './food.scss';
 
-const emptyCards = [...'abcdefghijkl'];
-const tagColors = {
-  all: '#fff',
-  vegetable: 'green',
-  fruit: 'purple',
-  rice: 'orange',
-  milk: 'cyan',
-  meat: 'red',
-  sugar: 'magenta',
-  fat: 'volcano',
-  free: 'blue',
-  beverage: 'lime'
-};
+import * as constants from '../../constants';
 
 const { Search } = Input;
 
@@ -49,17 +37,13 @@ class Food extends Component {
       changePage,
       getFoodClass,
       toFetch,
-      title
+      title,
+      resetSearch
     } = this.props;
     const { skip, take } = this.state;
     changePage(title);
-
-    // Fetch food
-    if (toFetch === 'all') {
-      getFoodClass({ skip, take });
-    } else {
-      getFoodClass({ skip, take, foodClass: toFetch });
-    }
+    resetSearch();
+    getFoodClass({ skip, take, foodClass: toFetch });
   }
 
   componentDidUpdate(previousProps) {
@@ -77,11 +61,8 @@ class Food extends Component {
       // Fetch food
       resetSearch();
       this.setState({ currentSearched: null });
-      if (toFetch === 'all') {
-        getFoodClass({ skip, take });
-      } else {
-        getFoodClass({ skip, take, foodClass: toFetch });
-      }
+      getFoodClass({ skip, take, foodClass: toFetch });
+      console.log("BOMBONTEND DID UPDATE")
     }
   }
 
@@ -103,40 +84,31 @@ class Food extends Component {
   }
 
   handlePageChange = (page) => {
-    const { resetSearch, getFoodClass, toFetch } = this.props;
+    const { getFoodClass, toFetch } = this.props;
     const { defaultSize, take } = this.state;
     const skip = (page - 1) * defaultSize;
 
-    resetSearch();
     this.setState({ currentPageNumber: page });
-    if (toFetch === 'all') {
-      getFoodClass({ skip, take });
-    } else {
-      getFoodClass({ skip, take, foodClass: toFetch });
-    }
+    getFoodClass({ skip, take, foodClass: toFetch });
   }
 
   handlePageChangeFromSearch = (page) => {
     const { searchFood, toFetch } = this.props;
     const { defaultSize, take, currentSearched } = this.state;
     const skip = (page - 1) * defaultSize;
-
-    if (toFetch === 'all') {
-      searchFood({ skip, take });
-    } else {
-      searchFood({
-        skip, take, q: currentSearched, foodClass: toFetch
-      });
-    }
+    searchFood({
+      skip, take, q: currentSearched, foodClass: toFetch
+    });
   }
 
   handleSearch = (q) => {
     const { previousSearched } = this.state;
     if (!q.length) {
       message.error('Input something');
-    } else if (q !== previousSearched) {
-      const { searchFood, toFetch } = this.props;
+    } else if (q !== previousSearched && q.length > 2) {
+      const { searchFood, toFetch, resetSearch } = this.props;
       const { skip, take } = this.state;
+      resetSearch();
       searchFood({
         skip, take, q, foodClass: toFetch
       });
@@ -190,35 +162,35 @@ class Food extends Component {
             onChange={this.handleSearchChange}
             value={currentSearched}
           />
-          {
-            searchedFoodCount ? (
-              <div className="showing">
-                {`SHOWING ${searchedFoodCount} RESULT/S FOR "${confirmedSearch}"` }
-              </div>
-            ) : (
-              <div className="showing">
-                {`SHOWING ${foodCount} ITEMS UNDER ${toFetch.toUpperCase()}` }
-              </div>
-            )
-          }
-          {
-            isFetching ? (
-              emptyCards.map(element => (
-                <Col
-                  key={element}
-                  className="food-col"
-                  xs={24}
-                  md={8}
-                  lg={6}
-                >
-                  <Card className="food-card" loading />
-                </Col>
-              ))
-            ) : null
-          }
           <Row gutter={24}>
             {
-              searchedFood.length ? (
+              searchedFoodCount && !isFetching ? (
+                <div className="showing">
+                  {`SHOWING ${searchedFoodCount} RESULT/S FOR "${confirmedSearch}"` }
+                </div>
+              ) : !(hasSearched || isFetching) ? (
+                <div className="showing">
+                  {`SHOWING ${foodCount} ITEMS UNDER ${toFetch.toUpperCase()}` }
+                </div>
+              ) : null
+            }
+            {
+              isFetching ? (
+                constants.emptyCards.map(element => (
+                  <Col
+                    key={element}
+                    className="food-col"
+                    xs={24}
+                    md={8}
+                    lg={6}
+                  >
+                    <Card className="food-card" loading />
+                  </Col>
+                ))
+              ) : null
+            }
+            {
+              searchedFood.length && !isFetching ? (
                 searchedFood.map((foodElement, index) => (
                   <Col
                     key={foodElement.food_id}
@@ -240,7 +212,7 @@ class Food extends Component {
                     >
                       <Tag
                         color={
-                          tagColors[foodElement.food_primaryClassification.split('-')[0]]
+                          constants.tagColors[foodElement.food_primaryClassification.split('-')[0]]
                         }
                       >
                         {foodElement.food_primaryClassification.split('-')[0]}
@@ -248,7 +220,7 @@ class Food extends Component {
                       {
                         foodElement.food_secondaryClassification ? (
                           <Tag
-                            color={tagColors[foodElement.food_secondaryClassification]}
+                            color={constants.tagColors[foodElement.food_secondaryClassification]}
                           >
                             {foodElement.food_secondaryClassification}
                           </Tag>
@@ -279,7 +251,7 @@ class Food extends Component {
                     >
                       <Tag
                         color={
-                          tagColors[foodElement.food_primaryClassification.split('-')[0]]
+                          constants.tagColors[foodElement.food_primaryClassification.split('-')[0]]
                         }
                       >
                         {foodElement.food_primaryClassification.split('-')[0]}
@@ -287,7 +259,7 @@ class Food extends Component {
                       {
                         foodElement.food_secondaryClassification ? (
                           <Tag
-                            color={tagColors[foodElement.food_secondaryClassification]}
+                            color={constants.tagColors[foodElement.food_secondaryClassification]}
                           >
                             {foodElement.food_secondaryClassification}
                           </Tag>
@@ -338,7 +310,7 @@ class Food extends Component {
             }
             visible={showModal}
             onCancel={this.handleModalClose}
-            onOk={this.handleModalClose}
+            footer={null}
           >
 
             <div className="label-container">
@@ -402,10 +374,22 @@ class Food extends Component {
 
             <div className="info-row">
               <div className="macros">
-                EP Weight
+                {`${
+                  parseInt(currentFood.food_gramsEPPerExchange, 10)
+                    ? 'EP Weight'
+                    : 'EP ML'
+                }`}
               </div>
               <div className="macros-value">
-                {`${currentFood.food_gramsEPPerExchange}g`}
+                {`${
+                  parseInt(currentFood.food_gramsEPPerExchange, 10)
+                    ? currentFood.food_gramsEPPerExchange
+                    : currentFood.food_mlEPPerExchange
+                }${
+                  parseInt(currentFood.food_gramsEPPerExchange, 10)
+                    ? 'g'
+                    : 'ml'
+                }`}
               </div>
             </div>
 
@@ -419,6 +403,8 @@ class Food extends Component {
                 {currentFood.food_servingMeasurement}
               </div>
             </div>
+
+            <Divider />
           </Modal>
         </div>
       </div>

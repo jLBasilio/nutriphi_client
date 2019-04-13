@@ -64,7 +64,7 @@ class Signup extends Component {
 
   handleBirthday = (date, dateString) => {
     this.setState({
-      birthday: dateString
+      birthday: new Date(dateString).toISOString()
     });
   }
 
@@ -110,7 +110,7 @@ class Signup extends Component {
 
   handleEndDate = (date, dateString) => {
     this.setState({
-      endDate: dateString
+      endDate: new Date(dateString).toISOString()
     });
   }
 
