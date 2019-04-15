@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import { Redirect } from 'react-router-dom';
 import {
   Button,
   Card,
@@ -91,9 +90,10 @@ class Entry extends Component {
     const gramsEPPerExchange = parseFloat(currentFood.food_gramsEPPerExchange);
     this.setState({
       currentFood,
+      measure: 1,
       gramsml: gramsEPPerExchange ? (
-        currentFood.food_exchangePerServing * currentFood.food_gramsEPPerExchange
-      ) : currentFood.food_exchangePerServing * parseFloat(currentFood.food_mlEPPerExchange)
+        currentFood.food_exchangePerMeasure * currentFood.food_gramsEPPerExchange
+      ) : currentFood.food_exchangePerMeasure * parseFloat(currentFood.food_mlEPPerExchange)
     }, () => console.log(this.state));
     toggleModal();
   }
@@ -107,8 +107,9 @@ class Entry extends Component {
     const { currentFood } = this.state;
     const gramsEPPerExchange = parseFloat(currentFood.food_gramsEPPerExchange);
     const gramsml = gramsEPPerExchange
-      ? currentFood.food_exchangePerServing * gramsEPPerExchange
-      : currentFood.food_exchangePerServing * parseFloat(currentFood.food_mlEPPerExchange);
+      ? currentFood.food_exchangePerMeasure * gramsEPPerExchange
+      : currentFood.food_exchangePerMeasure * parseFloat(currentFood.food_mlEPPerExchange);
+
     this.setState({
       measure,
       gramsml: gramsml * measure
@@ -124,7 +125,7 @@ class Entry extends Component {
       : gramsml / parseFloat(currentFood.food_mlEPPerExchange);
     this.setState({
       gramsml,
-      measure: (measure / currentFood.food_exchangePerServing).toFixed(2)
+      measure: (measure / currentFood.food_exchangePerMeasure).toFixed(2)
     });
   }
 
@@ -132,27 +133,28 @@ class Entry extends Component {
     const {
       period,
       user,
-      addToLog,
-      toggleModal
+      addToLog
     } = this.props;
     const {
       currentFood: { food_id: foodId },
       gramsml: gramsmlConsumed,
-      measure: measureConsumed
+      measure
     } = this.state;
-    const dateConsumed = new Date(Date.now()).toISOString();
 
-    addToLog({
-      user,
-      period,
-      foodId,
-      gramsmlConsumed,
-      measureConsumed,
-      dateConsumed
-    });
-    toggleModal();
+    if (measure === 0 || gramsmlConsumed === 0) {
+      message.error('Input something!');
+    } else {
+      const dateConsumed = new Date(Date.now()).toISOString();
+
+      addToLog({
+        user,
+        period,
+        foodId,
+        gramsmlConsumed,
+        dateConsumed
+      });
+    }
   }
-
 
   render() {
     const {
@@ -288,8 +290,8 @@ class Entry extends Component {
                   Measure
                   <InputNumber
                     className="input-measure"
-                    min={1}
                     onChange={this.handleMeasure}
+                    min={0}
                     type="number"
                     value={measure}
                   />
@@ -305,7 +307,7 @@ class Entry extends Component {
                   }`}
                   <InputNumber
                     className="input-measure"
-                    min={5}
+                    min={0}
                     onChange={this.handleGramsML}
                     type="number"
                     value={gramsml}
@@ -316,12 +318,11 @@ class Entry extends Component {
                     key="submit"
                     type="primary"
                     onClick={this.handleAddToLog}
-                    loading={isAddingLog}
                   >
                     {
                       !isAddingLog
                         ? <Icon type="check" />
-                        : null
+                        : <Icon type="loading" />
                     }
                   </Button>
                 </div>

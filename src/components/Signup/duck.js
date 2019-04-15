@@ -40,17 +40,10 @@ export const toggleModal = () => ({
   type: actions.TOGGLE_MODAL
 });
 
-export const signup = ({ dbwKg, lifestyleMultiplier }) => (dispatch) => {
-  dispatch({
-    type: actions.SIGNUP,
-    promise: signupConst.getNutriDist({ dbwKg, lifestyleMultiplier }),
-    meta: {
-      onSuccess: () => {
-        dispatch(toggleModal());
-      }
-    }
-  });
-};
+export const signup = ({ dbwKg, lifestyleMultiplier }) => ({
+  type: actions.SIGNUP,
+  promise: signupConst.getNutriDist({ dbwKg, lifestyleMultiplier })
+});
 
 export const confirmSignup = body => ({
   type: actions.CONFIRM,
@@ -119,7 +112,8 @@ const reducer = (state = initialState, action) => {
           ...prevState,
           choPerDay: payload.choPerDay,
           proPerDay: payload.proPerDay,
-          fatPerDay: payload.fatPerDay
+          fatPerDay: payload.fatPerDay,
+          showConfirmModal: true
         })
       });
 

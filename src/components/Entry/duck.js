@@ -96,7 +96,8 @@ const reducer = (state = initialState, action) => {
         }),
         finish: prevState => ({
           ...prevState,
-          isAddingLog: false
+          isAddingLog: false,
+          showModal: false
         })
       });
 
