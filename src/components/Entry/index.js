@@ -144,7 +144,8 @@ class Entry extends Component {
     if (measure === 0 || gramsmlConsumed === 0) {
       message.error('Input something!');
     } else {
-      const dateConsumed = new Date(Date.now()).toISOString();
+      const date = new Date(Date.now());
+      const dateConsumed = `${date.getFullYear()}-${(date.getMonth() < 10 ? '0' : '') + (date.getMonth() + 1)}-${(date.getDate() < 10 ? '0' : '') + date.getDate()}`;
 
       addToLog({
         user,
@@ -332,7 +333,7 @@ class Entry extends Component {
 
             <div className="label-container">
               <div className="label-title">
-                Other Term
+                Other Term &nbsp;
               </div>
               <div className="label">
                 {
@@ -417,7 +418,7 @@ class Entry extends Component {
                 Measurement
               </div>
               <div className="macros-value">
-                {currentFood.food_servingMeasurement}
+                {currentFood.food_servingMeasurement ? currentFood.food_servingMeasurement : 'N/A'}
               </div>
             </div>
 

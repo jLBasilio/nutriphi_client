@@ -39,8 +39,44 @@ class Header extends Component {
     logout();
   }
 
-  handleDateChange = () => {
-    console.log('Changed date!');
+  handleDateChange = (dateMoment) => {
+    const { changeDate } = this.props;
+    const date = `${dateMoment.year()}-${(dateMoment.month() < 10 ? '0' : '') + (dateMoment.month() + 1)}-${(dateMoment.date() < 10 ? '0' : '') + dateMoment.date()}`;
+    changeDate(date);
+  }
+
+  handleGoToday = () => {
+    const {
+      user,
+      dateToday,
+      fetchLogs,
+      toggleCalendar
+    } = this.props;
+
+    fetchLogs({
+      userId: user.id,
+      date: dateToday,
+      skip: 0,
+      take: 10
+    });
+    toggleCalendar();
+  }
+
+  handleGoToDate = () => {
+    const {
+      user,
+      dateSelected,
+      fetchLogs,
+      toggleCalendar
+    } = this.props;
+
+    fetchLogs({
+      userId: user.id,
+      date: dateSelected,
+      skip: 0,
+      take: 10
+    });
+    toggleCalendar();
   }
 
   render() {
@@ -175,6 +211,7 @@ class Header extends Component {
           }
         </Drawer>
         <Drawer
+          className="calendar-drawer"
           title="Select Date"
           placement="right"
           closable
@@ -182,9 +219,36 @@ class Header extends Component {
           visible={showCalendar}
         >
           <Calendar
+            className="calendar"
             fullscreen={false}
             onChange={this.handleDateChange}
+            onSelect={this.handleDateSelect}
           />
+
+          <div className="button-section">
+            <Button
+              className="select-button"
+              onClick={toggleCalendar}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="select-button"
+              onClick={this.handleGoToday}
+              type="primary"
+            >
+              Today
+              <Icon type="clock-circle" />
+            </Button>
+            <Button
+              className="select-button"
+              onClick={this.handleGoToDate}
+              type="primary"
+            >
+              Selected
+              <Icon type="right" />
+            </Button>
+          </div>
         </Drawer>
       </div>
     );

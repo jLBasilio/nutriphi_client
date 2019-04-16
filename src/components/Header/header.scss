@@ -1,6 +1,7 @@
 @import 'src/constants/screen';
 @import 'src/constants/color';
 
+// sass-lint:disable nesting-depth, no-important
 .header {
   background: $base-green;
   height: 4rem;
@@ -37,7 +38,7 @@
     background: 0;
     border: 0;
     height: 3.5rem;
-    left: .5rem;
+    left: .1rem;
     padding: 0;
     top: .04rem;
 
@@ -46,33 +47,101 @@
       width: 65px;
     }
   }
-
-
 }
 
 .ant-drawer-body {
-  padding: 1rem 0;
+  padding: 0 0 1rem;
+
+  .calendar {
+    color: $base-kahel;
+
+    .ant-fullcalendar-header {
+      padding: .5rem 0;
+      text-align: center;
+
+      .ant-select-selection {
+        &:hover {
+          border-color: $base-kahel;
+        }
+      }
+
+      .ant-radio-button-wrapper-checked {
+        border-color: $base-kahel;
+        box-shadow: -1px 0 0 0 $base-kahel;
+        color: $base-kahel;
+      }
+
+    }
+
+    .ant-fullcalendar-month-panel-cell {
+      &.ant-fullcalendar-month-panel-selected-cell {
+        .ant-fullcalendar-month {
+          .ant-fullcalendar-value {
+            background: $base-kahel;
+          }
+        }
+      }
+    }
+
+
+    .ant-fullcalendar-month-panel-current-cell {
+      .ant-fullcalendar-value {
+        box-shadow: 0 0 0 1px $base-kahel inset;
+      }
+    }
+
+    .ant-fullcalendar-cell {
+      &.ant-fullcalendar-selected-day {
+        .ant-fullcalendar-date {
+          .ant-fullcalendar-value {
+            background: $base-kahel;
+          }
+        }
+      }
+
+      &.ant-fullcalendar-today {
+        .ant-fullcalendar-date {
+          .ant-fullcalendar-value {
+            box-shadow: 0 0 0 1px $base-kahel inset;
+          }
+        }
+      }
+    }
+  }
+
+  .button-section {
+    display: flex;
+    justify-content: space-around;
+    padding: 0 .5rem;
+
+    .ant-btn {
+      padding: 0 .5rem;
+
+      &.select-button {
+        border-color: $base-kahel;
+        color: $base-kahel;
+
+        &.ant-btn-primary {
+          background-color: $base-kahel;
+          color: $white;
+        }
+      }
+    }
+  }
 }
 
 .ant-menu-item {
-
   &.ant-menu-item-active,
   &.ant-menu-item-selected {
     a {
       color: $base-green;
     }
-
   }
 
   &::after {
     border-right: 3px solid $base-green !important;
   }
 }
-
-.ant-menu-item, .ant-menu-item-active {
-
-}
-
 
 .ant-menu-submenu-title {
   &:hover {

@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Button,
-  Popover
+  Col,
+  Popover,
+  Progress,
+  Row
 } from 'antd';
 import './home.scss';
 
@@ -14,13 +17,32 @@ class Home extends Component {
     super(props);
 
     this.state = {
-      showPopups: false
+      showPopups: false,
+      skip: 0,
+      take: 10
     };
   }
 
   componentDidMount() {
-    const { changePage } = this.props;
+    const {
+      changePage,
+      setTodayDate,
+      userId,
+      fetchLogs
+    } = this.props;
+    const { skip, take } = this.state;
+    const date = new Date(Date.now());
+    const dateFormatted = `${date.getFullYear()}-${(date.getMonth() < 10 ? '0' : '') + (date.getMonth() + 1)}-${(date.getDate() < 10 ? '0' : '') + date.getDate()}`;
+
     changePage(pageTitles.HOME);
+    setTodayDate(dateFormatted);
+
+    fetchLogs({
+      userId,
+      date: dateFormatted,
+      skip,
+      take
+    });
   }
 
   handleAddClick = () => {
@@ -30,7 +52,6 @@ class Home extends Component {
     });
   }
 
-  /* Stopped here, add entry functionality, send bfast, lunch or dinner to /entry component */
   handleAddEntry = (period) => {
     const { setPeriod } = this.props;
     setPeriod(period);
@@ -40,12 +61,61 @@ class Home extends Component {
     const {
       showPopups
     } = this.state;
+
     return (
       <div className="home">
         <div className="home-body">
-          <br />
-          <br />
-          <h1> HOME PAGE </h1>
+          <Row gutter={24} className="today-progress">
+            <div className="today-title">
+              Today&apos;s progress
+            </div>
+            <Col span={24} className="macro-progress">
+              CARBOHYDRATE (CHO)
+              <Progress
+                type="line"
+                strokeColor={{
+                  from: '#0FD64F',
+                  to: '#F8EF42'
+                }}
+                percent={100}
+                status="active"
+              />
+            </Col>
+            <Col span={24} className="macro-progress">
+              PROTEIN (PRO)
+              <Progress
+                type="line"
+                strokeColor={{
+                  from: '#F8EF42',
+                  to: '#FF748B'
+                }}
+                percent={100}
+                status="active"
+              />
+            </Col>
+            <Col span={24} className="macro-progress">
+              FAT (FAT)
+              <Progress
+                type="line"
+                strokeColor={{
+                  from: '#FF748B',
+                  to: '#F53803'
+                }}
+                percent={100}
+                status="active"
+              />
+            </Col>
+          </Row>
+
+
+          <div className="space" />
+
+          <Row gutter={24} className="today-progress">
+            <div className="today-title">
+              Breakfast
+            </div>
+          </Row>
+
         </div>
         <div className="absolute-button">
           <div className="popoverzzz">

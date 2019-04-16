@@ -315,7 +315,7 @@ class Food extends Component {
 
             <div className="label-container">
               <div className="label-title">
-                Other Term
+                Other Term &nbsp;
               </div>
               <div className="label">
                 {

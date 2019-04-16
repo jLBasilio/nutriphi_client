@@ -3,17 +3,23 @@ import Header from '.';
 
 import { toggleDrawer, changePage } from './duck';
 import { logout } from '../Login/duck';
-import { toggleCalendar } from '../Home/duck';
+import {
+  toggleCalendar,
+  changeDate,
+  fetchLogs
+} from '../Home/duck';
 
 const mapStateToProps = (state) => {
   const { showDrawer, currentPage } = state.header;
   const { user } = state.login;
-  const { showCalendar } = state.home;
+  const { showCalendar, dateToday, dateSelected } = state.home;
   return {
     showDrawer,
     user,
     showCalendar,
-    currentPage
+    currentPage,
+    dateToday,
+    dateSelected
   };
 };
 
@@ -30,6 +36,16 @@ const mapDispatchToProps = dispatch => ({
   },
   toggleCalendar: () => {
     dispatch(toggleCalendar());
+  },
+  changeDate: (date) => {
+    dispatch(changeDate(date));
+  },
+  fetchLogs: ({
+    userId, date, skip, take
+  }) => {
+    dispatch(fetchLogs({
+      userId, date, skip, take
+    }));
   }
 });
 
