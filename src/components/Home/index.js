@@ -27,6 +27,7 @@ class Home extends Component {
     const {
       changePage,
       setTodayDate,
+      changeDate,
       userId,
       fetchLogs
     } = this.props;
@@ -36,6 +37,7 @@ class Home extends Component {
 
     changePage(pageTitles.HOME);
     setTodayDate(dateFormatted);
+    changeDate(dateFormatted);
 
     fetchLogs({
       userId,
@@ -58,16 +60,31 @@ class Home extends Component {
   }
 
   render() {
+    const { showPopups } = this.state;
     const {
-      showPopups
-    } = this.state;
+      dateToday,
+      dateSelected
+    } = this.props;
+    let dateSelectedSplit = [];
+    if (dateSelected) {
+      dateSelectedSplit = dateSelected.split('-');
+    } else if (dateToday) {
+      dateSelectedSplit = dateToday.split('-');
+    }
 
     return (
       <div className="home">
         <div className="home-body">
+          <div className="date">
+            {
+              dateSelectedSplit.length ? (
+                `${constants.months[dateSelectedSplit[1]]} ${dateSelectedSplit[2]}, ${dateSelectedSplit[0]}`
+              ) : null
+            }
+          </div>
           <Row gutter={24} className="today-progress">
             <div className="today-title">
-              Today&apos;s progress
+              Progress for the day
             </div>
             <Col span={24} className="macro-progress">
               CARBOHYDRATE (CHO)
@@ -115,6 +132,19 @@ class Home extends Component {
               Breakfast
             </div>
           </Row>
+          <div className="space" />
+          <Row gutter={24} className="today-progress">
+            <div className="today-title">
+              Lunch
+            </div>
+          </Row>
+          <div className="space" />
+          <Row gutter={24} className="today-progress">
+            <div className="today-title">
+              Dinner
+            </div>
+          </Row>
+          <div className="space" />
 
         </div>
         <div className="absolute-button">

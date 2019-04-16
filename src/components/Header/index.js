@@ -28,6 +28,21 @@ const foodSections = [
 ];
 
 class Header extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      currentDateSelected: null
+    };
+  }
+
+  componentDidUpdate(props) {
+    const { dateToday } = this.props;
+    if (props.dateToday !== dateToday) {
+      this.setState({ currentDateSelected: dateToday });
+    }
+  }
+
   clickedLink = () => {
     const { toggleDrawer } = this.props;
     toggleDrawer();
@@ -40,9 +55,10 @@ class Header extends Component {
   }
 
   handleDateChange = (dateMoment) => {
-    const { changeDate } = this.props;
     const date = `${dateMoment.year()}-${(dateMoment.month() < 10 ? '0' : '') + (dateMoment.month() + 1)}-${(dateMoment.date() < 10 ? '0' : '') + dateMoment.date()}`;
-    changeDate(date);
+    this.setState({
+      currentDateSelected: date
+    });
   }
 
   handleGoToday = () => {
@@ -50,7 +66,8 @@ class Header extends Component {
       user,
       dateToday,
       fetchLogs,
-      toggleCalendar
+      toggleCalendar,
+      changeDate
     } = this.props;
 
     fetchLogs({
@@ -59,23 +76,27 @@ class Header extends Component {
       skip: 0,
       take: 10
     });
+    changeDate(dateToday);
     toggleCalendar();
   }
 
   handleGoToDate = () => {
     const {
       user,
-      dateSelected,
       fetchLogs,
-      toggleCalendar
+      toggleCalendar,
+      changeDate
     } = this.props;
+    const { currentDateSelected } = this.state;
 
     fetchLogs({
       userId: user.id,
-      date: dateSelected,
+      date: currentDateSelected,
       skip: 0,
       take: 10
     });
+
+    changeDate(currentDateSelected);
     toggleCalendar();
   }
 

@@ -17,6 +17,7 @@ import './entry.scss';
 
 import * as constants from '../../constants';
 import * as pageTitles from '../../constants/pages';
+import * as dateUtil from '../../utils/date.util';
 
 const { Search } = Input;
 
@@ -144,9 +145,7 @@ class Entry extends Component {
     if (measure === 0 || gramsmlConsumed === 0) {
       message.error('Input something!');
     } else {
-      const date = new Date(Date.now());
-      const dateConsumed = `${date.getFullYear()}-${(date.getMonth() < 10 ? '0' : '') + (date.getMonth() + 1)}-${(date.getDate() < 10 ? '0' : '') + date.getDate()}`;
-
+      const dateConsumed = dateUtil.generatePresent();
       addToLog({
         user,
         period,

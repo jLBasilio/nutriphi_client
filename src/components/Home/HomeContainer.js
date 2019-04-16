@@ -4,16 +4,23 @@ import Home from '.';
 import { logout } from '../Login/duck';
 import { setPeriod } from '../Entry/duck';
 import { changePage } from '../Header/duck';
-import { fetchLogs, setTodayDate } from './duck';
+import { fetchLogs, setTodayDate, changeDate } from './duck';
 
 const mapStateToProps = (state) => {
-  const { isFetchingLogs, userLogs } = state.home;
   const { user: { id } } = state.login;
+  const {
+    isFetchingLogs,
+    userLogs,
+    dateToday,
+    dateSelected
+  } = state.home;
 
   return {
     isFetchingLogs,
     userLogs,
-    userId: id
+    userId: id,
+    dateToday,
+    dateSelected
   };
 };
 
@@ -30,6 +37,9 @@ const mapDispatchToProps = dispatch => ({
   },
   setTodayDate: (date) => {
     dispatch(setTodayDate(date));
+  },
+  changeDate: (date) => {
+    dispatch(changeDate(date));
   },
   fetchLogs: ({
     userId, date, skip, take
