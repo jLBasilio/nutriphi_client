@@ -3,9 +3,9 @@ import * as constants from '../constants';
 export const getNutriDist = async ({ dbwKg, lifestyleMultiplier }) => {
   const tea = dbwKg * lifestyleMultiplier;
   const toReturn = {
-    choPerDay: ((tea * constants.CHO_MUL) / constants.CHO_PER_KCAL).toFixed(2),
-    proPerDay: ((tea * constants.PRO_MUL) / constants.PRO_PER_KCAL).toFixed(2),
-    fatPerDay: ((tea * constants.FAT_MUL) / constants.FAT_PER_KCAL).toFixed(2)
+    choPerDay: ((tea * constants.CHO_MUL) / constants.KCAL_PER_CHO_MUL).toFixed(2),
+    proPerDay: ((tea * constants.PRO_MUL) / constants.KCAL_PER_PRO_MUL).toFixed(2),
+    fatPerDay: ((tea * constants.FAT_MUL) / constants.KCAL_PER_FAT_MUL).toFixed(2)
   };
   return toReturn;
 };

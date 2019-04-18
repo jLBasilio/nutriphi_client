@@ -193,14 +193,14 @@ class Entry extends Component {
           />
           <Row gutter={24}>
             {
-              searchedFoodCount ? (
+              searchedFoodCount && (
                 <div className="showing">
                   {`SHOWING ${searchedFoodCount} RESULT/S FOR "${confirmedSearch}"` }
                 </div>
-              ) : null
+              )
             }
             {
-              isFetching ? (
+              isFetching && (
                 constants.emptyCards.map(element => (
                   <Col
                     key={element}
@@ -212,7 +212,7 @@ class Entry extends Component {
                     <Card className="food-card" loading />
                   </Col>
                 ))
-              ) : null
+              )
             }
             {
               searchedFood.length && !isFetching ? (
@@ -226,11 +226,7 @@ class Entry extends Component {
                   >
                     <Card
                       className="food-card"
-                      title={
-                        foodElement.food_filipinoName
-                          ? foodElement.food_filipinoName
-                          : foodElement.food_englishName
-                      }
+                      title={foodElement.food_filipinoName || foodElement.food_englishName}
                       hoverable
                       loading={isFetching}
                       onClick={() => this.showFoodModal(index, true)}
@@ -243,13 +239,13 @@ class Entry extends Component {
                         {foodElement.food_primaryClassification.split('-')[0]}
                       </Tag>
                       {
-                        foodElement.food_secondaryClassification ? (
+                        foodElement.food_secondaryClassification && (
                           <Tag
                             color={constants.tagColors[foodElement.food_secondaryClassification]}
                           >
                             {foodElement.food_secondaryClassification}
                           </Tag>
-                        ) : null
+                        )
                       }
                     </Card>
                   </Col>
@@ -269,19 +265,15 @@ class Entry extends Component {
                   onChange={this.handlePageChangeFromSearch}
                 />
               </div>
-            ) : hasSearched && !searchedFoodCount ? (
+            ) : hasSearched && !searchedFoodCount && (
               <div className="pagination-div">
                 {`NO RESULTS FOR "${confirmedSearch}"`}
               </div>
-            ) : null
+            )
           }
 
           <Modal
-            title={
-              currentFood.food_filipinoName
-                ? currentFood.food_filipinoName
-                : currentFood.food_englishName
-            }
+            title={currentFood.food_filipinoName || currentFood.food_englishName}
             visible={showModal}
             onCancel={this.handleModalClose}
             footer={(
@@ -331,17 +323,8 @@ class Entry extends Component {
           >
 
             <div className="label-container">
-              <div className="label-title">
-                Other Term &nbsp;
-              </div>
               <div className="label">
-                {
-                  currentFood.food_filipinoName ? (
-                    currentFood.food_englishName ? (
-                      currentFood.food_englishName
-                    ) : 'N/A'
-                  ) : 'N/A'
-                }
+                {currentFood.food_englishName || 'N/A'}
               </div>
             </div>
 

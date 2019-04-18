@@ -5,40 +5,99 @@
 .home {
   .home-body {
     @include for-tablet-portrait-up {
-      padding: 0 5rem;
-      padding-top: 6rem;
+      padding: 6rem 5rem 0;
     }
     @include for-small-desktop-up {
-      padding: 0 8rem;
-      padding-top: 6rem;
+      padding: 6rem 13rem 0;
     }
-    padding: 5rem 2rem 0;
+
+    padding: 5rem 1rem 0;
 
     .date {
-      font-size: 1.5rem;
+      font-size: 1.1rem;
       font-weight: bold;
       padding-bottom: .5rem;
     }
 
+    .period {
+      padding: 0 .7rem;
+    }
+
     .today-progress {
-      background-color: $white;
+      @include for-tablet-portrait-up {
+        padding: .5rem 2rem 1rem;
+      }
+
+      background-color: $card-bg;
       border-radius: 5px;
       font-weight: bold;
-      padding: .5rem .5rem 1rem;
+      overflow: auto;
+      padding: .5rem 1rem 1rem;
 
+      .log-loader {
+        padding-top: 1rem;
+        text-align: center;
+      }
 
       .today-title {
-        font-size: 1rem;
-        padding: .1rem .7rem;
+        border-bottom: 1px solid $greywhite;
+        font-size: 1.05rem;
+        padding: .5rem 0;
         text-align: left;
       }
 
-      .macro-progress {
-        padding: .8rem 0 0;
+      .log {
+        align-items: center;
+        border-bottom: 1px solid $greywhite;
+        display: flex;
+        font-size: .8rem;
+        height: 5rem;
+        justify-content: space-between;
+        overflow: hidden;
+        padding: 1rem 1rem 1rem .5rem;
+
+        &:hover {
+          background-color: $default-bg;
+        }
 
         &:last-child {
-          padding: .8rem 0 0;
+          border-bottom: 1px solid $greywhite;
         }
+
+        .log-left {
+          float: left;
+          text-align: left;
+
+          .kcal {
+            font-weight: normal;
+          }
+
+          .log-tag {
+            display: inline-block;
+          }
+        }
+
+        .log-right {
+          display: flex;
+          font-size: 1rem;
+          text-align: right;
+
+          .icon-container {
+
+            &:last-child {
+              padding-left: 1rem;
+            }
+          }
+
+          .action-icon {
+            display: inline-block;
+          }
+        }
+      }
+
+      .macro-progress {
+        font-size: .8rem;
+        padding: .8rem .5rem 0;
 
         .ant-progress-outer {
           .ant-progress-inner {
@@ -46,8 +105,10 @@
             border-radius: 5px !important;
 
             .ant-progress-bg {
+              background-color: transparent;
               border-radius: 5px !important;
               height: 2.5rem !important;
+              transition: 1.3s cubic-bezier(0.08, 0.82, 1, 1) 0s;
 
               &::before {
                 border-radius: 5px !important;
@@ -56,12 +117,15 @@
           }
         }
       }
+
+      .percentage {
+        color: $warning;
+      }
     }
 
     .space {
       padding: 1rem;
     }
-
   }
 
   .absolute-button {
@@ -70,7 +134,7 @@
       right: 4rem;
     }
     bottom: 2.5rem;
-    position: absolute;
+    position: fixed;
     right: 2rem;
 
     .add-button {

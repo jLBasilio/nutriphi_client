@@ -168,14 +168,14 @@ class Food extends Component {
                 <div className="showing">
                   {`SHOWING ${searchedFoodCount} RESULT/S FOR "${confirmedSearch}"` }
                 </div>
-              ) : !(hasSearched || isFetching) ? (
+              ) : !(hasSearched || isFetching) && (
                 <div className="showing">
                   {`SHOWING ${foodCount} ITEMS UNDER ${toFetch.toUpperCase()}` }
                 </div>
-              ) : null
+              )
             }
             {
-              isFetching ? (
+              isFetching && (
                 constants.emptyCards.map(element => (
                   <Col
                     key={element}
@@ -187,7 +187,7 @@ class Food extends Component {
                     <Card className="food-card" loading />
                   </Col>
                 ))
-              ) : null
+              )
             }
             {
               searchedFood.length && !isFetching ? (
@@ -218,18 +218,18 @@ class Food extends Component {
                         {foodElement.food_primaryClassification.split('-')[0]}
                       </Tag>
                       {
-                        foodElement.food_secondaryClassification ? (
+                        foodElement.food_secondaryClassification && (
                           <Tag
                             color={constants.tagColors[foodElement.food_secondaryClassification]}
                           >
                             {foodElement.food_secondaryClassification}
                           </Tag>
-                        ) : null
+                        )
                       }
                     </Card>
                   </Col>
                 ))
-              ) : !(hasSearched || isFetching) ? (
+              ) : !(hasSearched || isFetching) && (
                 food.map((foodElement, index) => (
                   <Col
                     key={foodElement.food_id}
@@ -241,9 +241,7 @@ class Food extends Component {
                     <Card
                       className="food-card"
                       title={
-                        foodElement.food_filipinoName
-                          ? foodElement.food_filipinoName
-                          : foodElement.food_englishName
+                        foodElement.food_filipinoName || foodElement.food_englishName
                       }
                       hoverable
                       loading={isFetching}
@@ -257,18 +255,18 @@ class Food extends Component {
                         {foodElement.food_primaryClassification.split('-')[0]}
                       </Tag>
                       {
-                        foodElement.food_secondaryClassification ? (
+                        foodElement.food_secondaryClassification && (
                           <Tag
                             color={constants.tagColors[foodElement.food_secondaryClassification]}
                           >
                             {foodElement.food_secondaryClassification}
                           </Tag>
-                        ) : null
+                        )
                       }
                     </Card>
                   </Col>
                 ))
-              ) : null
+              )
             }
           </Row>
           {
@@ -287,7 +285,7 @@ class Food extends Component {
               <div className="pagination-div">
                 {`NO RESULTS FOR "${confirmedSearch}"`}
               </div>
-            ) : !isFetching ? (
+            ) : !isFetching && (
               <div className="pagination-div">
                 <Pagination
                   className="pagination"
@@ -299,32 +297,19 @@ class Food extends Component {
                   onChange={this.handlePageChange}
                 />
               </div>
-            ) : null
+            )
           }
 
           <Modal
-            title={
-              currentFood.food_filipinoName
-                ? currentFood.food_filipinoName
-                : currentFood.food_englishName
-            }
+            title={currentFood.food_filipinoName || currentFood.food_englishName}
             visible={showModal}
             onCancel={this.handleModalClose}
             footer={null}
           >
 
             <div className="label-container">
-              <div className="label-title">
-                Other Term &nbsp;
-              </div>
               <div className="label">
-                {
-                  currentFood.food_filipinoName ? (
-                    currentFood.food_englishName ? (
-                      currentFood.food_englishName
-                    ) : 'N/A'
-                  ) : 'N/A'
-                }
+                {currentFood.food_englishName}
               </div>
             </div>
 

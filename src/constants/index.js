@@ -8,12 +8,12 @@ export const LOSE = 1;
 export const GAIN = 2;
 export const MAINTAIN = 3;
 
-export const CHO_PER_KCAL = 4;
-export const PRO_PER_KCAL = 4;
-export const FAT_PER_KCAL = 9;
+export const KCAL_PER_CHO_MUL = 4;
+export const KCAL_PER_PRO_MUL = 4;
+export const KCAL_PER_FAT_MUL = 9;
 
-export const CHO_MUL = 0.15;
-export const PRO_MUL = 0.6;
+export const CHO_MUL = 0.6;
+export const PRO_MUL = 0.15;
 export const FAT_MUL = 0.25;
 
 export const BREAKFAST = 'breakfast';

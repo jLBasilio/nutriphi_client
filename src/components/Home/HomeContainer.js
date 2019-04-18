@@ -7,7 +7,7 @@ import { changePage } from '../Header/duck';
 import { fetchLogs, setTodayDate, changeDate } from './duck';
 
 const mapStateToProps = (state) => {
-  const { user: { id } } = state.login;
+  const { user } = state.login;
   const {
     isFetchingLogs,
     userLogs,
@@ -18,7 +18,7 @@ const mapStateToProps = (state) => {
   return {
     isFetchingLogs,
     userLogs,
-    userId: id,
+    user,
     dateToday,
     dateSelected
   };

@@ -32,6 +32,7 @@
     }
 
     .showing {
+      font-size: .8rem;
       padding-top: 1rem;
       text-align: center;
     }
@@ -153,6 +154,7 @@
 
     .input-label {
       flex: 1;
+      font-weight: bold;
       padding: 0 .3rem;
 
       .input-measure {
@@ -169,7 +171,7 @@
 
     .submit-button {
       flex: 1;
-      padding-top: 1.23rem;
+      padding-top: 1.3rem;
       text-align: center;
 
       .ant-btn {

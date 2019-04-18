@@ -70,14 +70,24 @@ class Signup extends Component {
 
   handleWeight = (e) => {
     const weight = e.target.value;
+    const { weightKg, weightLbs } = this.state;
+
     if (e.target.name === 'weightKg') {
       this.setState({ weightKg: weight, weightLbs: parseFloat((weight * 2.2).toFixed(2)) });
     } else if (e.target.name === 'weightLbs') {
       this.setState({ weightKg: parseFloat((weight / 2.2).toFixed(2)), weightLbs: weight });
     } else if (e.target.name === 'goalKg') {
-      this.setState({ goalKg: weight, goalLbs: parseFloat((weight * 2.2).toFixed(2)) });
+      this.setState({
+        goalKg: weight,
+        goalLbs: parseFloat((weight * 2.2).toFixed(2)),
+        target: weightKg > weight ? 'lose' : weightKg < weight ? 'gain' : 'maintain'
+      });
     } else if (e.target.name === 'goalLbs') {
-      this.setState({ goalKg: parseFloat((weight / 2.2).toFixed(2)), goalLbs: weight });
+      this.setState({
+        goalKg: parseFloat((weight / 2.2).toFixed(2)),
+        goalLbs: weight,
+        target: weightLbs > weight ? 'lose' : weightLbs < weight ? 'gain' : 'maintain'
+      });
     }
   }
 
@@ -511,10 +521,10 @@ class Signup extends Component {
                       <Row gutter={24}>
                         <Col xs={24} md={8}>
                           <FormItem required label="User Goal">
-                            <Select placeholder="Select Goal" onChange={this.handleTarget}>
-                              <Option value={1}>Lose weight</Option>
-                              <Option value={2}>Gain weight</Option>
-                              <Option value={3}>Maintain weight</Option>
+                            <Select disabled placeholder="Select Goal" value={target}>
+                              <Option value="lose">Lose weight</Option>
+                              <Option value="gain">Gain weight</Option>
+                              <Option value="maintain">Maintain weight</Option>
                             </Select>
                           </FormItem>
                         </Col>
@@ -556,7 +566,7 @@ class Signup extends Component {
                           </FormItem>
                         </Col>
                         <Col xs={24} md={12}>
-                          <FormItem required label={`Goal Timespan (Recommended weeks = ${recommended.toFixed(0)})`}>
+                          <FormItem required label={`Goal Timespan (Recommended weeks = ${Math.abs(recommended.toFixed(0))})`}>
                             <DatePicker
                               onChange={this.handleEndDate}
                             />

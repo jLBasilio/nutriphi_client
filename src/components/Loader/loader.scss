@@ -1,2 +1,8 @@
 @import 'src/constants/screen';
 @import 'src/constants/color';
+
+.loader {
+  left: 50%;
+  position: absolute;
+  top: 50%;
+}
