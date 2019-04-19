@@ -106,11 +106,9 @@ class Entry extends Component {
 
   handleMeasure = (measure) => {
     const { currentFood } = this.state;
-    const gramsEPPerExchange = parseFloat(currentFood.food_gramsEPPerExchange);
-    const gramsml = gramsEPPerExchange
-      ? currentFood.food_exchangePerMeasure * gramsEPPerExchange
-      : currentFood.food_exchangePerMeasure * parseFloat(currentFood.food_mlEPPerExchange);
-
+    const gramsmlEPPerExchange = parseFloat(currentFood.food_gramsEPPerExchange
+      || currentFood.food_mlEPPerExchange);
+    const gramsml = currentFood.food_exchangePerMeasure * gramsmlEPPerExchange;
     this.setState({
       measure,
       gramsml: gramsml * measure
@@ -119,14 +117,12 @@ class Entry extends Component {
 
   handleGramsML = (gramsml) => {
     const { currentFood } = this.state;
-    const gramsEPPerExchange = parseFloat(currentFood.food_gramsEPPerExchange);
-
-    const measure = gramsEPPerExchange
-      ? gramsml / gramsEPPerExchange
-      : gramsml / parseFloat(currentFood.food_mlEPPerExchange);
+    const gramsmlEPPerExchange = parseFloat(currentFood.food_gramsEPPerExchange
+      || currentFood.food_mlEPPerExchange);
+    const measure = gramsml / gramsmlEPPerExchange;
     this.setState({
       gramsml,
-      measure: (measure / currentFood.food_exchangePerMeasure).toFixed(2)
+      measure: parseFloat((measure / currentFood.food_exchangePerMeasure).toFixed(2))
     });
   }
 
@@ -229,7 +225,7 @@ class Entry extends Component {
                       title={foodElement.food_filipinoName || foodElement.food_englishName}
                       hoverable
                       loading={isFetching}
-                      onClick={() => this.showFoodModal(index, true)}
+                      onClick={() => this.showFoodModal(index)}
                     >
                       <Tag
                         color={
@@ -276,7 +272,19 @@ class Entry extends Component {
             title={currentFood.food_filipinoName || currentFood.food_englishName}
             visible={showModal}
             onCancel={this.handleModalClose}
-            footer={(
+            footer={[
+              <div className="macro-update" key="macro-display">
+                <div className="macro-one">
+                  {`CHO: ${currentFood.food_choPerExchange * measure}g`}
+                </div>
+                <div className="macro-one">
+                  {`PRO: ${currentFood.food_proPerExchange * measure}g`}
+                </div>
+                <div className="macro-one">
+                  {`FAT: ${currentFood.food_fatPerExchange * measure}g`}
+                </div>
+              </div>,
+
               <div className="input-container" key="input-log">
                 <div className="input-label">
                   Measure
@@ -319,7 +327,7 @@ class Entry extends Component {
                   </Button>
                 </div>
               </div>
-            )}
+            ]}
           >
 
             <div className="label-container">
@@ -341,7 +349,7 @@ class Entry extends Component {
 
             <div className="info-row">
               <div className="macros">
-                Carbohydrate
+                Carbohydrate (CHO)
               </div>
               <div className="macros-value">
                 {`${currentFood.food_choPerExchange}g`}
@@ -352,7 +360,7 @@ class Entry extends Component {
 
             <div className="info-row">
               <div className="macros">
-                Protein
+                Protein (PRO)
               </div>
               <div className="macros-value">
                 {`${currentFood.food_proPerExchange}g`}
@@ -363,7 +371,7 @@ class Entry extends Component {
 
             <div className="info-row">
               <div className="macros">
-                Fat
+                Fat (FAT)
               </div>
               <div className="macros-value">
                 {`${currentFood.food_fatPerExchange}g`}

@@ -147,6 +147,23 @@
     }
   }
 
+  .macro-update {
+    display: flex;
+    justify-content: space-around;
+    text-align: left;
+
+    .macro-one {
+      border-right: 1px solid $greyish-line;
+      font-weight: bold;
+      padding: 0 .3rem;
+
+      &:last-child {
+        border: 0;
+      }
+
+    }
+  }
+
   .input-container {
     display: flex;
     justify-content: space-around;
@@ -182,9 +199,20 @@
 
           &:hover {
             background-color: $secondary-kahel;
-            cursor: pointer;
           }
         }
+
+        &.ant-btn-danger {
+          background-color: $red;
+          border: 0;
+          color: $white;
+          width: 100%;
+
+          &:hover {
+            background-color: $secondary-red;
+          }
+        }
+
       }
     }
   }

@@ -67,16 +67,18 @@ class Header extends Component {
       dateToday,
       fetchLogs,
       toggleCalendar,
-      changeDate
+      changeDate,
+      dateSelected
     } = this.props;
-
-    fetchLogs({
-      userId: user.id,
-      date: dateToday,
-      skip: 0,
-      take: 10
-    });
-    changeDate(dateToday);
+    if (dateToday !== dateSelected) {
+      fetchLogs({
+        userId: user.id,
+        date: dateToday,
+        skip: 0,
+        take: 10
+      });
+      changeDate(dateToday);
+    }
     toggleCalendar();
   }
 
@@ -85,18 +87,19 @@ class Header extends Component {
       user,
       fetchLogs,
       toggleCalendar,
-      changeDate
+      changeDate,
+      dateSelected
     } = this.props;
     const { currentDateSelected } = this.state;
-
-    fetchLogs({
-      userId: user.id,
-      date: currentDateSelected,
-      skip: 0,
-      take: 10
-    });
-
-    changeDate(currentDateSelected);
+    if (dateSelected !== currentDateSelected) {
+      fetchLogs({
+        userId: user.id,
+        date: currentDateSelected,
+        skip: 0,
+        take: 10
+      });
+      changeDate(currentDateSelected);
+    }
     toggleCalendar();
   }
 

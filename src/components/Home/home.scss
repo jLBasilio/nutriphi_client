@@ -73,7 +73,12 @@
           }
 
           .log-tag {
+            @include for-tablet-portrait-up {
+              margin: 0 .3rem;
+            }
             display: inline-block;
+            margin-left: .05rem;
+            margin-right: 0;
           }
         }
 
@@ -142,14 +147,14 @@
       border: 0;
       border-radius: 4rem;
       box-shadow: none;
-      height: 80px;
+      height: 65px;
       padding: 0;
       text-shadow: none;
-      width: 80px;
+      width: 65px;
 
       .add-img {
-        height: 80px;
-        width: 80px;
+        height: 65px;
+        width: 65px;
       }
     }
   }

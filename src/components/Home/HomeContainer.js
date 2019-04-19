@@ -4,23 +4,47 @@ import Home from '.';
 import { logout } from '../Login/duck';
 import { setPeriod } from '../Entry/duck';
 import { changePage } from '../Header/duck';
-import { fetchLogs, setTodayDate, changeDate } from './duck';
+import {
+  fetchLogs,
+  fetchPeriod,
+  setTodayDate,
+  changeDate,
+  toggleEditModal,
+  toggleDeleteModal,
+  editLog,
+  deleteLog,
+  setPeriodEditing
+} from './duck';
 
 const mapStateToProps = (state) => {
   const { user } = state.login;
   const {
     isFetchingLogs,
     userLogs,
+    breakfast,
+    lunch,
+    dinner,
     dateToday,
-    dateSelected
+    dateSelected,
+    showEditModal,
+    isEditing,
+    showDeleteModal,
+    isDeleting
   } = state.home;
 
   return {
     isFetchingLogs,
     userLogs,
+    breakfast,
+    lunch,
+    dinner,
     user,
     dateToday,
-    dateSelected
+    dateSelected,
+    showEditModal,
+    isEditing,
+    showDeleteModal,
+    isDeleting
   };
 };
 
@@ -41,12 +65,26 @@ const mapDispatchToProps = dispatch => ({
   changeDate: (date) => {
     dispatch(changeDate(date));
   },
-  fetchLogs: ({
-    userId, date, skip, take
-  }) => {
-    dispatch(fetchLogs({
-      userId, date, skip, take
-    }));
+  toggleEditModal: () => {
+    dispatch(toggleEditModal());
+  },
+  toggleDeleteModal: () => {
+    dispatch(toggleDeleteModal());
+  },
+  editLog: (logInfo) => {
+    dispatch(editLog(logInfo));
+  },
+  deleteLog: (logInfo) => {
+    dispatch(deleteLog(logInfo));
+  },
+  fetchLogs: ({ userId, date }) => {
+    dispatch(fetchLogs({ userId, date }));
+  },
+  fetchPeriod: ({ userId, date, period }) => {
+    dispatch(fetchPeriod({ userId, date, period }));
+  },
+  setPeriodEditing: (period) => {
+    dispatch(setPeriodEditing(period));
   }
 });
 
