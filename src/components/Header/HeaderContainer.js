@@ -23,7 +23,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-
 const mapDispatchToProps = dispatch => ({
   toggleDrawer: () => {
     dispatch(toggleDrawer());

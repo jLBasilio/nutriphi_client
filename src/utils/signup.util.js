@@ -1,12 +1,16 @@
 import * as constants from '../constants';
 
-export const getNutriDist = async ({ dbwKg, lifestyleMultiplier }) => {
-  const tea = dbwKg * lifestyleMultiplier;
+export const getNutriDist = async ({ goalKg, lifestyleMultiplier }) => {
+  const tea = goalKg * lifestyleMultiplier;
   const toReturn = {
     choPerDay: ((tea * constants.CHO_MUL) / constants.KCAL_PER_CHO_MUL).toFixed(2),
     proPerDay: ((tea * constants.PRO_MUL) / constants.KCAL_PER_PRO_MUL).toFixed(2),
     fatPerDay: ((tea * constants.FAT_MUL) / constants.KCAL_PER_FAT_MUL).toFixed(2)
   };
+  console.log("GOAL KG", goalKg)
+  console.log("LF MULT", lifestyleMultiplier)
+  console.log("tea", tea)
+  console.log("TO RETURN: ", toReturn);
   return toReturn;
 };
 

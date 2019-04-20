@@ -240,9 +240,9 @@ class Signup extends Component {
 
   handleSignup = () => {
     if (this.validateSignup()) {
-      const { dbwKg, signup } = this.props;
-      const { lifestyleMultiplier } = this.state;
-      signup({ dbwKg, lifestyleMultiplier });
+      const { signup } = this.props;
+      const { lifestyleMultiplier, goalKg } = this.state;
+      signup({ goalKg, lifestyleMultiplier });
     }
   }
 
@@ -601,7 +601,7 @@ class Signup extends Component {
               >
                 <h2>{`${firstName} ${lastName}`}</h2>
                 <h2>{`Initial Weight: ${weightKg}kg | ${weightLbs}lbs`}</h2>
-                <h2>{`Goal: ${target === 1 ? 'Lose' : target === 2 ? 'Gain' : 'Maintain'}`}</h2>
+                <h2>{`Goal: ${target === 'lose' ? 'Lose' : target === 'gain' ? 'Gain' : 'Maintain'}`}</h2>
                 <h2>You will need to consume:</h2>
                 <h3>{`${choPerDay} grams of carbohydrates,`}</h3>
                 <h3>{`${proPerDay} grams of proteins;`}</h3>

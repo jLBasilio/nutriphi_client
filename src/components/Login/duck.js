@@ -15,13 +15,17 @@ export const login = ({ userName, password }) => ({
   promise: auth.login({ userName, password }),
   meta: {
     onFailure: (response) => {
-      switch (response.response.data.status) {
-        case 401:
-          message.error('Invalid credentials');
-          break;
-        default:
-          message.error('Server error');
-          break;
+      if (response.response) {
+        switch (response.response.data.status) {
+          case 401:
+            message.error('Invalid credentials');
+            break;
+          default:
+            message.error('Server error');
+            break;
+        }
+      } else {
+        message.error('Server error');
       }
     }
   }
@@ -36,7 +40,6 @@ export const getSession = () => ({
   type: actions.SESSION,
   promise: auth.getSession()
 });
-
 
 const initialState = {
   isLoggingIn: false,

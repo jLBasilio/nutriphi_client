@@ -10,7 +10,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-
 const mapDispatchToProps = dispatch => ({
   changePage: (newPage) => {
     dispatch(changePage(newPage));

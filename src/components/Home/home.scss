@@ -30,6 +30,7 @@
 
       background-color: $card-bg;
       border-radius: 5px;
+      box-shadow: $card-shadow;
       font-weight: bold;
       overflow: auto;
       padding: .5rem 1rem 1rem;
@@ -108,12 +109,13 @@
           .ant-progress-inner {
             background-color: $default-bg;
             border-radius: 5px !important;
+            box-shadow: $card-shadow;
 
             .ant-progress-bg {
               background-color: transparent;
               border-radius: 5px !important;
               height: 2.5rem !important;
-              transition: 1.3s cubic-bezier(0.08, 0.82, 1, 1) 0s;
+              transition: 1.3s cubic-bezier(.08, .82, 1, 1) 0s;
 
               &::before {
                 border-radius: 5px !important;
@@ -133,29 +135,34 @@
     }
   }
 
-  .absolute-button {
+  .add-container {
     @include for-tablet-portrait-up {
-      bottom: 4rem;
-      right: 4rem;
-    }
-    bottom: 2.5rem;
-    position: fixed;
-    right: 2rem;
-
-    .add-button {
-      background: none;
-      border: 0;
-      border-radius: 4rem;
-      box-shadow: none;
+      bottom: 5rem;
+      font-size: 75px;
       height: 65px;
-      padding: 0;
-      text-shadow: none;
+      right: 6rem;
       width: 65px;
+    }
+    background-color: $white;
+    border-radius: 50%;
+    bottom: 1.5rem;
+    color: $base-kahel;
+    display: flex;
+    position: fixed;
+    right: 1.5rem;
 
-      .add-img {
+    .add-img {
+      @include for-tablet-portrait-up {
+        bottom: 5rem;
+        font-size: 65px;
         height: 65px;
+        right: 6rem;
         width: 65px;
       }
+      font-size: 50px;
+      height: 50px;
+      width: 50px;
     }
   }
+
 }

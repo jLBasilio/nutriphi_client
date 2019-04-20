@@ -138,10 +138,12 @@ class Entry extends Component {
       measure
     } = this.state;
 
-    if (measure === 0 || gramsmlConsumed === 0) {
+    if (measure <= 0 || gramsmlConsumed <= 0) {
       message.error('Input something!');
     } else {
-      const dateConsumed = dateUtil.generatePresent();
+      let { dateSelected: dateConsumed } = this.props;
+      const presentTime = dateUtil.generatePresent().split('T')[1];
+      dateConsumed = `${dateConsumed}T${presentTime}`;
       addToLog({
         user,
         period,
@@ -275,13 +277,13 @@ class Entry extends Component {
             footer={[
               <div className="macro-update" key="macro-display">
                 <div className="macro-one">
-                  {`CHO: ${currentFood.food_choPerExchange * measure}g`}
+                  {`CHO: ${parseFloat((currentFood.food_choPerExchange * measure).toFixed(2))}g`}
                 </div>
                 <div className="macro-one">
-                  {`PRO: ${currentFood.food_proPerExchange * measure}g`}
+                  {`CHO: ${parseFloat((currentFood.food_proPerExchange * measure).toFixed(2))}g`}
                 </div>
                 <div className="macro-one">
-                  {`FAT: ${currentFood.food_fatPerExchange * measure}g`}
+                  {`CHO: ${parseFloat((currentFood.food_fatPerExchange * measure).toFixed(2))}g`}
                 </div>
               </div>,
 

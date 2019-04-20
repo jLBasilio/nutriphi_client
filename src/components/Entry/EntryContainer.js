@@ -21,7 +21,7 @@ const mapStateToProps = (state) => {
     isAddingLog
   } = state.entry;
   const { user: { id: user } } = state.login;
-
+  const { dateSelected } = state.home;
 
   return {
     period,
@@ -31,10 +31,10 @@ const mapStateToProps = (state) => {
     hasSearched,
     showModal,
     isAddingLog,
-    user
+    user,
+    dateSelected
   };
 };
-
 
 const mapDispatchToProps = dispatch => ({
   setPeriod: (period) => {

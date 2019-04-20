@@ -44,7 +44,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-
 const mapDispatchToProps = dispatch => ({
   getDBW: (userInfo) => {
     dispatch(getDBW(userInfo));

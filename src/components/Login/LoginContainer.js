@@ -12,7 +12,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-
 const mapDispatchToProps = dispatch => ({
   login: (credentials) => {
     dispatch(login(credentials));

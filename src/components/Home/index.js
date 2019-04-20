@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   Button,
   Divider,
+  Empty,
   Icon,
   InputNumber,
   message,
@@ -37,21 +38,30 @@ class Home extends Component {
       changePage,
       setTodayDate,
       changeDate,
+      dateToday,
+      dateSelected,
       user,
       fetchLogs
     } = this.props;
-    // const { skip, take } = this.state;
-    const date = new Date(Date.now());
-    const dateFormatted = `${date.getFullYear()}-${(date.getMonth() < 10 ? '0' : '') + (date.getMonth() + 1)}-${(date.getDate() < 10 ? '0' : '') + date.getDate()}`;
-
     changePage(pageTitles.HOME);
-    setTodayDate(dateFormatted);
-    changeDate(dateFormatted);
 
-    fetchLogs({
-      userId: user.id,
-      date: dateFormatted
-    });
+    if (!dateToday) {
+      const date = new Date(Date.now());
+      const dateFormatted = `${date.getFullYear()}-${(date.getMonth() < 10 ? '0' : '') + (date.getMonth() + 1)}-${(date.getDate() < 10 ? '0' : '') + date.getDate()}`;
+
+      setTodayDate(dateFormatted);
+      changeDate(dateFormatted);
+
+      fetchLogs({
+        userId: user.id,
+        date: dateFormatted
+      });
+    } else {
+      fetchLogs({
+        userId: user.id,
+        date: dateSelected
+      });
+    }
   }
 
   handleAddClick = () => {
@@ -105,7 +115,7 @@ class Home extends Component {
     const gramsml = currentFoodConsumed.foodInfo.exchangePerMeasure * gramsmlEPPerExchange;
     this.setState({
       measure,
-      gramsml: gramsml * measure
+      gramsml: parseFloat((gramsml * measure).toFixed(2))
     });
   }
 
@@ -136,7 +146,7 @@ class Home extends Component {
     const { editLog, toggleEditModal } = this.props;
     const currentFoodGramsML = currentFoodConsumed.consumed_gramsConsumed
       || currentFoodConsumed.consumed_mlConsumed;
-    if (measure === 0 || gramsmlConsumed === 0) {
+    if (measure <= 0 || gramsmlConsumed <= 0) {
       message.error('Input something!');
     } else if (gramsmlConsumed === currentFoodGramsML) {
       toggleEditModal();
@@ -149,7 +159,6 @@ class Home extends Component {
         userId,
         gramsmlConsumed
       });
-      toggleEditModal();
     }
   }
 
@@ -160,7 +169,7 @@ class Home extends Component {
   }
 
   handleDeleteLog = () => {
-    const { deleteLog, toggleEditModal } = this.props;
+    const { deleteLog } = this.props;
     const {
       currentFoodConsumed: { consumed_id: consumedId },
       currentFoodConsumed: { consumed_userId: userId },
@@ -173,7 +182,6 @@ class Home extends Component {
       dateConsumed,
       consumedId
     });
-    toggleEditModal();
   }
 
   render() {
@@ -214,7 +222,6 @@ class Home extends Component {
     } else if (dateToday) {
       dateSelectedSplit = dateToday.split('-');
     }
-
 
     return (
       <div className="home">
@@ -311,7 +318,7 @@ class Home extends Component {
                 <div className="log-loader">
                   <Spin />
                 </div>
-              ) : (
+              ) : breakfast.length ? (
                 breakfast.map((log, index) => (
                   <div className="log" key={log.consumed_id}>
                     <div className="log-left">
@@ -366,6 +373,8 @@ class Home extends Component {
                     </div>
                   </div>
                 ))
+              ) : (
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
               )
             }
           </div>
@@ -384,7 +393,7 @@ class Home extends Component {
                 <div className="log-loader">
                   <Spin />
                 </div>
-              ) : (
+              ) : lunch.length ? (
                 lunch.map((log, index) => (
                   <div className="log" key={log.consumed_id}>
                     <div className="log-left">
@@ -439,6 +448,8 @@ class Home extends Component {
                     </div>
                   </div>
                 ))
+              ) : (
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
               )
             }
           </div>
@@ -457,7 +468,7 @@ class Home extends Component {
                 <div className="log-loader">
                   <Spin />
                 </div>
-              ) : (
+              ) : dinner.length ? (
                 dinner.map((log, index) => (
                   <div className="log" key={log.consumed_id}>
                     <div className="log-left">
@@ -512,45 +523,46 @@ class Home extends Component {
                     </div>
                   </div>
                 ))
+              ) : (
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
               )
             }
           </div>
 
           <div className="space" />
 
-
         </div>
-        <div className="absolute-button">
-          <div className="popoverzzz">
-            <Popover
-              content={(
-                <div>
-                  <h5>
-                    <Link to="/entry" onClick={() => this.handleAddEntry(constants.BREAKFAST)}>Breakfast</Link>
-                  </h5>
-                  <h5>
-                    <Link to="/entry" onClick={() => this.handleAddEntry(constants.LUNCH)}>Lunch</Link>
-                  </h5>
-                  <h5>
-                    <Link to="/entry" onClick={() => this.handleAddEntry(constants.DINNER)}>Dinner</Link>
-                  </h5>
-                  <h5>
-                    Exercise
-                  </h5>
-                </div>
-              )}
-              placement="topLeft"
-              title="Add Log"
-              trigger="click"
-              visible={showPopups}
-              onVisibleChange={this.handleAddClick}
+
+        <Popover
+          content={[
+            <Link to="/entry" key="breakfast" onClick={() => this.handleAddEntry(constants.BREAKFAST)}>
+              <div className="link">Breakfast</div>
+            </Link>,
+            <Link to="/entry" key="lunch" onClick={() => this.handleAddEntry(constants.LUNCH)}>
+              <div className="link">Lunch</div>
+            </Link>,
+            <Link to="/entry" key="dinner" onClick={() => this.handleAddEntry(constants.DINNER)}>
+              <div className="link">Dinner</div>
+            </Link>,
+            <Link to="/exercise" key="exercise" onClick={this.handleExercise}>
+              <div className="link">Exercise</div>
+            </Link>
+          ]}
+          placement="topLeft"
+          title="Add Log"
+          trigger="click"
+          visible={showPopups}
+          onVisibleChange={this.handleAddClick}
+        >
+          <div className="add-container">
+            <Icon
+              type="plus-circle"
+              className="add-img"
+              theme="filled"
+              onClick={this.handleAddClick}
             />
           </div>
-          <Button className="add-button" onClick={this.handleAddClick}>
-            <img className="add-img" src="/home/addbutton.png" alt="add-entry" />
-          </Button>
-        </div>
-
+        </Popover>
 
         <Modal
           title={
@@ -563,19 +575,34 @@ class Home extends Component {
             <div className="macro-update" key="macro-display">
               <div className="macro-one">
                 {`CHO: ${currentFoodConsumed.foodInfo
-                  ? currentFoodConsumed.foodInfo.choPerExchange * measure
+                  ? parseFloat(
+                    (currentFoodConsumed.foodInfo.choPerExchange
+                      * measure
+                      * parseFloat(currentFoodConsumed.foodInfo.exchangePerMeasure))
+                      .toFixed(2)
+                  )
                   : null}g`
                 }
               </div>
               <div className="macro-one">
                 {`PRO: ${currentFoodConsumed.foodInfo
-                  ? currentFoodConsumed.foodInfo.proPerExchange * measure
+                  ? parseFloat(
+                    (currentFoodConsumed.foodInfo.proPerExchange
+                      * measure
+                      * parseFloat(currentFoodConsumed.foodInfo.exchangePerMeasure))
+                      .toFixed(2)
+                  )
                   : null}g`
                 }
               </div>
               <div className="macro-one">
                 {`FAT: ${currentFoodConsumed.foodInfo
-                  ? currentFoodConsumed.foodInfo.fatPerExchange * measure
+                  ? parseFloat(
+                    (currentFoodConsumed.foodInfo.proPerExchange
+                      * measure
+                      * parseFloat(currentFoodConsumed.foodInfo.exchangePerMeasure))
+                      .toFixed(2)
+                  )
                   : null}g`
                 }
               </div>

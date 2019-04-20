@@ -84,6 +84,7 @@ export const editLog = logInfo => (dispatch) => {
           date: logInfo.dateConsumed.split('T')[0],
           period: logInfo.period
         }));
+        dispatch(toggleEditModal());
       },
       onFailure: () => message.error('Edit log failed')
     }
@@ -102,6 +103,7 @@ export const deleteLog = logInfo => (dispatch) => {
           date: logInfo.dateConsumed.split('T')[0],
           period: logInfo.period
         }));
+        dispatch(toggleEditModal());
       },
       onFailure: () => message.error('Delete log failed')
     }

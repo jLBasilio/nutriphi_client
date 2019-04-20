@@ -40,9 +40,9 @@ export const toggleModal = () => ({
   type: actions.TOGGLE_MODAL
 });
 
-export const signup = ({ dbwKg, lifestyleMultiplier }) => ({
+export const signup = ({ goalKg, lifestyleMultiplier }) => ({
   type: actions.SIGNUP,
-  promise: signupConst.getNutriDist({ dbwKg, lifestyleMultiplier })
+  promise: signupConst.getNutriDist({ goalKg, lifestyleMultiplier })
 });
 
 export const confirmSignup = body => ({
@@ -59,7 +59,6 @@ export const confirmSignup = body => ({
     )
   }
 });
-
 
 const initialState = {
   existingUser: false,
@@ -139,7 +138,6 @@ const reducer = (state = initialState, action) => {
         ...state,
         showConfirmModal: !state.showConfirmModal
       };
-
 
     default:
       return state;

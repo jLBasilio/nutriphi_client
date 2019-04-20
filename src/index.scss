@@ -1,6 +1,7 @@
 @import 'src/constants/screen';
 @import 'src/constants/color';
 
+// sass-lint:disable class-name-format, no-important, nesting-depth
 html {
   scroll-behavior: smooth;
 }
@@ -15,4 +16,39 @@ body {
   padding: 0;
 }
 
+.ant-popover {
+  &.ant-popover-placement-topRight {
+    .ant-popover-content {
+      .ant-popover-inner {
+        background-color: $card-bg;
 
+        .ant-popover-title {
+          color: $black-line;
+          font-size: .9rem;
+          font-weight: bold;
+        }
+
+        .ant-popover-inner-content {
+          display: flex;
+          flex-direction: column;
+          padding: 0;
+
+          .link {
+            color: $black-line;
+            flex: 1;
+            padding: .3rem 1rem ;
+            text-align: center;
+            width: 100%;
+
+            &:hover {
+              background-color: $secondary-kahel;
+              color: $white;
+              cursor: pointer;
+            }
+
+          }
+        }
+      }
+    }
+  }
+}

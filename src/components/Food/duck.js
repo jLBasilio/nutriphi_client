@@ -102,7 +102,6 @@ const reducer = (state = initialState, action) => {
         showModal: !state.showModal
       };
 
-
     default:
       return state;
   }
