@@ -4,7 +4,6 @@ import {
   Button,
   Col,
   DatePicker,
-  Divider,
   Form,
   Icon,
   Input,
@@ -18,6 +17,7 @@ import './signup.scss';
 
 import * as pageTitles from '../../constants/pages';
 import * as signupConst from '../../constants';
+import * as signupUtil from '../../utils/signup.util';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -28,21 +28,21 @@ class Signup extends Component {
     super(props);
 
     this.state = {
-      firstName: null,
-      lastName: null,
+      firstName: 'jeff',
+      lastName: 'basilio',
       userName: null,
       password: null,
       confirmPassword: null,
-      sex: null,
+      sex: 'M',
 
-      birthday: null,
-      weightKg: null,
-      weightLbs: null,
-      goalKg: null,
+      birthday: '1999-05-31',
+      weightKg: 68,
+      weightLbs: 149.6,
+      goalKg: 60,
       goalLbs: null,
-      heightCm: null,
-      heightFt: null,
-      heightInch: null,
+      heightCm: 175,
+      heightFt: 5,
+      heightInch: 9,
 
       lifestyleMultiplier: null,
       target: null,
@@ -68,23 +68,31 @@ class Signup extends Component {
     });
   }
 
-  handleWeight = (e) => {
+  handleWeight = async (e) => {
     const weight = e.target.value;
-    const { weightKg, weightLbs } = this.state;
-
+    const { weightKg, weightLbs, heightCm } = this.state;
     if (e.target.name === 'weightKg') {
       this.setState({ weightKg: weight, weightLbs: parseFloat((weight * 2.2).toFixed(2)) });
     } else if (e.target.name === 'weightLbs') {
       this.setState({ weightKg: parseFloat((weight / 2.2).toFixed(2)), weightLbs: weight });
     } else if (e.target.name === 'goalKg') {
+      const bmi = await signupUtil.getBMIFromGoal({ goalKg: weight, heightCm });
+      if (bmi !== 'normal' && weight.toString().length >= 2) {
+        message.warning(`Your BMI will be ${bmi}.`);
+      }
       this.setState({
         goalKg: weight,
         goalLbs: parseFloat((weight * 2.2).toFixed(2)),
         target: weightKg > weight ? 'lose' : weightKg < weight ? 'gain' : 'maintain'
       });
     } else if (e.target.name === 'goalLbs') {
+      const goalKg = parseFloat((weight / 2.2).toFixed(2))
+      const bmi = await signupUtil.getBMIFromGoal({ goalKg, heightCm });
+      if (bmi !== 'normal' && goalKg.toString().length >= 2) {
+        message.warning(`Your BMI will be ${bmi}.`);
+      }
       this.setState({
-        goalKg: parseFloat((weight / 2.2).toFixed(2)),
+        goalKg,
         goalLbs: weight,
         target: weightLbs > weight ? 'lose' : weightLbs < weight ? 'gain' : 'maintain'
       });
@@ -342,256 +350,295 @@ class Signup extends Component {
     return (
       <div className="signup">
         <div className="signup-body">
-          <Row gutter={24}>
-            <Col xs={2} md={4} lg={6} />
-            <Col xs={20} md={16} lg={12} className="middle-col">
-              <Form>
-                <Row gutter={24}>
-                  <Col xs={24} md={12}>
-                    <FormItem required label="First Name">
-                      <Input
-                        required
-                        className="form-bar"
-                        value={firstName}
-                        name="firstName"
-                        onChange={this.handleChange}
-                        prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                      />
-                    </FormItem>
-                  </Col>
-                  <Col xs={24} md={12}>
-                    <FormItem required label="Last Name">
-                      <Input
-                        className="form-bar"
-                        value={lastName}
-                        name="lastName"
-                        onChange={this.handleChange}
-                        prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                      />
-                    </FormItem>
-                  </Col>
-                </Row>
+          <div className="page-title">
+            Sign up for Nutriphi
+          </div>
+          <div className="form-group">
+            <div className="one-row">
+              <div className="one-form">
+                <div className="form-title">
+                  First name
+                </div>
+                <Input
+                  className="form-bar"
+                  required
+                  value={firstName}
+                  name="firstName"
+                  onChange={this.handleChange}
+                  prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                />
+              </div>
+              <div className="one-form">
+                <div className="form-title">
+                  Last name
+                </div>
+                <Input
+                  className="form-bar"
+                  value={lastName}
+                  name="lastName"
+                  onChange={this.handleChange}
+                  prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                />
+              </div>
+            </div>
+            <div className="one-row">
+              <div className="one-form">
+                <div className="form-title">
+                  Username
+                </div>
+                <Input
+                  required
+                  className="form-bar"
+                  value={userName}
+                  name="userName"
+                  onChange={this.handleChange}
+                  prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                />
+              </div>
 
-                <Row gutter={24}>
-                  <Col xs={24} md={8}>
-                    <FormItem required label="Username">
-                      <Input
-                        required
-                        className="form-bar"
-                        value={userName}
-                        name="userName"
-                        onChange={this.handleChange}
-                        prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                      />
-                    </FormItem>
-                  </Col>
-                  <Col xs={24} md={8}>
-                    <FormItem required label="Password">
-                      <Input
-                        className="form-bar"
-                        type="password"
-                        value={password}
-                        name="password"
-                        onChange={this.handleChange}
-                        prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                      />
-                    </FormItem>
-                  </Col>
-                  <Col xs={24} md={8}>
-                    <FormItem required label="Confirm Password">
-                      <Input
-                        className="form-bar"
-                        type="password"
-                        value={confirmPassword}
-                        name="confirmPassword"
-                        onChange={this.handleChange}
-                        prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                      />
-                    </FormItem>
-                  </Col>
-                </Row>
+              <div className="one-form">
+                <div className="form-title">
+                  Password
+                </div>
+                <Input
+                  className="form-bar"
+                  type="password"
+                  value={password}
+                  name="password"
+                  onChange={this.handleChange}
+                  prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                />
+              </div>
 
-                <Row gutter={24}>
-                  <Col xs={24} md={12}>
-                    <FormItem required label="Biological Sex">
-                      <RadioGroup name="sex" onChange={this.handleChange} value={sex}>
-                        <Radio value="M">Male</Radio>
-                        <Radio value="F">Female</Radio>
-                      </RadioGroup>
-                    </FormItem>
-                  </Col>
-                  <Col xs={24} md={12}>
-                    <FormItem required label="Birthday">
-                      <DatePicker
-                        onChange={this.handleBirthday}
-                      />
-                    </FormItem>
-                  </Col>
-                </Row>
+              <div className="one-form">
+                <div className="form-title">
+                  Confirm password
+                </div>
+                <Input
+                  className="form-bar"
+                  type="password"
+                  value={confirmPassword}
+                  name="confirmPassword"
+                  onChange={this.handleChange}
+                  prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                />
+              </div>
+            </div>
+            <div className="one-row">
+              <div className="one-form">
+                <div className="form-title">
+                  Biological Sex
+                </div>
+                <RadioGroup
+                  className="form-bar"
+                  name="sex"
+                  onChange={this.handleChange}
+                  value={sex}
+                >
+                  <Radio value="M">Male</Radio>
+                  <Radio value="F">Female</Radio>
+                </RadioGroup>
+              </div>
+              <div className="one-form">
+                <div className="form-title">
+                  Birthday
+                </div>
+                <DatePicker className="form-bar" onChange={this.handleBirthday} />
+              </div>
+            </div>
+            <div className="one-row">
+              <div className="one-form">
+                <div className="form-title">
+                  Weight (kg)
+                </div>
+                <Input
+                  className="form-bar"
+                  value={weightKg}
+                  name="weightKg"
+                  onChange={this.handleWeight}
+                  prefix={<Icon type="heart" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  suffix="kg"
+                />
+              </div>
+              <div className="one-form">
+                <div className="form-title">
+                  Weight (lbs)
+                </div>
+                <Input
+                  className="form-bar"
+                  value={weightLbs}
+                  name="weightLbs"
+                  onChange={this.handleWeight}
+                  prefix={<Icon type="heart" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  suffix="lbs"
+                />
+              </div>
+            </div>
+            <div className="one-row">
+              <div className="one-form">
+                <div className="form-title">
+                  Height (cm)
+                </div>
+                <Input
+                  required
+                  className="form-bar"
+                  value={heightCm}
+                  name="heightCm"
+                  onChange={this.handleHeight}
+                  prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  suffix="cm"
+                />
+              </div>
 
-                <Row gutter={24}>
-                  <Col xs={24} md={12}>
-                    <FormItem required label="Weight (kg)">
+              <div className="one-form">
+                <div className="form-title">
+                  Height (ft)
+                </div>
+                <Input
+                  className="form-bar"
+                  value={heightFt}
+                  name="heightFt"
+                  onChange={this.handleHeight}
+                  prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  suffix="ft"
+                />
+              </div>
+
+              <div className="one-form">
+                <div className="form-title">
+                  Height (in)
+                </div>
+                <Input
+                  className="form-bar"
+                  value={heightInch}
+                  name="heightInch"
+                  onChange={this.handleHeight}
+                  prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  suffix="in"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="one-row">
+            <div className="button-container">
+              <Button
+                className="next-button"
+                type="primary"
+                onClick={this.handleNext}
+                loading={isCheckingExisting}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+
+          {
+            dbwKg || dbwLbs ? (
+              <Fragment>
+
+                <div className="recommended-container">
+                  <div className="recommended-val">
+                    Recommended Weight:
+                  </div>
+                  <div className="recommended-val">
+                    {`${dbwKg} kg or ${dbwLbs} lbs`}
+                  </div>
+                </div>
+
+                <div className="form-group">
+
+                  <div className="one-row">
+                    <div className="one-form">
+                      <div className="form-title">
+                        Goal
+                      </div>
+                      <Select disabled value={target || 'Select Goal'}>
+                        <Option value="lose">Lose weight</Option>
+                        <Option value="gain">Gain weight</Option>
+                        <Option value="maintain">Maintain weight</Option>
+                      </Select>
+                    </div>
+                    <div className="one-form">
+                      <div className="form-title">
+                        Goal weight (kg)
+                      </div>
                       <Input
                         className="form-bar"
-                        value={weightKg}
-                        name="weightKg"
+                        value={goalKg}
+                        name="goalKg"
                         onChange={this.handleWeight}
                         prefix={<Icon type="heart" style={{ color: 'rgba(0,0,0,.25)' }} />}
                         suffix="kg"
                       />
-                    </FormItem>
-                  </Col>
-                  <Col xs={24} md={12}>
-                    <FormItem required label="Weight (lbs)">
+                    </div>
+                    <div className="one-form">
+                      <div className="form-title">
+                        Goal weight (lbs)
+                      </div>
                       <Input
                         className="form-bar"
-                        value={weightLbs}
-                        name="weightLbs"
+                        value={goalLbs}
+                        name="goalLbs"
                         onChange={this.handleWeight}
                         prefix={<Icon type="heart" style={{ color: 'rgba(0,0,0,.25)' }} />}
                         suffix="lbs"
                       />
-                    </FormItem>
-                  </Col>
-                </Row>
-                <Row gutter={24}>
-                  <Col xs={24} md={8}>
-                    <FormItem required label="Height (cm)">
-                      <Input
-                        required
-                        className="form-bar"
-                        value={heightCm}
-                        name="heightCm"
-                        onChange={this.handleHeight}
-                        prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                        suffix="cm"
-                      />
-                    </FormItem>
-                  </Col>
-                  <Col xs={24} md={8}>
-                    <FormItem required label="Height (ft)">
-                      <Input
-                        className="form-bar"
-                        value={heightFt}
-                        name="heightFt"
-                        onChange={this.handleHeight}
-                        prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                        suffix="ft"
-                      />
-                    </FormItem>
-                  </Col>
-                  <Col xs={24} md={8}>
-                    <FormItem required label="Height (in)">
-                      <Input
-                        className="form-bar"
-                        value={heightInch}
-                        name="heightInch"
-                        onChange={this.handleHeight}
-                        prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                        suffix="in"
-                      />
-                    </FormItem>
-                  </Col>
-                </Row>
+                    </div>
+                  </div>
 
-                <Row gutter={24}>
-                  <Col span={24}>
-                    <FormItem className="submit-button">
-                      <Button
-                        className="next-button"
-                        type="primary"
-                        onClick={this.handleNext}
-                        loading={isCheckingExisting}
-                      >
-                        Next
-                      </Button>
-                    </FormItem>
-                  </Col>
-                </Row>
+                  <div className="one-row">
+                    <div className="one-form">
+                      <div className="form-title empty">
+                        Lifestyle
+                      </div>
+                      <Select placeholder="Select current lifestyle" onChange={this.handlelifestyleMultiplier}>
+                        <Option value={signupConst.BED_REST}>Bed rest</Option>
+                        <Option value={signupConst.SEDENTARY}>Sedentary</Option>
+                        <Option value={signupConst.LIGHT}>Light</Option>
+                        <Option value={signupConst.MODERATE}>Moderate</Option>
+                        <Option value={signupConst.VERY_ACTIVE}>Very Active</Option>
+                      </Select>
+                    </div>
+                    <div className="one-form">
+                      <div className="form-title">
+                        Goal Timespan
+                      </div>
+                      <div className="form-title">
+                        {`(Recommended weeks = ${Math.abs(recommended.toFixed(0))})`}
+                      </div>
+                      <DatePicker className="form-bar" onChange={this.handleEndDate} />
+                    </div>
+                  </div>
+                </div>
+                <div className="one-row">
+                  <div className="button-container">
+                    <Button
+                      className="next-button back-button"
+                      type="primary"
+                      href="/"
+                    >
+                      Back
+                    </Button>
+                  </div>
+                  <div className="button-container">
+                    <Button
+                      className="next-button"
+                      type="primary"
+                      onClick={this.handleSignup}
+                      loading={isSigningUp}
+                    >
+                      Sign Up
+                    </Button>
+                  </div>
+                </div>
+              </Fragment>
+            ) : null
+          }
 
-                {
-                  dbwKg || dbwLbs ? (
-                    <Fragment>
-                      <Row>
-                        <Divider id="recommended">
-                          {`Recommended Weight: ${dbwKg} kg or ${dbwLbs} lbs`}
-                        </Divider>
-                      </Row>
-                      <Row gutter={24}>
-                        <Col xs={24} md={8}>
-                          <FormItem required label="User Goal">
-                            <Select disabled placeholder="Select Goal" value={target}>
-                              <Option value="lose">Lose weight</Option>
-                              <Option value="gain">Gain weight</Option>
-                              <Option value="maintain">Maintain weight</Option>
-                            </Select>
-                          </FormItem>
-                        </Col>
-                        <Col xs={24} md={8}>
-                          <FormItem required label="Goal weight (kg)">
-                            <Input
-                              className="form-bar"
-                              value={goalKg}
-                              name="goalKg"
-                              onChange={this.handleWeight}
-                              prefix={<Icon type="heart" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                              suffix="kg"
-                            />
-                          </FormItem>
-                        </Col>
-                        <Col xs={24} md={8}>
-                          <FormItem required label="Goal weight (lbs)">
-                            <Input
-                              className="form-bar"
-                              value={goalLbs}
-                              name="goalLbs"
-                              onChange={this.handleWeight}
-                              prefix={<Icon type="heart" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                              suffix="lbs"
-                            />
-                          </FormItem>
-                        </Col>
-                      </Row>
-                      <Row gutter={24}>
-                        <Col xs={24} md={12}>
-                          <FormItem required label="Lifestyle">
-                            <Select placeholder="Select current lifestyle" onChange={this.handlelifestyleMultiplier}>
-                              <Option value={signupConst.BED_REST}>Bed rest</Option>
-                              <Option value={signupConst.SEDENTARY}>Sedentary</Option>
-                              <Option value={signupConst.LIGHT}>Light</Option>
-                              <Option value={signupConst.MODERATE}>Moderate</Option>
-                              <Option value={signupConst.VERY_ACTIVE}>Very Active</Option>
-                            </Select>
-                          </FormItem>
-                        </Col>
-                        <Col xs={24} md={12}>
-                          <FormItem required label={`Goal Timespan (Recommended weeks = ${Math.abs(recommended.toFixed(0))})`}>
-                            <DatePicker
-                              onChange={this.handleEndDate}
-                            />
-                          </FormItem>
-                        </Col>
-                      </Row>
-                      <Row gutter={24}>
-                        <Col span={24}>
-                          <FormItem className="submit-button">
-                            <Button className="back-button" type="primary" href="/">Back</Button>
-                            <Button
-                              className="next-button"
-                              type="primary"
-                              onClick={this.handleSignup}
-                              loading={isSigningUp}
-                            >
-                              Sign Up
-                            </Button>
-                          </FormItem>
-                        </Col>
-                      </Row>
-                    </Fragment>
-                  ) : null
-                }
-              </Form>
+          <Row gutter={24}>
+            <Col xs={2} md={4} lg={6} />
+            <Col xs={20} md={16} lg={12} className="middle-col">
+
               <Modal
                 title="Summary"
                 visible={showConfirmModal}

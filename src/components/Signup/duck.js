@@ -64,7 +64,7 @@ const initialState = {
   existingUser: false,
   isCheckingExisting: false,
 
-  dbwKg: null,
+  dbwKg: 12,
   dbwLbs: null,
   choPerDay: null,
   proPerDay: null,

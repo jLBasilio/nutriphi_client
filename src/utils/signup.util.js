@@ -1,5 +1,19 @@
 import * as constants from '../constants';
 
+export const getBMIFromGoal = async ({ goalKg, heightCm }) => {
+  const bmi = parseFloat((goalKg / ((heightCm / 100) ** 2)).toFixed(2));
+  switch (true) {
+    case (bmi >= 30):
+      return 'obese';
+    case (bmi >= 25):
+      return 'overweight';
+    case (bmi <= 18.5):
+      return 'underweight';
+    default:
+      return 'normal';
+  }
+};
+
 export const getNutriDist = async ({ goalKg, lifestyleMultiplier }) => {
   const tea = goalKg * lifestyleMultiplier;
   const toReturn = {
@@ -7,10 +21,6 @@ export const getNutriDist = async ({ goalKg, lifestyleMultiplier }) => {
     proPerDay: ((tea * constants.PRO_MUL) / constants.KCAL_PER_PRO_MUL).toFixed(2),
     fatPerDay: ((tea * constants.FAT_MUL) / constants.KCAL_PER_FAT_MUL).toFixed(2)
   };
-  console.log("GOAL KG", goalKg)
-  console.log("LF MULT", lifestyleMultiplier)
-  console.log("tea", tea)
-  console.log("TO RETURN: ", toReturn);
   return toReturn;
 };
 

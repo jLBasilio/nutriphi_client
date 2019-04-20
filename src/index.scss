@@ -52,3 +52,26 @@ body {
     }
   }
 }
+
+.ant-input {
+  &:hover {
+    border-color: $base-green !important;
+  }
+
+  &:focus {
+    border: 0 !important;
+    box-shadow: $card-shadow;
+  }
+}
+
+.ant-radio {
+  &.ant-radio-checked {
+    .ant-radio-inner {
+      border-color: $base-green !important;
+
+      &::after {
+        background-color: $base-green;
+      }
+    }
+  }
+}

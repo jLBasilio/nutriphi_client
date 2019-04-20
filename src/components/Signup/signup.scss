@@ -4,64 +4,140 @@
 // sass-lint:disable nesting-depth, no-ids
 .signup {
   .signup-body {
-    padding: 3.5rem 3rem 0;
+    @include for-tablet-portrait-up {
+      padding: 6rem 5rem 0;
+    }
+    @include for-small-desktop-up {
+      padding: 6rem 13rem 0;
+    }
+    @include for-big-desktop-up {
+      padding: 6rem 30rem 0;
+    }
 
-    .middle-col {
+    padding: 5rem 1rem 0;
+
+    .page-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      padding-bottom: .5rem;
+    }
+
+    .form-group {
+      background-color: $card-bg;
+      border-radius: 5px;
+      box-shadow: $card-shadow;
+      font-weight: bold;
+      padding: .8rem 1rem;
+    }
+
+    .one-row {
       @include for-tablet-portrait-up {
-        padding: 5rem 6rem 0;
+        flex-direction: row;
       }
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
 
-      padding: 3.5rem 15rem;
-
-      .ant-form-item-label {
-        line-height: 1rem;
-        padding: 0;
-      }
-
-      .ant-form-item {
-        margin-bottom: 1rem;
-      }
-
-      .submit-button {
-        text-align: right;
-
-        .back-button {
-          @include for-tablet-portrait-up {
-            width: 20%;
-          }
-          background-color: $greywhite;
-          border-color: $white;
-          border-radius: 6px;
-          color: $black;
-          width: 100%;
+      .one-form {
+        @include for-tablet-portrait-up {
+          padding: 0 1rem 1rem;
+          width: 40rem;
         }
+
+        font-size: .8rem;
+        padding: 0 0 .8rem;
+
+        .form-title {
+          text-align: left;
+        }
+
+        .empty {
+          @include for-tablet-portrait-up {
+            padding-top: 1.23rem;
+          }
+        }
+
+        .form-bar {
+          padding-top: .3rem;
+          width: 100%;
+
+          &.ant-calendar-picker {
+            .ant-calendar-picker-input {
+              &.ant-input {
+                width: 100%;
+              }
+            }
+          }
+        }
+
+        .ant-select {
+          font-weight: normal;
+
+          &.ant-select-disabled,
+          &.ant-select-enabled {
+            padding-top: .3rem;
+            width: 100%;
+          }
+        }
+      }
+
+      .button-container {
+        @include for-tablet-portrait-up {
+          padding: 0 0 0 1rem;
+          width: 30%;
+        }
+
+        padding: 0 0 1rem;
 
         .next-button {
-          @include for-tablet-portrait-up {
-            margin-left: 1rem;
-            width: 20%;
-          }
           background-color: $base-kahel;
-          border-color: $white;
-          border-radius: 6px;
+          border-color: transparent;
+          border-radius: 5px;
+          padding-left: 1rem;
           width: 100%;
+
+          &:hover {
+            background-color: $secondary-kahel;
+          }
+        }
+
+        .back-button {
+          background-color: $card-bg;
+          color: $black-line;
         }
       }
-
     }
-  }
-}
 
-#recommended {
-  @include for-tablet-portrait-up {
-    right: 0;
-  }
-  right: 2rem;
 
-  span {
-    @include for-tablet-portrait-up {
-      padding: 0 24px;
+    .recommended-container {
+      @include for-tablet-portrait-up {
+        flex-direction: row;
+        padding: 1rem 0;
+      }
+      display: flex;
+      flex-direction: column;
+      font-size: 1rem;
+      justify-content: space-between;
+      padding: 0 0 1rem;
+      text-align: center;
+
+      .recommended-val {
+        flex: 1;
+
+        &:first-child {
+          @include for-tablet-portrait-up {
+            text-align: right;
+          }
+        }
+
+        &:last-child {
+          @include for-tablet-portrait-up {
+            padding-left: 1rem;
+            text-align: left;
+          }
+          font-weight: bold;
+        }
+      }
     }
-    padding: 0;
   }
 }
