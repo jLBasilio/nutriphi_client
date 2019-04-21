@@ -2,7 +2,6 @@ import React, { Component, Fragment } from 'react';
 import { Redirect } from 'react-router-dom';
 import {
   Button,
-  Col,
   DatePicker,
   Divider,
   Icon,
@@ -10,7 +9,6 @@ import {
   message,
   Modal,
   Radio,
-  Row,
   Select
 } from 'antd';
 import './signup.scss';
@@ -37,8 +35,8 @@ class Signup extends Component {
       birthday: '1999-05-31',
       weightKg: 68,
       weightLbs: 149.6,
-      goalKg: 60,
-      goalLbs: 132,
+      goalKg: 67,
+      goalLbs: 147.4,
       heightCm: 175,
       heightFt: 5,
       heightInch: 9,
@@ -47,7 +45,7 @@ class Signup extends Component {
       target: 'lose',
       endDate: null,
       weeksToComplete: null,
-      poundDiff: 18,
+      poundDiff: 2.2,
       kcalAddSubToGoal: null,
 
       baseTEA: null,
@@ -222,8 +220,7 @@ class Signup extends Component {
       heightInch,
       lifestyleMultiplier,
       target,
-      weeksToComplete,
-      endDate
+      weeksToComplete
     } = this.state;
 
     if (password !== confirmPassword) {
@@ -247,8 +244,7 @@ class Signup extends Component {
       heightFt,
       heightInch,
       lifestyleMultiplier,
-      target,
-      weeksToComplete
+      target
     };
 
     const subsetObjVal = Object.values(subsetObj);
@@ -259,9 +255,7 @@ class Signup extends Component {
       return false;
     }
 
-    if (target !== 'maintain' && weeksToComplete > 0) {
-      subsetObj.endDate = endDate;
-    } else {
+    if (target !== 'maintain' && (!weeksToComplete || weeksToComplete <= 0)) {
       message.error('Please fill out the fields correctly.');
       return false;
     }
@@ -274,7 +268,7 @@ class Signup extends Component {
       const { weeksToComplete, poundDiff, target } = this.state;
       const kcalAddSubToGoal = await signupUtil.validateTimeSpan(poundDiff, weeksToComplete);
       if (!kcalAddSubToGoal && target !== 'maintain') {
-        message.error('Max healthy loss exceeded (2lbs/week)');
+        message.error('Max healthy loss/gain exceeded (2lbs/week)');
       } else {
         const { signup } = this.props;
         const { lifestyleMultiplier, weightKg } = this.state;
@@ -316,7 +310,11 @@ class Signup extends Component {
       heightInch,
       lifestyleMultiplier,
       target,
-      endDate
+      endDate,
+      weeksToComplete,
+      kcalAddSubToGoal,
+      baseTEA,
+      goalTEA
     } = this.state;
 
     confirmSignup({
@@ -339,7 +337,11 @@ class Signup extends Component {
       endDate,
       choPerDay,
       proPerDay,
-      fatPerDay
+      fatPerDay,
+      weeksToComplete,
+      kcalAddSubToGoal,
+      baseTEA,
+      goalTEA
     });
   }
 
@@ -685,7 +687,29 @@ class Signup extends Component {
             title="Confirm Signup"
             visible={showConfirmModal}
             onCancel={this.handleCancel}
-            confirmLoading={isConfirming}
+            footer={(
+              <div className="one-row">
+                <div className="button-container">
+                  <Button
+                    className="back-button"
+                    type="primary"
+                    onClick={this.handleCancel}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+                <div className="button-container">
+                  <Button
+                    className="next-button"
+                    type="primary"
+                    onClick={this.handleConfirm}
+                    loading={isConfirming}
+                  >
+                    OK
+                  </Button>
+                </div>
+              </div>
+            )}
           >
             <div className="label-container">
               <div className="label">
@@ -726,7 +750,7 @@ class Signup extends Component {
             <div className="nut-info">
               Nutrition Requirement
               <div className="nut-subinfo">
-                As such, you need to consume:
+                You need to have these everyday to reach your goal:
               </div>
             </div>
 
@@ -763,33 +787,16 @@ class Signup extends Component {
               </div>
             </div>
 
+            <Divider />
+
+            <div className="nut-info">
+              <div className="nut-subinfo">
+                Click OK to Sign Up.
+              </div>
+            </div>
+
           </Modal>
 
-          <Row gutter={24}>
-            <Col xs={2} md={4} lg={6} />
-            <Col xs={20} md={16} lg={12} className="middle-col">
-
-              <Modal
-                title="Summary"
-                visible={false}
-                onOk={this.handleConfirm}
-                onCancel={this.handleCancel}
-                confirmLoading={isConfirming}
-              >
-                <h2>{`${firstName} ${lastName}`}</h2>
-                <h2>{`Initial Weight: ${weightKg}kg | ${weightLbs}lbs`}</h2>
-                <h2>{`Goal: ${target === 'lose' ? 'Lose' : target === 'gain' ? 'Gain' : 'Maintain'}`}</h2>
-                <h2>You will need to consume:</h2>
-                <h3>{`${choPerDay} grams of carbohydrates,`}</h3>
-                <h3>{`${proPerDay} grams of proteins;`}</h3>
-                <h3>{`and ${fatPerDay} grams of fat everyday`}</h3>
-                <br />
-                <h2>Click OK to sign up</h2>
-
-              </Modal>
-            </Col>
-            <Col xs={2} md={4} lg={6} />
-          </Row>
         </div>
       </div>
     );

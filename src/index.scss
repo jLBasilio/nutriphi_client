@@ -75,3 +75,35 @@ body {
     }
   }
 }
+
+.ant-modal-footer {
+  .one-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: .5rem 0;
+
+    .button-container {
+      padding: 0 0 0 1rem;
+
+      .next-button {
+        background-color: $base-kahel;
+        border-color: transparent;
+        border-radius: 5px;
+        padding-left: 1rem;
+        width: 5rem;
+
+        &:hover {
+          background-color: $secondary-kahel;
+        }
+      }
+
+      .back-button {
+        background-color: $default-bg;
+        border: 0;
+        color: $black-line;
+        width: 5rem;
+      }
+    }
+  }
+}

@@ -14,8 +14,9 @@ import * as pageTitles from '../../constants/pages';
 
 class Login extends Component {
   componentDidMount() {
-    const { changePage } = this.props;
+    const { changePage, signupToLogin } = this.props;
     changePage(pageTitles.LOGIN);
+    signupToLogin();
   }
 
   handleSubmit = (e) => {

@@ -213,8 +213,7 @@ class Home extends Component {
     const percentFat = parseFloat(((totalFat / user.fatPerDay) * 100).toFixed(2));
     const totalKcal = (totalCho + totalPro) * constants.KCAL_PER_PRO_MUL
       + totalFat * constants.KCAL_PER_FAT_MUL;
-    const userKcal = (user.choPerDay + user.proPerDay) * constants.KCAL_PER_PRO_MUL
-      + user.fatPerDay * constants.KCAL_PER_FAT_MUL;
+    const userKcal = user.goalTEA;
 
     let dateSelectedSplit = [];
     if (dateSelected) {

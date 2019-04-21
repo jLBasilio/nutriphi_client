@@ -9,7 +9,8 @@ const actions = {
   GETDBW: 'SIGNUP/GETDBW',
   SIGNUP: 'SIGNUP/SIGNUP',
   SUCCESS: 'SIGNUP/SUCCESS',
-  TOGGLE_MODAL: 'SIGNUP/TOGGLE_MODAL'
+  TOGGLE_MODAL: 'SIGNUP/TOGGLE_MODAL',
+  SIGNUP_LOGIN: 'SIGNUP/SIGNUP_LOGIN'
 };
 
 export const getDBW = ({ sex, heightCm }) => ({
@@ -35,6 +36,10 @@ export const checkExistingUser = ({ userName, sex, heightCm }) => (dispatch) => 
     }
   });
 };
+
+export const signupToLogin = () => ({
+  type: actions.SIGNUP_LOGIN
+});
 
 export const toggleModal = () => ({
   type: actions.TOGGLE_MODAL
@@ -107,12 +112,20 @@ const reducer = (state = initialState, action) => {
 
     case actions.SIGNUP:
       return handle(state, action, {
+        start: prevState => ({
+          ...prevState,
+          isSigningUp: true
+        }),
         success: prevState => ({
           ...prevState,
           choPerDay: payload.choPerDay,
           proPerDay: payload.proPerDay,
           fatPerDay: payload.fatPerDay,
           showConfirmModal: true
+        }),
+        finish: prevState => ({
+          ...prevState,
+          isSigningUp: false
         })
       });
 
@@ -137,6 +150,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         showConfirmModal: !state.showConfirmModal
+      };
+
+    case actions.SIGNUP_LOGIN:
+      return {
+        ...state,
+        successSigningUp: false
       };
 
     default:

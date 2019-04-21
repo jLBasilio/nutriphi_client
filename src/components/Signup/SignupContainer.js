@@ -6,7 +6,7 @@ import {
   getDBW,
   signup,
   toggleModal,
-  checkExistingUser,
+  checkExistingUser
 } from './duck';
 
 import { changePage } from '../Header/duck';

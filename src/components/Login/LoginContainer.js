@@ -3,6 +3,7 @@ import Login from '.';
 
 import { login } from './duck';
 import { changePage } from '../Header/duck';
+import { signupToLogin } from '../Signup/duck';
 
 const mapStateToProps = (state) => {
   const { isLoggingIn, user } = state.login;
@@ -18,6 +19,9 @@ const mapDispatchToProps = dispatch => ({
   },
   changePage: (newPage) => {
     dispatch(changePage(newPage));
+  },
+  signupToLogin: () => {
+    dispatch(signupToLogin());
   }
 });
 
