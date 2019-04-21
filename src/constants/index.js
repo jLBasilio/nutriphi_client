@@ -4,13 +4,15 @@ export const LIGHT = 35;
 export const MODERATE = 40;
 export const VERY_ACTIVE = 45;
 
-export const LOSE = 1;
-export const GAIN = 2;
-export const MAINTAIN = 3;
+export const LOSE = 'lose';
+export const GAIN = 'gain';
+export const MAINTAIN = 'maintain';
 
 export const KCAL_PER_CHO_MUL = 4;
 export const KCAL_PER_PRO_MUL = 4;
 export const KCAL_PER_FAT_MUL = 9;
+
+export const KCAL_PER_POUND = 500;
 
 export const CHO_MUL = 0.6;
 export const PRO_MUL = 0.15;

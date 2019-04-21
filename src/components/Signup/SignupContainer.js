@@ -6,7 +6,7 @@ import {
   getDBW,
   signup,
   toggleModal,
-  checkExistingUser
+  checkExistingUser,
 } from './duck';
 
 import { changePage } from '../Header/duck';
@@ -51,8 +51,8 @@ const mapDispatchToProps = dispatch => ({
   toggleModal: () => {
     dispatch(toggleModal());
   },
-  signup: (userInfo) => {
-    dispatch(signup(userInfo));
+  signup: (nutriInfo) => {
+    dispatch(signup(nutriInfo));
   },
   confirmSignup: (credentials) => {
     dispatch(confirmSignup(credentials));

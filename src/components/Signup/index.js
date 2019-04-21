@@ -4,7 +4,7 @@ import {
   Button,
   Col,
   DatePicker,
-  Form,
+  Divider,
   Icon,
   Input,
   message,
@@ -16,10 +16,9 @@ import {
 import './signup.scss';
 
 import * as pageTitles from '../../constants/pages';
-import * as signupConst from '../../constants';
+import * as constants from '../../constants';
 import * as signupUtil from '../../utils/signup.util';
 
-const FormItem = Form.Item;
 const { Option } = Select;
 const RadioGroup = Radio.Group;
 
@@ -30,23 +29,29 @@ class Signup extends Component {
     this.state = {
       firstName: 'jeff',
       lastName: 'basilio',
-      userName: null,
-      password: null,
-      confirmPassword: null,
+      userName: 'a2',
+      password: '2222',
+      confirmPassword: '2222',
       sex: 'M',
 
       birthday: '1999-05-31',
       weightKg: 68,
       weightLbs: 149.6,
       goalKg: 60,
-      goalLbs: null,
+      goalLbs: 132,
       heightCm: 175,
       heightFt: 5,
       heightInch: 9,
 
-      lifestyleMultiplier: null,
-      target: null,
-      endDate: null
+      lifestyleMultiplier: 30,
+      target: 'lose',
+      endDate: null,
+      weeksToComplete: null,
+      poundDiff: 18,
+      kcalAddSubToGoal: null,
+
+      baseTEA: null,
+      goalTEA: null
 
     };
   }
@@ -77,16 +82,18 @@ class Signup extends Component {
       this.setState({ weightKg: parseFloat((weight / 2.2).toFixed(2)), weightLbs: weight });
     } else if (e.target.name === 'goalKg') {
       const bmi = await signupUtil.getBMIFromGoal({ goalKg: weight, heightCm });
+      const goalLbs = parseFloat((weight * 2.2).toFixed(2));
       if (bmi !== 'normal' && weight.toString().length >= 2) {
         message.warning(`Your BMI will be ${bmi}.`);
       }
       this.setState({
         goalKg: weight,
-        goalLbs: parseFloat((weight * 2.2).toFixed(2)),
-        target: weightKg > weight ? 'lose' : weightKg < weight ? 'gain' : 'maintain'
+        goalLbs,
+        target: weightKg > weight ? 'lose' : weightKg < weight ? 'gain' : 'maintain',
+        poundDiff: Math.abs(parseFloat((weightLbs - goalLbs).toFixed(2)))
       });
     } else if (e.target.name === 'goalLbs') {
-      const goalKg = parseFloat((weight / 2.2).toFixed(2))
+      const goalKg = parseFloat((weight / 2.2).toFixed(2));
       const bmi = await signupUtil.getBMIFromGoal({ goalKg, heightCm });
       if (bmi !== 'normal' && goalKg.toString().length >= 2) {
         message.warning(`Your BMI will be ${bmi}.`);
@@ -94,7 +101,9 @@ class Signup extends Component {
       this.setState({
         goalKg,
         goalLbs: weight,
-        target: weightLbs > weight ? 'lose' : weightLbs < weight ? 'gain' : 'maintain'
+        target: weightLbs > weight ? 'lose' : weightLbs < weight ? 'gain' : 'maintain',
+        poundDiff: Math.abs(parseFloat((weightLbs - weight).toFixed(2))),
+
       });
     }
   }
@@ -126,9 +135,10 @@ class Signup extends Component {
     this.setState({ target });
   }
 
-  handleEndDate = (date, dateString) => {
+  handleEndDate = async (date, dateString) => {
     this.setState({
-      endDate: dateString
+      endDate: dateString,
+      weeksToComplete: await signupUtil.getDiffWeeks(dateString)
     });
   }
 
@@ -173,11 +183,25 @@ class Signup extends Component {
       subsetObjVal.includes(null)
       || subsetObjVal.includes('')
       || subsetObjVal.includes(0)) {
-      message.error('Please fill out the fields correctly.');
+      message.error('Please fill out all the fields.');
       return false;
     }
 
     return true;
+  }
+
+  handleNext = async () => {
+    if (this.validateNext()) {
+      const { firstName, lastName } = this.state;
+      this.setState({
+        firstName: await signupUtil.capitalize(firstName),
+        lastName: await signupUtil.capitalize(lastName)
+      });
+      const { sex, heightCm } = this.state;
+      const { checkExistingUser } = this.props;
+      const { userName } = this.state;
+      checkExistingUser({ userName, sex, heightCm });
+    }
   }
 
   validateSignup = () => {
@@ -198,6 +222,7 @@ class Signup extends Component {
       heightInch,
       lifestyleMultiplier,
       target,
+      weeksToComplete,
       endDate
     } = this.state;
 
@@ -223,34 +248,46 @@ class Signup extends Component {
       heightInch,
       lifestyleMultiplier,
       target,
-      endDate
+      weeksToComplete
     };
 
     const subsetObjVal = Object.values(subsetObj);
-    if (
-      subsetObjVal.includes(null)
+    if (subsetObjVal.includes(null)
       || subsetObjVal.includes('')
       || subsetObjVal.includes(0)) {
       message.error('Please fill out the fields correctly.');
       return false;
     }
+
+    if (target !== 'maintain' && weeksToComplete > 0) {
+      subsetObj.endDate = endDate;
+    } else {
+      message.error('Please fill out the fields correctly.');
+      return false;
+    }
+
     return true;
   }
 
-  handleNext = () => {
-    if (this.validateNext()) {
-      const { sex, heightCm } = this.state;
-      const { checkExistingUser } = this.props;
-      const { userName } = this.state;
-      checkExistingUser({ userName, sex, heightCm });
-    }
-  }
-
-  handleSignup = () => {
+  handleSignup = async () => {
     if (this.validateSignup()) {
-      const { signup } = this.props;
-      const { lifestyleMultiplier, goalKg } = this.state;
-      signup({ goalKg, lifestyleMultiplier });
+      const { weeksToComplete, poundDiff, target } = this.state;
+      const kcalAddSubToGoal = await signupUtil.validateTimeSpan(poundDiff, weeksToComplete);
+      if (!kcalAddSubToGoal && target !== 'maintain') {
+        message.error('Max healthy loss exceeded (2lbs/week)');
+      } else {
+        const { signup } = this.props;
+        const { lifestyleMultiplier, weightKg } = this.state;
+        const baseTEA = await signupUtil.getTEA(weightKg, lifestyleMultiplier);
+        const goalTEA = target === 'lose'
+          ? (baseTEA - kcalAddSubToGoal)
+          : target === 'gain'
+            ? (baseTEA + kcalAddSubToGoal)
+            : baseTEA;
+
+        this.setState({ kcalAddSubToGoal, baseTEA, goalTEA });
+        signup(goalTEA);
+      }
     }
   }
 
@@ -326,7 +363,9 @@ class Signup extends Component {
       heightInch,
       goalKg,
       goalLbs,
-      target
+      target,
+      poundDiff,
+      goalTEA
     } = this.state;
 
     const {
@@ -342,7 +381,6 @@ class Signup extends Component {
       successSigningUp
     } = this.props;
 
-    const recommended = goalLbs - weightLbs;
     if (successSigningUp) {
       return <Redirect to="/" />;
     }
@@ -452,6 +490,7 @@ class Signup extends Component {
                   Weight (kg)
                 </div>
                 <Input
+                  type="number"
                   className="form-bar"
                   value={weightKg}
                   name="weightKg"
@@ -465,6 +504,7 @@ class Signup extends Component {
                   Weight (lbs)
                 </div>
                 <Input
+                  type="number"
                   className="form-bar"
                   value={weightLbs}
                   name="weightLbs"
@@ -480,7 +520,7 @@ class Signup extends Component {
                   Height (cm)
                 </div>
                 <Input
-                  required
+                  type="number"
                   className="form-bar"
                   value={heightCm}
                   name="heightCm"
@@ -495,6 +535,7 @@ class Signup extends Component {
                   Height (ft)
                 </div>
                 <Input
+                  type="number"
                   className="form-bar"
                   value={heightFt}
                   name="heightFt"
@@ -509,6 +550,7 @@ class Signup extends Component {
                   Height (in)
                 </div>
                 <Input
+                  type="number"
                   className="form-bar"
                   value={heightInch}
                   name="heightInch"
@@ -531,17 +573,15 @@ class Signup extends Component {
               </Button>
             </div>
           </div>
-
           {
             dbwKg || dbwLbs ? (
               <Fragment>
-
                 <div className="recommended-container">
                   <div className="recommended-val">
                     Recommended Weight:
                   </div>
                   <div className="recommended-val">
-                    {`${dbwKg} kg or ${dbwLbs} lbs`}
+                    {`${dbwKg} kg OR ${dbwLbs} lbs`}
                   </div>
                 </div>
 
@@ -552,10 +592,10 @@ class Signup extends Component {
                       <div className="form-title">
                         Goal
                       </div>
-                      <Select disabled value={target || 'Select Goal'}>
-                        <Option value="lose">Lose weight</Option>
-                        <Option value="gain">Gain weight</Option>
-                        <Option value="maintain">Maintain weight</Option>
+                      <Select disabled value={target || 'Input goal weight'}>
+                        <Option value={constants.LOSE}>Lose weight</Option>
+                        <Option value={constants.GAIN}>Gain weight</Option>
+                        <Option value={constants.MAINTAIN}>Maintain weight</Option>
                       </Select>
                     </div>
                     <div className="one-form">
@@ -563,6 +603,7 @@ class Signup extends Component {
                         Goal weight (kg)
                       </div>
                       <Input
+                        type="number"
                         className="form-bar"
                         value={goalKg}
                         name="goalKg"
@@ -576,6 +617,7 @@ class Signup extends Component {
                         Goal weight (lbs)
                       </div>
                       <Input
+                        type="number"
                         className="form-bar"
                         value={goalLbs}
                         name="goalLbs"
@@ -592,22 +634,26 @@ class Signup extends Component {
                         Lifestyle
                       </div>
                       <Select placeholder="Select current lifestyle" onChange={this.handlelifestyleMultiplier}>
-                        <Option value={signupConst.BED_REST}>Bed rest</Option>
-                        <Option value={signupConst.SEDENTARY}>Sedentary</Option>
-                        <Option value={signupConst.LIGHT}>Light</Option>
-                        <Option value={signupConst.MODERATE}>Moderate</Option>
-                        <Option value={signupConst.VERY_ACTIVE}>Very Active</Option>
+                        <Option value={constants.BED_REST}>Bed rest</Option>
+                        <Option value={constants.SEDENTARY}>Sedentary</Option>
+                        <Option value={constants.LIGHT}>Light</Option>
+                        <Option value={constants.MODERATE}>Moderate</Option>
+                        <Option value={constants.VERY_ACTIVE}>Very Active</Option>
                       </Select>
                     </div>
-                    <div className="one-form">
-                      <div className="form-title">
-                        Goal Timespan
-                      </div>
-                      <div className="form-title">
-                        {`(Recommended weeks = ${Math.abs(recommended.toFixed(0))})`}
-                      </div>
-                      <DatePicker className="form-bar" onChange={this.handleEndDate} />
-                    </div>
+                    {
+                      target !== 'maintain' && (
+                        <div className="one-form">
+                          <div className="form-title">
+                            Goal Timespan
+                          </div>
+                          <div className="form-title">
+                            {`(Recommended weeks = ${poundDiff.toFixed(0)})`}
+                          </div>
+                          <DatePicker className="form-bar" onChange={this.handleEndDate} />
+                        </div>
+                      )
+                    }
                   </div>
                 </div>
                 <div className="one-row">
@@ -635,13 +681,97 @@ class Signup extends Component {
             ) : null
           }
 
+          <Modal
+            title="Confirm Signup"
+            visible={showConfirmModal}
+            onCancel={this.handleCancel}
+            confirmLoading={isConfirming}
+          >
+            <div className="label-container">
+              <div className="label">
+                {`${firstName} ${lastName} - ${sex} `}
+              </div>
+            </div>
+
+            <Divider />
+
+            <div className="nut-info nut-subinfo">
+              Weight Information
+            </div>
+
+            <Divider />
+
+            <div className="info-row">
+              <div className="macros">
+                Current Weight
+              </div>
+              <div className="macros-value">
+                {`${weightKg} kg | ${weightLbs} lbs`}
+              </div>
+            </div>
+
+            <Divider />
+
+            <div className="info-row">
+              <div className="macros">
+                {`kcal/day to ${target.toUpperCase()}`}
+              </div>
+              <div className="macros-value">
+                {`${goalTEA}kcal`}
+              </div>
+            </div>
+
+            <Divider />
+
+            <div className="nut-info">
+              Nutrition Requirement
+              <div className="nut-subinfo">
+                As such, you need to consume:
+              </div>
+            </div>
+
+            <Divider />
+
+            <div className="info-row">
+              <div className="macros">
+                Carbohydrate (CHO)
+              </div>
+              <div className="macros-value">
+                {`${choPerDay}g`}
+              </div>
+            </div>
+
+            <Divider />
+
+            <div className="info-row">
+              <div className="macros">
+                Protein (PRO)
+              </div>
+              <div className="macros-value">
+                {`${proPerDay}g`}
+              </div>
+            </div>
+
+            <Divider />
+
+            <div className="info-row">
+              <div className="macros">
+                Fat (FAT)
+              </div>
+              <div className="macros-value">
+                {`${fatPerDay}g`}
+              </div>
+            </div>
+
+          </Modal>
+
           <Row gutter={24}>
             <Col xs={2} md={4} lg={6} />
             <Col xs={20} md={16} lg={12} className="middle-col">
 
               <Modal
                 title="Summary"
-                visible={showConfirmModal}
+                visible={false}
                 onOk={this.handleConfirm}
                 onCancel={this.handleCancel}
                 confirmLoading={isConfirming}

@@ -40,9 +40,9 @@ export const toggleModal = () => ({
   type: actions.TOGGLE_MODAL
 });
 
-export const signup = ({ goalKg, lifestyleMultiplier }) => ({
+export const signup = goalTEA => ({
   type: actions.SIGNUP,
-  promise: signupConst.getNutriDist({ goalKg, lifestyleMultiplier })
+  promise: signupConst.getNutriDist(goalTEA)
 });
 
 export const confirmSignup = body => ({
