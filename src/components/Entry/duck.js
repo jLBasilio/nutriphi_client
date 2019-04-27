@@ -24,7 +24,7 @@ export const searchFood = ({
     skip, take, q, foodClass
   }),
   meta: {
-    onFailure: () => message.error('Server error')
+    onFailure: () => message.error('Server error', 4)
   }
 });
 
@@ -32,8 +32,8 @@ export const addToLog = logInfo => ({
   type: actions.ADD_LOG,
   promise: logApi.addToLog(logInfo),
   meta: {
-    onSuccess: () => message.success('Successfully added to log'),
-    onFailure: () => message.error('Server error')
+    onSuccess: () => message.success('Successfully added to log', 4),
+    onFailure: () => message.error('Server error', 4)
   }
 });
 

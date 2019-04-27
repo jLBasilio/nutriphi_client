@@ -50,7 +50,7 @@ class Entry extends Component {
   handleSearch = (q) => {
     const { previousSearched } = this.state;
     if (!q.length) {
-      message.error('Input something');
+      message.error('Input something', 4);
     } else if (q !== previousSearched && q.length > 2) {
       const { searchFood } = this.props;
       const { skip, take } = this.state;
@@ -126,7 +126,7 @@ class Entry extends Component {
     });
   }
 
-  handleAddToLog = () => {
+  handleAddToLog = async () => {
     const {
       period,
       user,
@@ -139,10 +139,11 @@ class Entry extends Component {
     } = this.state;
 
     if (measure <= 0 || gramsmlConsumed <= 0) {
-      message.error('Input something!');
+      message.error('Input something!', 4);
     } else {
       let { dateSelected: dateConsumed } = this.props;
-      const presentTime = dateUtil.generatePresent().split('T')[1];
+      let presentTime = await dateUtil.generatePresent();
+      [, presentTime] = presentTime.split('T');
       dateConsumed = `${dateConsumed}T${presentTime}`;
       addToLog({
         user,

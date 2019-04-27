@@ -62,3 +62,11 @@ export const months = {
   11: 'November',
   12: 'December'
 };
+
+export const lifestyle = {
+  27.5: 'Bed rest',
+  30: 'Sedentary',
+  35: 'Light',
+  40: 'Moderate',
+  45: 'Very active'
+};

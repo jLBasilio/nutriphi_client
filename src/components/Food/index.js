@@ -104,7 +104,7 @@ class Food extends Component {
   handleSearch = (q) => {
     const { previousSearched } = this.state;
     if (!q.length) {
-      message.error('Input something');
+      message.error('Input something!', 4);
     } else if (q !== previousSearched && q.length > 2) {
       const { searchFood, toFetch, resetSearch } = this.props;
       const { skip, take } = this.state;

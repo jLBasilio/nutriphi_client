@@ -147,7 +147,7 @@ class Home extends Component {
     const currentFoodGramsML = currentFoodConsumed.consumed_gramsConsumed
       || currentFoodConsumed.consumed_mlConsumed;
     if (measure <= 0 || gramsmlConsumed <= 0) {
-      message.error('Input something!');
+      message.error('Input something!', 4);
     } else if (gramsmlConsumed === currentFoodGramsML) {
       toggleEditModal();
     } else {

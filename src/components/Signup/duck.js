@@ -24,13 +24,13 @@ export const checkExistingUser = ({ userName, sex, heightCm }) => (dispatch) => 
     promise: auth.findUser({ userName }),
     meta: {
       onSuccess: () => {
-        message.error('Username exists.');
+        message.error('Username exists.', 4);
       },
       onFailure: (response) => {
         if (response.response.data.status === 404) {
           dispatch(getDBW({ sex, heightCm }));
         } else {
-          message.error('Server error.');
+          message.error('Server error.', 4);
         }
       }
     }
@@ -55,12 +55,12 @@ export const confirmSignup = body => ({
   promise: auth.signup(body),
   meta: {
     onSuccess: () => {
-      message.success('Successful sign up.');
+      message.success('Successful sign up.', 4);
     },
     onFailure: response => (
       response.response.data.status === 409
-        ? message.error('Username exists.')
-        : message.error('Server error.')
+        ? message.error('Username exists.', 4)
+        : message.error('Server error.', 4)
     )
   }
 });
@@ -69,7 +69,7 @@ const initialState = {
   existingUser: false,
   isCheckingExisting: false,
 
-  dbwKg: 12,
+  dbwKg: null,
   dbwLbs: null,
   choPerDay: null,
   proPerDay: null,
@@ -155,6 +155,16 @@ const reducer = (state = initialState, action) => {
     case actions.SIGNUP_LOGIN:
       return {
         ...state,
+        existingUser: false,
+        isCheckingExisting: false,
+        dbwKg: null,
+        dbwLbs: null,
+        choPerDay: null,
+        proPerDay: null,
+        fatPerDay: null,
+        isConfirming: false,
+        isSigningUp: false,
+        showConfirmModal: false,
         successSigningUp: false
       };
 

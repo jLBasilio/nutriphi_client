@@ -11,3 +11,5 @@ export const login = ({ userName, password }) => axios.post(`${url}/login`, { us
 export const logout = () => axios.post(`${url}/logout`);
 
 export const getSession = () => axios.post(`${url}/session`);
+
+export const editHealth = userInfo => axios.put(`${url}/edit/${userInfo.id}`);

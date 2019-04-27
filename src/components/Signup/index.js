@@ -25,27 +25,27 @@ class Signup extends Component {
     super(props);
 
     this.state = {
-      firstName: 'jeff',
-      lastName: 'basilio',
-      userName: 'a2',
-      password: '2222',
-      confirmPassword: '2222',
-      sex: 'M',
+      firstName: null,
+      lastName: null,
+      userName: null,
+      password: null,
+      confirmPassword: null,
+      sex: null,
 
-      birthday: '1999-05-31',
-      weightKg: 68,
-      weightLbs: 149.6,
-      goalKg: 67,
-      goalLbs: 147.4,
-      heightCm: 175,
-      heightFt: 5,
-      heightInch: 9,
+      birthday: null,
+      weightKg: null,
+      weightLbs: null,
+      goalKg: null,
+      goalLbs: null,
+      heightCm: null,
+      heightFt: null,
+      heightInch: null,
 
-      lifestyleMultiplier: 30,
-      target: 'lose',
+      lifestyleMultiplier: null,
+      target: null,
       endDate: null,
       weeksToComplete: null,
-      poundDiff: 2.2,
+      poundDiff: null,
       kcalAddSubToGoal: null,
 
       baseTEA: null,
@@ -82,7 +82,7 @@ class Signup extends Component {
       const bmi = await signupUtil.getBMIFromGoal({ goalKg: weight, heightCm });
       const goalLbs = parseFloat((weight * 2.2).toFixed(2));
       if (bmi !== 'normal' && weight.toString().length >= 2) {
-        message.warning(`Your BMI will be ${bmi}.`);
+        message.warning(`Your BMI will be ${bmi}.` ,4);
       }
       this.setState({
         goalKg: weight,
@@ -94,13 +94,13 @@ class Signup extends Component {
       const goalKg = parseFloat((weight / 2.2).toFixed(2));
       const bmi = await signupUtil.getBMIFromGoal({ goalKg, heightCm });
       if (bmi !== 'normal' && goalKg.toString().length >= 2) {
-        message.warning(`Your BMI will be ${bmi}.`);
+        message.warning(`Your BMI will be ${bmi}.`, 4);
       }
       this.setState({
         goalKg,
         goalLbs: weight,
         target: weightLbs > weight ? 'lose' : weightLbs < weight ? 'gain' : 'maintain',
-        poundDiff: Math.abs(parseFloat((weightLbs - weight).toFixed(2))),
+        poundDiff: Math.abs(parseFloat((weightLbs - weight).toFixed(2)))
 
       });
     }
@@ -181,7 +181,7 @@ class Signup extends Component {
       subsetObjVal.includes(null)
       || subsetObjVal.includes('')
       || subsetObjVal.includes(0)) {
-      message.error('Please fill out all the fields.');
+      message.error('Please fill out all the fields.', 4);
       return false;
     }
 
@@ -224,7 +224,7 @@ class Signup extends Component {
     } = this.state;
 
     if (password !== confirmPassword) {
-      message.error('Passwords don\'t match.');
+      message.error('Passwords don\'t match.', 4);
       return false;
     }
 
@@ -251,12 +251,12 @@ class Signup extends Component {
     if (subsetObjVal.includes(null)
       || subsetObjVal.includes('')
       || subsetObjVal.includes(0)) {
-      message.error('Please fill out the fields correctly.');
+      message.error('Please fill out the fields correctly.', 4);
       return false;
     }
 
     if (target !== 'maintain' && (!weeksToComplete || weeksToComplete <= 0)) {
-      message.error('Please fill out the fields correctly.');
+      message.error('Please fill out the fields correctly.', 4);
       return false;
     }
 
@@ -268,7 +268,7 @@ class Signup extends Component {
       const { weeksToComplete, poundDiff, target } = this.state;
       const kcalAddSubToGoal = await signupUtil.validateTimeSpan(poundDiff, weeksToComplete);
       if (!kcalAddSubToGoal && target !== 'maintain') {
-        message.error('Max healthy loss/gain exceeded (2lbs/week)');
+        message.error(`Max healthy ${target} exceeded (2lbs/week)`, 4);
       } else {
         const { signup } = this.props;
         const { lifestyleMultiplier, weightKg } = this.state;
@@ -650,7 +650,7 @@ class Signup extends Component {
                             Goal Timespan
                           </div>
                           <div className="form-title">
-                            {`(Recommended weeks = ${poundDiff.toFixed(0)})`}
+                            {`(Recommended weeks = ${poundDiff ? poundDiff.toFixed(0) : null})`}
                           </div>
                           <DatePicker className="form-bar" onChange={this.handleEndDate} />
                         </div>
@@ -738,7 +738,7 @@ class Signup extends Component {
 
             <div className="info-row">
               <div className="macros">
-                {`kcal/day to ${target.toUpperCase()}`}
+                {`kcal/day to ${target ? target.toUpperCase() : null}`}
               </div>
               <div className="macros-value">
                 {`${goalTEA}kcal`}

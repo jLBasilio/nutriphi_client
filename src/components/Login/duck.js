@@ -18,14 +18,14 @@ export const login = ({ userName, password }) => ({
       if (response.response) {
         switch (response.response.data.status) {
           case 401:
-            message.error('Invalid credentials');
+            message.error('Invalid credentials', 4);
             break;
           default:
-            message.error('Server error');
+            message.error('Server error', 4);
             break;
         }
       } else {
-        message.error('Server error');
+        message.error('Server error', 4);
       }
     }
   }

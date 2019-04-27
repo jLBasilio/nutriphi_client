@@ -33,8 +33,7 @@ class App extends Component {
       user,
       isLoggingIn,
       isGettingSession,
-      isLoggingOut,
-      logout
+      isLoggingOut
     } = this.props;
     return (
       <Router>
@@ -45,7 +44,7 @@ class App extends Component {
             <React.Fragment>
               <Header />
               <Switch>
-                <Route exact path="/" render={() => <Home logout={logout} />} />
+                <Route exact path="/asd" component={Home} />
                 <Route exact path="/food/all" render={() => <Food toFetch="all" title={pageTitles.ALL} />} />
                 <Route exact path="/food/vegetable" render={() => <Food toFetch="vegetable" title={pageTitles.VEGETABLE} />} />
                 <Route exact path="/food/fruit" render={() => <Food toFetch="fruit" title={pageTitles.FRUIT} />} />
@@ -59,7 +58,7 @@ class App extends Component {
                 <Route exact path="/entry" component={Entry} />
                 <Route exact path="/about" component={About} />
                 <Route exact path="/profile" component={Profile} />
-                <Redirect to="/" />
+                <Redirect to="/profile" />
               </Switch>
             </React.Fragment>
           ) : (

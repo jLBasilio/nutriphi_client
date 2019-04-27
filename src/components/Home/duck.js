@@ -78,7 +78,7 @@ export const editLog = logInfo => (dispatch) => {
     promise: logApi.editLog(logInfo),
     meta: {
       onSuccess: () => {
-        message.success('Success in editing log');
+        message.success('Success in editing log', 4);
         dispatch(fetchPeriod({
           userId: logInfo.userId,
           date: logInfo.dateConsumed.split('T')[0],
@@ -86,7 +86,7 @@ export const editLog = logInfo => (dispatch) => {
         }));
         dispatch(toggleEditModal());
       },
-      onFailure: () => message.error('Edit log failed')
+      onFailure: () => message.error('Edit log failed', 4)
     }
   });
 };
@@ -97,7 +97,7 @@ export const deleteLog = logInfo => (dispatch) => {
     promise: logApi.deleteLog(logInfo.consumedId),
     meta: {
       onSuccess: () => {
-        message.success('Success in deleting log');
+        message.success('Success in deleting log', 4);
         dispatch(fetchPeriod({
           userId: logInfo.userId,
           date: logInfo.dateConsumed.split('T')[0],
@@ -105,7 +105,7 @@ export const deleteLog = logInfo => (dispatch) => {
         }));
         dispatch(toggleEditModal());
       },
-      onFailure: () => message.error('Delete log failed')
+      onFailure: () => message.error('Delete log failed', 4)
     }
   });
 };

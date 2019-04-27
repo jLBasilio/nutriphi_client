@@ -13,7 +13,7 @@ export const getFoodClass = ({ skip, take, foodClass }) => ({
   type: actions.FETCH_FOOD,
   promise: api.getFoodClass({ skip, take, foodClass }),
   meta: {
-    onFailure: () => message.error('Server error')
+    onFailure: () => message.error('Server error', 4)
   }
 });
 
@@ -25,7 +25,7 @@ export const searchFood = ({
     skip, take, q, foodClass
   }),
   meta: {
-    onFailure: () => message.error('Server error')
+    onFailure: () => message.error('Server error', 4)
   }
 });
 
