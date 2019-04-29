@@ -145,6 +145,7 @@ class Entry extends Component {
       let presentTime = await dateUtil.generatePresent();
       [, presentTime] = presentTime.split('T');
       dateConsumed = `${dateConsumed}T${presentTime}`;
+
       addToLog({
         user,
         period,
@@ -411,7 +412,7 @@ class Entry extends Component {
                 Measurement
               </div>
               <div className="macros-value">
-                {currentFood.food_servingMeasurement ? currentFood.food_servingMeasurement : 'N/A'}
+                {currentFood.food_servingMeasurement || 'N/A'}
               </div>
             </div>
 

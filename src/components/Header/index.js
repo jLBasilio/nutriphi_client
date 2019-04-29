@@ -16,6 +16,7 @@ import * as pageTitles from '../../constants/pages';
 const { SubMenu } = Menu;
 const foodSections = [
   'All',
+  'Favorites',
   'Vegetable',
   'Fruit',
   'Milk',

@@ -94,15 +94,13 @@ class Home extends Component {
       deleting,
       currentFoodConsumed: logs[index],
       gramsml,
-      measure: logs[index].foodInfo
-        ? logs[index].consumed_mlConsumed
-          ? parseFloat((logs[index].consumed_mlConsumed
-            / parseFloat(logs[index].foodInfo.mlEPPerExchange)
-            / parseFloat(logs[index].foodInfo.exchangePerMeasure)).toFixed(2))
-          : parseFloat((logs[index].consumed_gramsConsumed
-            / parseFloat(logs[index].foodInfo.gramsEPPerExchange)
-            / parseFloat(logs[index].foodInfo.exchangePerMeasure)).toFixed(2))
-        : null
+      measure: logs[index].consumed_mlConsumed
+        ? parseFloat((logs[index].consumed_mlConsumed
+          / parseFloat(logs[index].food_mlEPPerExchange)
+          / parseFloat(logs[index].food_exchangePerMeasure)).toFixed(2))
+        : parseFloat((logs[index].consumed_gramsConsumed
+          / parseFloat(logs[index].food_gramsEPPerExchange)
+          / parseFloat(logs[index].food_exchangePerMeasure)).toFixed(2))
     });
     setPeriodEditing(period);
     toggleEditModal();
@@ -110,9 +108,9 @@ class Home extends Component {
 
   handleMeasure = (measure) => {
     const { currentFoodConsumed } = this.state;
-    const gramsmlEPPerExchange = parseFloat(currentFoodConsumed.foodInfo.gramsEPPerExchange
-      || currentFoodConsumed.foodInfo.mlEPPerExchange);
-    const gramsml = currentFoodConsumed.foodInfo.exchangePerMeasure * gramsmlEPPerExchange;
+    const gramsmlEPPerExchange = parseFloat(currentFoodConsumed.food_gramsEPPerExchange
+      || currentFoodConsumed.food_mlEPPerExchange);
+    const gramsml = currentFoodConsumed.food_exchangePerMeasure * gramsmlEPPerExchange;
     this.setState({
       measure,
       gramsml: parseFloat((gramsml * measure).toFixed(2))
@@ -121,12 +119,12 @@ class Home extends Component {
 
   handleGramsML = (gramsml) => {
     const { currentFoodConsumed } = this.state;
-    const gramsmlEPPerExchange = parseFloat(currentFoodConsumed.foodInfo.gramsEPPerExchange
-      || currentFoodConsumed.foodInfo.mlEPPerExchange);
+    const gramsmlEPPerExchange = parseFloat(currentFoodConsumed.food_gramsEPPerExchange
+      || currentFoodConsumed.food_mlEPPerExchange);
     const measure = gramsml / gramsmlEPPerExchange;
     this.setState({
       gramsml,
-      measure: parseFloat((measure / currentFoodConsumed.foodInfo.exchangePerMeasure).toFixed(2))
+      measure: parseFloat((measure / currentFoodConsumed.food_exchangePerMeasure).toFixed(2))
     });
   }
 
@@ -321,24 +319,24 @@ class Home extends Component {
                 breakfast.map((log, index) => (
                   <div className="log" key={log.consumed_id}>
                     <div className="log-left">
-                      {`${log.foodInfo.filipinoName || log.foodInfo.englishName} `}
+                      {`${log.food_filipinoName || log.food_englishName} `}
                       <Tag
                         className="log-tag"
                         color={
-                          constants.tagColors[log.foodInfo.primaryClassification.split('-')[0]]
+                          constants.tagColors[log.food_primaryClassification.split('-')[0]]
                         }
                       >
-                        {log.foodInfo.primaryClassification.split('-')[0]}
+                        {log.food_primaryClassification.split('-')[0]}
                       </Tag>
                       {
-                        log.foodInfo.secondaryClassification && (
+                        log.food_secondaryClassification && (
                           <Tag
                             className="log-tag"
                             color={
-                              constants.tagColors[log.foodInfo.secondaryClassification]
+                              constants.tagColors[log.food_secondaryClassification]
                             }
                           >
-                            {log.foodInfo.secondaryClassification}
+                            {log.food_secondaryClassification}
                           </Tag>
                         )
                       }
@@ -396,24 +394,24 @@ class Home extends Component {
                 lunch.map((log, index) => (
                   <div className="log" key={log.consumed_id}>
                     <div className="log-left">
-                      {`${log.foodInfo.filipinoName || log.foodInfo.englishName} `}
+                      {`${log.food_filipinoName || log.food_englishName} `}
                       <Tag
                         className="log-tag"
                         color={
-                          constants.tagColors[log.foodInfo.primaryClassification.split('-')[0]]
+                          constants.tagColors[log.food_primaryClassification.split('-')[0]]
                         }
                       >
-                        {log.foodInfo.primaryClassification.split('-')[0]}
+                        {log.food_primaryClassification.split('-')[0]}
                       </Tag>
                       {
-                        log.foodInfo.secondaryClassification && (
+                        log.food_secondaryClassification && (
                           <Tag
                             className="log-tag"
                             color={
-                              constants.tagColors[log.foodInfo.secondaryClassification]
+                              constants.tagColors[log.food_secondaryClassification]
                             }
                           >
-                            {log.foodInfo.secondaryClassification}
+                            {log.food_secondaryClassification}
                           </Tag>
                         )
                       }
@@ -471,24 +469,24 @@ class Home extends Component {
                 dinner.map((log, index) => (
                   <div className="log" key={log.consumed_id}>
                     <div className="log-left">
-                      {`${log.foodInfo.filipinoName || log.foodInfo.englishName} `}
+                      {`${log.food_filipinoName || log.food_englishName} `}
                       <Tag
                         className="log-tag"
                         color={
-                          constants.tagColors[log.foodInfo.primaryClassification.split('-')[0]]
+                          constants.tagColors[log.food_primaryClassification.split('-')[0]]
                         }
                       >
-                        {log.foodInfo.primaryClassification.split('-')[0]}
+                        {log.food_primaryClassification.split('-')[0]}
                       </Tag>
                       {
-                        log.foodInfo.secondaryClassification && (
+                        log.food_secondaryClassification && (
                           <Tag
                             className="log-tag"
                             color={
-                              constants.tagColors[log.foodInfo.secondaryClassification]
+                              constants.tagColors[log.food_secondaryClassification]
                             }
                           >
-                            {log.foodInfo.secondaryClassification}
+                            {log.food_secondaryClassification}
                           </Tag>
                         )
                       }
@@ -565,41 +563,41 @@ class Home extends Component {
 
         <Modal
           title={
-            currentFoodConsumed.foodInfo ? currentFoodConsumed.foodInfo.filipinoName
-            || currentFoodConsumed.foodInfo.englishName
+            currentFoodConsumed.food_? currentFoodConsumed.food_filipinoName
+            || currentFoodConsumed.food_englishName
               : null}
           visible={showEditModal}
           onCancel={this.handleModalClose}
           footer={[
             <div className="macro-update" key="macro-display">
               <div className="macro-one">
-                {`CHO: ${currentFoodConsumed.foodInfo
+                {`CHO: ${currentFoodConsumed
                   ? parseFloat(
-                    (currentFoodConsumed.foodInfo.choPerExchange
+                    (currentFoodConsumed.food_choPerExchange
                       * measure
-                      * parseFloat(currentFoodConsumed.foodInfo.exchangePerMeasure))
+                      * parseFloat(currentFoodConsumed.food_exchangePerMeasure))
                       .toFixed(2)
                   )
                   : null}g`
                 }
               </div>
               <div className="macro-one">
-                {`PRO: ${currentFoodConsumed.foodInfo
+                {`PRO: ${currentFoodConsumed
                   ? parseFloat(
-                    (currentFoodConsumed.foodInfo.proPerExchange
+                    (currentFoodConsumed.food_proPerExchange
                       * measure
-                      * parseFloat(currentFoodConsumed.foodInfo.exchangePerMeasure))
+                      * parseFloat(currentFoodConsumed.food_exchangePerMeasure))
                       .toFixed(2)
                   )
                   : null}g`
                 }
               </div>
               <div className="macro-one">
-                {`FAT: ${currentFoodConsumed.foodInfo
+                {`FAT: ${currentFoodConsumed
                   ? parseFloat(
-                    (currentFoodConsumed.foodInfo.proPerExchange
+                    (currentFoodConsumed.food_proPerExchange
                       * measure
-                      * parseFloat(currentFoodConsumed.foodInfo.exchangePerMeasure))
+                      * parseFloat(currentFoodConsumed.food_exchangePerMeasure))
                       .toFixed(2)
                   )
                   : null}g`
@@ -624,8 +622,8 @@ class Home extends Component {
               </div>
               <div className="input-label">
                 {`${
-                  parseFloat(currentFoodConsumed.foodInfo
-                    ? currentFoodConsumed.foodInfo.gramsEPPerExchange
+                  parseFloat(currentFoodConsumed
+                    ? currentFoodConsumed.food_gramsEPPerExchange
                     : 0)
                     ? 'Grams'
                     : 'ml'
@@ -672,8 +670,8 @@ class Home extends Component {
 
           <div className="label-container">
             <div className="label">
-              {currentFoodConsumed.foodInfo
-                ? (currentFoodConsumed.foodInfo.englishName || 'N/A')
+              {currentFoodConsumed
+                ? (currentFoodConsumed.food_englishName || 'N/A')
                 : null}
             </div>
           </div>
@@ -694,8 +692,8 @@ class Home extends Component {
               Carbohydrate (CHO)
             </div>
             <div className="macros-value">
-              {`${currentFoodConsumed.foodInfo
-                ? currentFoodConsumed.foodInfo.choPerExchange
+              {`${currentFoodConsumed
+                ? currentFoodConsumed.food_choPerExchange
                 : null}g`
               }
             </div>
@@ -708,8 +706,8 @@ class Home extends Component {
               Protein (PRO)
             </div>
             <div className="macros-value">
-              {`${currentFoodConsumed.foodInfo
-                ? currentFoodConsumed.foodInfo.proPerExchange
+              {`${currentFoodConsumed
+                ? currentFoodConsumed.food_proPerExchange
                 : null}g`
               }
             </div>
@@ -722,8 +720,8 @@ class Home extends Component {
               Fat (FAT)
             </div>
             <div className="macros-value">
-              {`${currentFoodConsumed.foodInfo
-                ? currentFoodConsumed.foodInfo.fatPerExchange
+              {`${currentFoodConsumed
+                ? currentFoodConsumed.food_fatPerExchange
                 : null}g`
               }
             </div>
@@ -741,10 +739,10 @@ class Home extends Component {
             </div>
             <div className="macros-value">
               {`${
-                currentFoodConsumed.foodInfo
+                currentFoodConsumed
                   ? parseFloat(currentFoodConsumed.consumed_gramsConsumed)
-                    ? currentFoodConsumed.foodInfo.gramsEPPerExchange
-                    : currentFoodConsumed.foodInfo.mlEPPerExchange
+                    ? currentFoodConsumed.food_gramsEPPerExchange
+                    : currentFoodConsumed.food_mlEPPerExchange
                   : null
               }${
                 parseFloat(currentFoodConsumed.consumed_gramsConsumed)
@@ -761,9 +759,9 @@ class Home extends Component {
               Measurement
             </div>
             <div className="macros-value">
-              {currentFoodConsumed.foodInfo
-                ? currentFoodConsumed.foodInfo.servingMeasurement
-                  ? currentFoodConsumed.foodInfo.servingMeasurement
+              {currentFoodConsumed
+                ? currentFoodConsumed.food_servingMeasurement
+                  ? currentFoodConsumed.food_servingMeasurement
                   : 'N/A'
                 : null
               }

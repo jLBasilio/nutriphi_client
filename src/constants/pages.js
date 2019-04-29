@@ -6,6 +6,7 @@ export const PROFILE = 'PROFILE';
 export const ABOUT = 'ABOUT';
 
 export const ALL = 'ALL FOODS';
+export const FAVORITES = 'FAVORITES';
 export const VEGETABLE = 'VEGETABLE';
 export const FRUIT = 'FRUIT';
 export const MEAT = 'MEAT | FISH';

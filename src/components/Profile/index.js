@@ -214,7 +214,6 @@ class Profile extends Component {
 
     if (parseFloat(user.weightKg) === weightKg
       && parseFloat(user.heightCm) === heightCm) {
-      this.resetFromUser();
       this.setState({ healthButtonDisabled: true });
     } else {
       this.setState({ healthButtonDisabled: false });
@@ -224,11 +223,10 @@ class Profile extends Component {
   checkGoalChange = () => {
     const { user } = this.props;
     const { goalKg, lifestyleMultiplier, endDate } = this.state;
-
+    
     if (parseFloat(user.goalKg) === goalKg
       && parseFloat(user.lifestyleMultiplier) === lifestyleMultiplier
       && user.endDate === endDate) {
-      this.resetFromUser();
       this.setState({ goalButtonDisabled: true });
     } else {
       this.setState({ goalButtonDisabled: false });

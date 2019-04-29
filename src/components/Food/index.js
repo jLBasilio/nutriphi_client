@@ -3,6 +3,7 @@ import {
   Card,
   Col,
   Divider,
+  Icon,
   Input,
   message,
   Modal,
@@ -38,12 +39,22 @@ class Food extends Component {
       getFoodClass,
       toFetch,
       title,
-      resetSearch
+      resetSearch,
+      uid,
+      getFavoriteIds,
+      fetchFavorites
     } = this.props;
     const { skip, take } = this.state;
+
     changePage(title);
     resetSearch();
-    getFoodClass({ skip, take, foodClass: toFetch });
+    getFavoriteIds(uid);
+
+    if (toFetch === 'favorites') {
+      fetchFavorites({ skip, take, uid });
+    } else {
+      getFoodClass({ skip, take, foodClass: toFetch });
+    }
   }
 
   componentDidUpdate(previousProps) {
@@ -52,17 +63,22 @@ class Food extends Component {
       const {
         changePage,
         getFoodClass,
-        toFetch
+        toFetch,
+        uid,
+        getFavoriteIds,
+        fetchFavorites
       } = this.props;
 
       const { skip, take } = this.state;
-      changePage(title);
 
-      // Fetch food
+      changePage(title);
       resetSearch();
+      if (toFetch === 'favorites') {
+        fetchFavorites({ skip, take, uid });
+      } else {
+        getFoodClass({ skip, take, foodClass: toFetch });
+      }
       this.setState({ currentSearched: null });
-      getFoodClass({ skip, take, foodClass: toFetch });
-      console.log("BOMBONTEND DID UPDATE")
     }
   }
 
@@ -84,12 +100,21 @@ class Food extends Component {
   }
 
   handlePageChange = (page) => {
-    const { getFoodClass, toFetch } = this.props;
+    const {
+      getFoodClass,
+      toFetch,
+      fetchFavorites,
+      uid
+    } = this.props;
     const { defaultSize, take } = this.state;
     const skip = (page - 1) * defaultSize;
 
     this.setState({ currentPageNumber: page });
-    getFoodClass({ skip, take, foodClass: toFetch });
+    if (toFetch === 'favorites') {
+      fetchFavorites({ skip, take, uid });
+    } else {
+      getFoodClass({ skip, take, foodClass: toFetch });
+    }
   }
 
   handlePageChangeFromSearch = (page) => {
@@ -131,9 +156,15 @@ class Food extends Component {
     }
   }
 
+  handleFavorite = (foodId) => {
+    console.log("FAV: #", foodId);
+
+  }
+
   render() {
     const {
       food,
+      favFoodIds,
       foodCount,
       searchedFood,
       searchedFoodCount,
@@ -201,31 +232,48 @@ class Food extends Component {
                   >
                     <Card
                       className="food-card"
-                      title={
-                        foodElement.food_filipinoName
-                          ? foodElement.food_filipinoName
-                          : foodElement.food_englishName
-                      }
+                      title={(
+                        <div className="title-container">
+                          <div className="food-title">
+                            {foodElement.food_filipinoName || foodElement.food_englishName}
+                          </div>
+
+                          <div className="food-tag">
+                            <div className="icon-section">
+                              <Tag
+                                color={
+                                  constants.tagColors[foodElement.food_primaryClassification.split('-')[0]]
+                                }
+                              >
+                                {foodElement.food_primaryClassification.split('-')[0]}
+                              </Tag>
+                              {
+                                foodElement.food_secondaryClassification && (
+                                  <Tag
+                                    color={
+                                      constants.tagColors[foodElement.food_secondaryClassification]
+                                    }
+                                  >
+                                    {foodElement.food_secondaryClassification}
+                                  </Tag>
+                                )
+                              }
+                            </div>
+                            {
+                              favFoodIds.includes(foodElement.food_id) && (
+                                <div className="icon-section">
+                                  <Icon type="heart" theme="filled" />
+                                </div>
+                              )
+                            }
+                          </div>
+                        </div>
+                      )}
                       hoverable
                       loading={isFetching}
                       onClick={() => this.showFoodModal(index, true)}
                     >
-                      <Tag
-                        color={
-                          constants.tagColors[foodElement.food_primaryClassification.split('-')[0]]
-                        }
-                      >
-                        {foodElement.food_primaryClassification.split('-')[0]}
-                      </Tag>
-                      {
-                        foodElement.food_secondaryClassification && (
-                          <Tag
-                            color={constants.tagColors[foodElement.food_secondaryClassification]}
-                          >
-                            {foodElement.food_secondaryClassification}
-                          </Tag>
-                        )
-                      }
+                      PUt kcal here plz
                     </Card>
                   </Col>
                 ))
@@ -240,29 +288,48 @@ class Food extends Component {
                   >
                     <Card
                       className="food-card"
-                      title={
-                        foodElement.food_filipinoName || foodElement.food_englishName
-                      }
+                      title={(
+                        <div className="title-container">
+                          <div className="food-title">
+                            {foodElement.food_filipinoName || foodElement.food_englishName}
+                          </div>
+
+                          <div className="food-tag">
+                            <div className="icon-section">
+                              <Tag
+                                color={
+                                  constants.tagColors[foodElement.food_primaryClassification.split('-')[0]]
+                                }
+                              >
+                                {foodElement.food_primaryClassification.split('-')[0]}
+                              </Tag>
+                              {
+                                foodElement.food_secondaryClassification && (
+                                  <Tag
+                                    color={
+                                      constants.tagColors[foodElement.food_secondaryClassification]
+                                    }
+                                  >
+                                    {foodElement.food_secondaryClassification}
+                                  </Tag>
+                                )
+                              }
+                            </div>
+                            {
+                              favFoodIds.includes(foodElement.food_id) && (
+                                <div className="icon-section">
+                                  <Icon type="heart" theme="filled" />
+                                </div>
+                              )
+                            }
+                          </div>
+                        </div>
+                      )}
                       hoverable
                       loading={isFetching}
                       onClick={() => this.showFoodModal(index, false)}
                     >
-                      <Tag
-                        color={
-                          constants.tagColors[foodElement.food_primaryClassification.split('-')[0]]
-                        }
-                      >
-                        {foodElement.food_primaryClassification.split('-')[0]}
-                      </Tag>
-                      {
-                        foodElement.food_secondaryClassification && (
-                          <Tag
-                            color={constants.tagColors[foodElement.food_secondaryClassification]}
-                          >
-                            {foodElement.food_secondaryClassification}
-                          </Tag>
-                        )
-                      }
+                      Put kcal here plz
                     </Card>
                   </Col>
                 ))
@@ -386,6 +453,20 @@ class Food extends Component {
               </div>
               <div className="macros-value">
                 {currentFood.food_servingMeasurement}
+              </div>
+            </div>
+            <Divider />
+            <div className="info-row">
+              <div className="macros">
+                Favorite
+              </div>
+              <div className="macros-value">
+                <Icon
+                  className="fav-icon"
+                  type="heart"
+                  theme={favFoodIds.includes(currentFood.food_id) ? 'filled' : null}
+                  onClick={() => this.handleFavorite(currentFood.food_id)}
+                />
               </div>
             </div>
             <Divider />

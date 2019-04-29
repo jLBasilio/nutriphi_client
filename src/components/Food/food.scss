@@ -15,6 +15,44 @@
       display: inline;
       padding: 1rem 0;
 
+      .ant-card {
+        background-color: $card-bg;
+        box-shadow: $card-shadow;
+
+        .ant-card-head {
+          padding: 0 1.2rem;
+
+          .ant-card-head-title {
+            max-width: none;
+
+            .food-tag {
+              display: flex;
+
+              .icon-section {
+                color: $base-kahel;
+                flex: 1;
+
+                &:hover {
+                  cursor: pointer;
+                }
+
+                &:last-child {
+                  text-align: right;
+                }
+
+                &:first-child {
+                  text-align: left;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .ant-card-body {
+        padding: 16px 24px;
+      }
+
     }
 
     .pagination-div {
@@ -42,20 +80,6 @@
   }
 }
 
-.ant-card {
-  background-color: $card-bg;
-  box-shadow: $card-shadow;
-
-  .ant-card-head {
-    .ant-card-head-title {
-      max-width: 70%;
-    }
-  }
-}
-
-.ant-card-body {
-  padding: 16px 24px;
-}
 
 .ant-modal {
   @include for-tablet-portrait-up {
@@ -137,6 +161,14 @@
 
     .macros-value {
       text-align: left;
+
+      .fav-icon {
+        color: $base-kahel;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
     }
   }
 }

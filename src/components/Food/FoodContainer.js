@@ -5,15 +5,19 @@ import {
   getFoodClass,
   searchFood,
   resetSearch,
-  toggleModal
+  toggleModal,
+  getFavoriteIds,
+  fetchFavorites
 } from './duck';
 import { changePage } from '../Header/duck';
 
 const mapStateToProps = (state) => {
   const { currentPage } = state.header;
+  const { user: { id: uid } } = state.login;
   const {
     isFetching,
     food,
+    favFoodIds,
     foodCount,
     showModal,
     searchedFood,
@@ -22,9 +26,11 @@ const mapStateToProps = (state) => {
   } = state.food;
 
   return {
+    uid,
     currentPage,
     isFetching,
     food,
+    favFoodIds,
     foodCount,
     showModal,
     searchedFood,
@@ -39,6 +45,12 @@ const mapDispatchToProps = dispatch => ({
   },
   getFoodClass: ({ skip, take, foodClass }) => {
     dispatch(getFoodClass({ skip, take, foodClass }));
+  },
+  getFavoriteIds: (uid) => {
+    dispatch(getFavoriteIds(uid));
+  },
+  fetchFavorites: ({ skip, take, uid }) => {
+    dispatch(fetchFavorites({ skip, take, uid }));
   },
   searchFood: ({
     skip, take, q, foodClass
