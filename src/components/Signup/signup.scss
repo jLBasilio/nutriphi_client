@@ -41,7 +41,7 @@
       .one-form {
         @include for-tablet-portrait-up {
           padding: 0 1rem 1rem;
-          width: 40rem;
+          width: 100%;
         }
 
         font-size: .8rem;

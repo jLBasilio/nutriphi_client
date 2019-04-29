@@ -2,17 +2,18 @@ import { handle } from 'redux-pack';
 import {
   message
 } from 'antd';
-import * as auth from '../../api/user';
+import * as userApi from '../../api/user';
 
 const actions = {
   LOGIN: 'AUTH/LOGIN',
   LOGOUT: 'AUTH/LOGOUT',
-  SESSION: 'AUTH/SESSION'
+  SESSION: 'AUTH/SESSION',
+  GET_USER: 'AUTH/GET_USER'
 };
 
 export const login = ({ userName, password }) => ({
   type: actions.LOGIN,
-  promise: auth.login({ userName, password }),
+  promise: userApi.login({ userName, password }),
   meta: {
     onFailure: (response) => {
       if (response.response) {
@@ -33,12 +34,17 @@ export const login = ({ userName, password }) => ({
 
 export const logout = () => ({
   type: actions.LOGOUT,
-  promise: auth.logout()
+  promise: userApi.logout()
+});
+
+export const getUser = uid => ({
+  type: actions.GET_USER,
+  promise: userApi.getUser(uid)
 });
 
 export const getSession = () => ({
   type: actions.SESSION,
-  promise: auth.getSession()
+  promise: userApi.getSession()
 });
 
 const initialState = {
@@ -81,6 +87,14 @@ const reducer = (state = initialState, action) => {
         finish: prevState => ({
           ...prevState,
           isLoggingOut: false
+        })
+      });
+
+    case actions.GET_USER:
+      return handle(state, action, {
+        success: prevState => ({
+          ...prevState,
+          user: payload.data.data
         })
       });
 

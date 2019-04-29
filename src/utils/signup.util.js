@@ -36,6 +36,12 @@ export const validateTimeSpan = async (poundDiff, weeks) => {
   return kcalNeeded <= 1100 ? kcalNeeded : null;
 };
 
+export const getDiffWeeks = async (toDateString) => {
+  let diff = (new Date(toDateString) - new Date(Date.now()).getTime()) / 1000;
+  diff /= (60 * 60 * 24 * 7);
+  return Math.round(diff);
+};
+
 export const getDBW = async ({ sex, heightCm }) => {
   const toReturn = {};
   switch (Math.round(heightCm)) {
@@ -261,10 +267,4 @@ export const getDBW = async ({ sex, heightCm }) => {
   const [lowerBound, upperBound] = toReturn.dbwKg.split('-');
   toReturn.dbwLbs = `${await convertKgToLBS(lowerBound)}-${await convertKgToLBS(upperBound)}`;
   return toReturn;
-};
-
-export const getDiffWeeks = async (toDateString) => {
-  let diff = (new Date(toDateString) - new Date(Date.now()).getTime()) / 1000;
-  diff /= (60 * 60 * 24 * 7);
-  return Math.round(diff);
 };

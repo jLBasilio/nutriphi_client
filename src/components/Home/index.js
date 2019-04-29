@@ -239,7 +239,7 @@ class Home extends Component {
             <div className={`macro-progress ${percentCho > 100 ? 'percentage' : null}`}>
               {`CARBOHYDRATE (CHO) - 
                 ${(user.choPerDay - totalCho) >= 0
-                ? (user.choPerDay - totalCho)
+                ? (user.choPerDay - totalCho).toFixed(2)
                 : 0
                 }g left
               `}
@@ -261,7 +261,7 @@ class Home extends Component {
             <div className={`macro-progress ${percentPro > 100 ? 'percentage' : null}`}>
               {`PROTEIN (PRO) - 
                 ${(user.proPerDay - totalPro) >= 0
-                ? (user.proPerDay - totalPro)
+                ? (user.proPerDay - totalPro).toFixed(2)
                 : 0
                 }g left
               `}
@@ -282,7 +282,7 @@ class Home extends Component {
             <div className={`macro-progress ${percentFat > 100 ? 'percentage' : null}`}>
               {`FAT (FAT) - 
                 ${(user.fatPerDay - totalFat) >= 0
-                ? (user.fatPerDay - totalFat)
+                ? (user.fatPerDay - totalFat).toFixed(2)
                 : 0
                 }g left
               `}

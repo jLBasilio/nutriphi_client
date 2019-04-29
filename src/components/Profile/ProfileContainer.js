@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import Profile from '.';
 
 import { changePage } from '../Header/duck';
+import { getUser, getSession } from '../Login/duck';
 import {
   toggleHealthEdit,
   toggleGoalEdit,
@@ -13,19 +14,25 @@ const mapStateToProps = (state) => {
   const {
     showHealthEdit,
     showGoalEdit,
-    isSaving
+    isEditing
   } = state.profile;
   return {
     user,
     showHealthEdit,
     showGoalEdit,
-    isSaving
+    isEditing
   };
 };
 
 const mapDispatchToProps = dispatch => ({
   changePage: (newPage) => {
     dispatch(changePage(newPage));
+  },
+  getUser: (uid) => {
+    dispatch(getUser(uid));
+  },
+  getSession: () => {
+    dispatch(getSession());
   },
   toggleHealthEdit: () => {
     dispatch(toggleHealthEdit());

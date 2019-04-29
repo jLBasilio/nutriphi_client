@@ -82,7 +82,7 @@ class Signup extends Component {
       const bmi = await signupUtil.getBMIFromGoal({ goalKg: weight, heightCm });
       const goalLbs = parseFloat((weight * 2.2).toFixed(2));
       if (bmi !== 'normal' && weight.toString().length >= 2) {
-        message.warning(`Your BMI will be ${bmi}.` ,4);
+        message.warning(`Your BMI will be ${bmi}.`, 4);
       }
       this.setState({
         goalKg: weight,
@@ -110,7 +110,6 @@ class Signup extends Component {
     const height = e.target.value;
     const { heightFt, heightInch } = this.state;
     let otherValue = 0;
-
     if (e.target.name === 'heightFt') {
       otherValue = height * 30.48 + heightInch * 2.54;
       this.setState({ heightFt: height, heightCm: parseFloat(otherValue.toFixed(2)) });
@@ -152,8 +151,7 @@ class Signup extends Component {
       weightKg,
       weightLbs,
       heightCm,
-      heightFt,
-      heightInch
+      heightFt
     } = this.state;
 
     if (password !== confirmPassword) {
@@ -172,8 +170,7 @@ class Signup extends Component {
       weightKg,
       weightLbs,
       heightCm,
-      heightFt,
-      heightInch
+      heightFt
     };
 
     const subsetObjVal = Object.values(subsetObj);
@@ -499,6 +496,7 @@ class Signup extends Component {
                   onChange={this.handleWeight}
                   prefix={<Icon type="heart" style={{ color: 'rgba(0,0,0,.25)' }} />}
                   suffix="kg"
+                  min={30}
                 />
               </div>
               <div className="one-form">
@@ -513,6 +511,7 @@ class Signup extends Component {
                   onChange={this.handleWeight}
                   prefix={<Icon type="heart" style={{ color: 'rgba(0,0,0,.25)' }} />}
                   suffix="lbs"
+                  min={66}
                 />
               </div>
             </div>
@@ -529,6 +528,7 @@ class Signup extends Component {
                   onChange={this.handleHeight}
                   prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
                   suffix="cm"
+                  min={129}
                 />
               </div>
 
@@ -544,6 +544,7 @@ class Signup extends Component {
                   onChange={this.handleHeight}
                   prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
                   suffix="ft"
+                  min={4}
                 />
               </div>
 
@@ -559,6 +560,7 @@ class Signup extends Component {
                   onChange={this.handleHeight}
                   prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
                   suffix="in"
+                  min={heightFt === 4 ? 3 : 0}
                 />
               </div>
             </div>

@@ -1,4 +1,5 @@
 import { handle } from 'redux-pack';
+import { message } from 'antd';
 import * as userApi from '../../api/user';
 
 const actions = {
@@ -17,14 +18,19 @@ export const toggleGoalEdit = () => ({
 
 export const healthEdit = userInfo => ({
   type: actions.HEALTH_EDIT,
-  promise: userApi.editHealth(userInfo)
+  promise: userApi.editHealth(userInfo),
+  meta: {
+    onSuccess: () => message.success('Successfully updated information'),
+    onFailure: () => message.error('Failed in updating information')
+  }
 });
 
 
 const initialState = {
-  showHealthEdit: true,
-  showGoalEdit: false,
-  isSaving: false
+  showHealthEdit: false,
+  showGoalEdit: true,
+  isSaving: false,
+  isEditing: false
 };
 
 const reducer = (state = initialState, action) => {
@@ -42,7 +48,8 @@ const reducer = (state = initialState, action) => {
         }),
         finish: prevState => ({
           ...prevState,
-          isEditing: false
+          isEditing: false,
+          showHealthEdit: false
         })
       });
 
