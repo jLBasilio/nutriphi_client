@@ -65,7 +65,6 @@ class Food extends Component {
         getFoodClass,
         toFetch,
         uid,
-        getFavoriteIds,
         fetchFavorites
       } = this.props;
 
@@ -118,12 +117,24 @@ class Food extends Component {
   }
 
   handlePageChangeFromSearch = (page) => {
-    const { searchFood, toFetch } = this.props;
+    const {
+      searchFood,
+      toFetch,
+      searchFavorites,
+      uid
+    } = this.props;
     const { defaultSize, take, currentSearched } = this.state;
     const skip = (page - 1) * defaultSize;
-    searchFood({
-      skip, take, q: currentSearched, foodClass: toFetch
-    });
+
+    if (toFetch === 'favorites') {
+      searchFavorites({
+        skip, take, q: currentSearched, uid
+      });
+    } else {
+      searchFood({
+        skip, take, q: currentSearched, foodClass: toFetch
+      });
+    }
   }
 
   handleSearch = (q) => {
@@ -131,12 +142,26 @@ class Food extends Component {
     if (!q.length) {
       message.error('Input something!', 4);
     } else if (q !== previousSearched && q.length > 2) {
-      const { searchFood, toFetch, resetSearch } = this.props;
+      const {
+        searchFood,
+        searchFavorites,
+        toFetch,
+        resetSearch,
+        uid
+      } = this.props;
       const { skip, take } = this.state;
       resetSearch();
-      searchFood({
-        skip, take, q, foodClass: toFetch
-      });
+
+      if (toFetch === 'favorites') {
+        searchFavorites({
+          skip, take, q, uid
+        });
+      } else {
+        searchFood({
+          skip, take, q, foodClass: toFetch
+        });
+      }
+
       this.setState({ previousSearched: q, confirmedSearch: q });
     }
   }
@@ -157,8 +182,15 @@ class Food extends Component {
   }
 
   handleFavorite = (foodId) => {
-    console.log("FAV: #", foodId);
+    const { favFoodIds } = this.props;
 
+    if (favFoodIds.includes(foodId)) {
+      const { deleteFromFavorites, uid } = this.props;
+      deleteFromFavorites({ uid, foodId });
+    } else {
+      const { addToFavorites, uid } = this.props;
+      addToFavorites({ uid, foodId });
+    }
   }
 
   render() {
@@ -171,7 +203,8 @@ class Food extends Component {
       isFetching,
       showModal,
       hasSearched,
-      toFetch
+      toFetch,
+      isAddingToFavorites
     } = this.props;
 
     const {
@@ -232,6 +265,9 @@ class Food extends Component {
                   >
                     <Card
                       className="food-card"
+                      hoverable
+                      loading={isFetching}
+                      onClick={() => this.showFoodModal(index, true)}
                       title={(
                         <div className="title-container">
                           <div className="food-title">
@@ -259,19 +295,16 @@ class Food extends Component {
                                 )
                               }
                             </div>
-                            {
-                              favFoodIds.includes(foodElement.food_id) && (
-                                <div className="icon-section">
-                                  <Icon type="heart" theme="filled" />
-                                </div>
-                              )
-                            }
+                            <div className="icon-section">
+                              <Icon
+                                className="fav-icon"
+                                type="heart"
+                                theme={favFoodIds.includes(foodElement.food_id) ? 'filled' : null}
+                              />
+                            </div>
                           </div>
                         </div>
                       )}
-                      hoverable
-                      loading={isFetching}
-                      onClick={() => this.showFoodModal(index, true)}
                     >
                       PUt kcal here plz
                     </Card>
@@ -288,6 +321,9 @@ class Food extends Component {
                   >
                     <Card
                       className="food-card"
+                      hoverable
+                      loading={isFetching}
+                      onClick={() => this.showFoodModal(index, false)}
                       title={(
                         <div className="title-container">
                           <div className="food-title">
@@ -315,19 +351,16 @@ class Food extends Component {
                                 )
                               }
                             </div>
-                            {
-                              favFoodIds.includes(foodElement.food_id) && (
-                                <div className="icon-section">
-                                  <Icon type="heart" theme="filled" />
-                                </div>
-                              )
-                            }
+                            <div className="icon-section">
+                              <Icon
+                                className="fav-icon"
+                                type="heart"
+                                theme={favFoodIds.includes(foodElement.food_id) ? 'filled' : null}
+                              />
+                            </div>
                           </div>
                         </div>
                       )}
-                      hoverable
-                      loading={isFetching}
-                      onClick={() => this.showFoodModal(index, false)}
                     >
                       Put kcal here plz
                     </Card>
@@ -377,6 +410,20 @@ class Food extends Component {
             <div className="label-container">
               <div className="label">
                 {currentFood.food_englishName}
+              </div>
+              <div className="label">
+                {
+                  isAddingToFavorites ? (
+                    <Icon type="loading" />
+                  ) : (
+                    <Icon
+                      className="fav-icon"
+                      type="heart"
+                      theme={favFoodIds.includes(currentFood.food_id) ? 'filled' : null}
+                      onClick={() => this.handleFavorite(currentFood.food_id)}
+                    />
+                  )
+                }
               </div>
             </div>
 
@@ -453,20 +500,6 @@ class Food extends Component {
               </div>
               <div className="macros-value">
                 {currentFood.food_servingMeasurement}
-              </div>
-            </div>
-            <Divider />
-            <div className="info-row">
-              <div className="macros">
-                Favorite
-              </div>
-              <div className="macros-value">
-                <Icon
-                  className="fav-icon"
-                  type="heart"
-                  theme={favFoodIds.includes(currentFood.food_id) ? 'filled' : null}
-                  onClick={() => this.handleFavorite(currentFood.food_id)}
-                />
               </div>
             </div>
             <Divider />

@@ -6,7 +6,10 @@ import * as favoriteApi from '../../api/favorite';
 const actions = {
   FETCH_FOOD: 'FOOD/FETCH_FOOD',
   GET_FAVORITES: 'FOOD/GET_FAVORITES',
+  ADD_FAVORITES: 'FOOD/ADD_FAVORITES',
+  DELETE_FAVORITES: 'FOOD/DELETE_FAVORITES',
   FETCH_FAVORITES: 'FOOD/FETCH_FAVORITES',
+  SEARCH_FAVORITES: 'FOOD/SEARCH_FAVORITES',
   SEARCH_FOOD: 'FOOD/SEARCH_FOOD',
   RESET_SEARCH: 'FOOD/RESET_SEARCH',
   SHOW_MODAL: 'FOOD/SHOW_MODAL'
@@ -23,6 +26,22 @@ export const getFoodClass = ({ skip, take, foodClass }) => ({
 export const getFavoriteIds = uid => ({
   type: actions.GET_FAVORITES,
   promise: favoriteApi.getFavoriteIds(uid),
+  meta: {
+    onFailure: () => message.error('Server error', 4)
+  }
+});
+
+export const addToFavorites = ({ uid, foodId }) => ({
+  type: actions.ADD_FAVORITES,
+  promise: favoriteApi.addToFavorites({ uid, foodId }),
+  meta: {
+    onFailure: () => message.error('Server error', 4)
+  }
+});
+
+export const deleteFromFavorites = ({ uid, foodId }) => ({
+  type: actions.DELETE_FAVORITES,
+  promise: favoriteApi.deleteFromFavorites({ uid, foodId }),
   meta: {
     onFailure: () => message.error('Server error', 4)
   }
@@ -48,6 +67,18 @@ export const searchFood = ({
   }
 });
 
+export const searchFavorites = ({
+  skip, take, q, uid
+}) => ({
+  type: actions.SEARCH_FAVORITES,
+  promise: favoriteApi.searchFavorites({
+    skip, take, q, uid
+  }),
+  meta: {
+    onFailure: () => message.error('Server error', 4)
+  }
+});
+
 export const resetSearch = () => ({
   type: actions.RESET_SEARCH
 });
@@ -64,7 +95,8 @@ const initialState = {
   searchedFoodCount: null,
   hasSearched: false,
   isFetching: false,
-  showModal: false
+  showModal: false,
+  isAddingToFavorites: false
 };
 
 const reducer = (state = initialState, action) => {
@@ -104,6 +136,38 @@ const reducer = (state = initialState, action) => {
         })
       });
 
+    case actions.ADD_FAVORITES:
+      return handle(state, action, {
+        start: prevState => ({
+          ...prevState,
+          isAddingToFavorites: true
+        }),
+        success: prevState => ({
+          ...prevState,
+          favFoodIds: payload.data.data
+        }),
+        finish: prevState => ({
+          ...prevState,
+          isAddingToFavorites: false
+        })
+      });
+
+    case actions.DELETE_FAVORITES:
+      return handle(state, action, {
+        start: prevState => ({
+          ...prevState,
+          isAddingToFavorites: true
+        }),
+        success: prevState => ({
+          ...prevState,
+          favFoodIds: payload.data.data
+        }),
+        finish: prevState => ({
+          ...prevState,
+          isAddingToFavorites: false
+        })
+      });
+
     case actions.FETCH_FAVORITES:
       return handle(state, action, {
         start: prevState => ({
@@ -122,6 +186,26 @@ const reducer = (state = initialState, action) => {
       });
 
     case actions.SEARCH_FOOD:
+      return handle(state, action, {
+        start: prevState => ({
+          ...prevState,
+          isFetching: true
+        }),
+        success: prevState => ({
+          ...prevState,
+          searchedFood: payload.data.data,
+          searchedFoodCount: payload.data.data.length
+            ? parseInt(payload.data.data[0].total, 10)
+            : null,
+          hasSearched: true
+        }),
+        finish: prevState => ({
+          ...prevState,
+          isFetching: false
+        })
+      });
+
+    case actions.SEARCH_FAVORITES:
       return handle(state, action, {
         start: prevState => ({
           ...prevState,

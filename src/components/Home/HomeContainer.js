@@ -15,9 +15,16 @@ import {
   deleteLog,
   setPeriodEditing
 } from './duck';
+import {
+  addToFavorites,
+  deleteFromFavorites,
+  getFavoriteIds
+} from '../Food/duck';
+
 
 const mapStateToProps = (state) => {
   const { user } = state.login;
+  const { favFoodIds, isAddingToFavorites } = state.food;
   const {
     isFetchingLogs,
     userLogs,
@@ -44,7 +51,9 @@ const mapStateToProps = (state) => {
     showEditModal,
     isEditing,
     showDeleteModal,
-    isDeleting
+    isDeleting,
+    favFoodIds,
+    isAddingToFavorites
   };
 };
 
@@ -84,6 +93,15 @@ const mapDispatchToProps = dispatch => ({
   },
   setPeriodEditing: (period) => {
     dispatch(setPeriodEditing(period));
+  },
+  addToFavorites: ({ uid, foodId }) => {
+    dispatch(addToFavorites({ uid, foodId }));
+  },
+  deleteFromFavorites: ({ uid, foodId }) => {
+    dispatch(deleteFromFavorites({ uid, foodId }));
+  },
+  getFavoriteIds: (uid) => {
+    dispatch(getFavoriteIds(uid));
   }
 });
 

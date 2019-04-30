@@ -156,6 +156,18 @@ class Entry extends Component {
     }
   }
 
+  handleFavorite = (foodId) => {
+    const { favFoodIds } = this.props;
+
+    if (favFoodIds.includes(foodId)) {
+      const { deleteFromFavorites, user: uid } = this.props;
+      deleteFromFavorites({ uid, foodId });
+    } else {
+      const { addToFavorites, user: uid } = this.props;
+      addToFavorites({ uid, foodId });
+    }
+  }
+
   render() {
     const {
       searchedFood,
@@ -164,7 +176,9 @@ class Entry extends Component {
       isAddingLog,
       hasSearched,
       showModal,
-      period
+      period,
+      favFoodIds,
+      isAddingToFavorites
     } = this.props;
 
     const {
@@ -226,10 +240,46 @@ class Entry extends Component {
                   >
                     <Card
                       className="food-card"
-                      title={foodElement.food_filipinoName || foodElement.food_englishName}
                       hoverable
                       loading={isFetching}
                       onClick={() => this.showFoodModal(index)}
+                      title={(
+                        <div className="title-container">
+                          <div className="food-title">
+                            {foodElement.food_filipinoName || foodElement.food_englishName}
+                          </div>
+
+                          <div className="food-tag">
+                            <div className="icon-section">
+                              <Tag
+                                color={
+                                  constants.tagColors[foodElement.food_primaryClassification.split('-')[0]]
+                                }
+                              >
+                                {foodElement.food_primaryClassification.split('-')[0]}
+                              </Tag>
+                              {
+                                foodElement.food_secondaryClassification && (
+                                  <Tag
+                                    color={
+                                      constants.tagColors[foodElement.food_secondaryClassification]
+                                    }
+                                  >
+                                    {foodElement.food_secondaryClassification}
+                                  </Tag>
+                                )
+                              }
+                            </div>
+                            <div className="icon-section">
+                              <Icon
+                                className="fav-icon"
+                                type="heart"
+                                theme={favFoodIds.includes(foodElement.food_id) ? 'filled' : null}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     >
                       <Tag
                         color={
@@ -282,10 +332,10 @@ class Entry extends Component {
                   {`CHO: ${parseFloat((currentFood.food_choPerExchange * measure).toFixed(2))}g`}
                 </div>
                 <div className="macro-one">
-                  {`CHO: ${parseFloat((currentFood.food_proPerExchange * measure).toFixed(2))}g`}
+                  {`PRO: ${parseFloat((currentFood.food_proPerExchange * measure).toFixed(2))}g`}
                 </div>
                 <div className="macro-one">
-                  {`CHO: ${parseFloat((currentFood.food_fatPerExchange * measure).toFixed(2))}g`}
+                  {`FAT: ${parseFloat((currentFood.food_fatPerExchange * measure).toFixed(2))}g`}
                 </div>
               </div>,
 
@@ -300,7 +350,7 @@ class Entry extends Component {
                     value={measure}
                   />
                 </div>
-                <div className="or-between">
+                <div className="input-label">
                   OR
                 </div>
                 <div className="input-label">
@@ -336,7 +386,21 @@ class Entry extends Component {
 
             <div className="label-container">
               <div className="label">
-                {currentFood.food_englishName || 'N/A'}
+                {currentFood.food_englishName}
+              </div>
+              <div className="label">
+                {
+                  isAddingToFavorites ? (
+                    <Icon type="loading" />
+                  ) : (
+                    <Icon
+                      className="fav-icon"
+                      type="heart"
+                      theme={favFoodIds.includes(currentFood.food_id) ? 'filled' : null}
+                      onClick={() => this.handleFavorite(currentFood.food_id)}
+                    />
+                  )
+                }
               </div>
             </div>
 

@@ -9,6 +9,7 @@ import {
   addToLog
 } from './duck';
 import { changePage } from '../Header/duck';
+import { addToFavorites, deleteFromFavorites } from '../Food/duck';
 
 const mapStateToProps = (state) => {
   const {
@@ -22,6 +23,7 @@ const mapStateToProps = (state) => {
   } = state.entry;
   const { user: { id: user } } = state.login;
   const { dateSelected } = state.home;
+  const { favFoodIds, isAddingToFavorites } = state.food;
 
   return {
     period,
@@ -32,7 +34,9 @@ const mapStateToProps = (state) => {
     showModal,
     isAddingLog,
     user,
-    dateSelected
+    dateSelected,
+    favFoodIds,
+    isAddingToFavorites
   };
 };
 
@@ -49,6 +53,12 @@ const mapDispatchToProps = dispatch => ({
   },
   addToLog: (foodInfo) => {
     dispatch(addToLog(foodInfo));
+  },
+  addToFavorites: ({ uid, foodId }) => {
+    dispatch(addToFavorites({ uid, foodId }));
+  },
+  deleteFromFavorites: ({ uid, foodId }) => {
+    dispatch(deleteFromFavorites({ uid, foodId }));
   },
   changePage: (newPage) => {
     dispatch(changePage(newPage));

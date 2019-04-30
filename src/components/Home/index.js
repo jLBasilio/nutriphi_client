@@ -41,7 +41,8 @@ class Home extends Component {
       dateToday,
       dateSelected,
       user,
-      fetchLogs
+      fetchLogs,
+      getFavoriteIds
     } = this.props;
     changePage(pageTitles.HOME);
 
@@ -62,6 +63,7 @@ class Home extends Component {
         date: dateSelected
       });
     }
+    getFavoriteIds(user.id);
   }
 
   handleAddClick = () => {
@@ -182,6 +184,18 @@ class Home extends Component {
     });
   }
 
+  handleFavorite = (foodId) => {
+    const { favFoodIds } = this.props;
+
+    if (favFoodIds.includes(foodId)) {
+      const { deleteFromFavorites, user: { id: uid } } = this.props;
+      deleteFromFavorites({ uid, foodId });
+    } else {
+      const { addToFavorites, user: { id: uid } } = this.props;
+      addToFavorites({ uid, foodId });
+    }
+  }
+
   render() {
     const {
       showPopups,
@@ -201,7 +215,9 @@ class Home extends Component {
       user,
       showEditModal,
       isEditing,
-      isDeleting
+      isDeleting,
+      isAddingToFavorites,
+      favFoodIds
     } = this.props;
     const totalCho = userLogs.reduce((accCho, log) => accCho + log.consumed_choGrams, 0);
     const totalPro = userLogs.reduce((accPro, log) => accPro + log.consumed_proGrams, 0);
@@ -562,10 +578,7 @@ class Home extends Component {
         </Popover>
 
         <Modal
-          title={
-            currentFoodConsumed.food_? currentFoodConsumed.food_filipinoName
-            || currentFoodConsumed.food_englishName
-              : null}
+          title={currentFoodConsumed.food_filipinoName || currentFoodConsumed.food_englishName}
           visible={showEditModal}
           onCancel={this.handleModalClose}
           footer={[
@@ -617,7 +630,7 @@ class Home extends Component {
                   value={measure}
                 />
               </div>
-              <div className="or-between">
+              <div className="input-label">
                 OR
               </div>
               <div className="input-label">
@@ -667,12 +680,23 @@ class Home extends Component {
             </div>
           ]}
         >
-
           <div className="label-container">
             <div className="label">
-              {currentFoodConsumed
-                ? (currentFoodConsumed.food_englishName || 'N/A')
-                : null}
+              {currentFoodConsumed.food_englishName}
+            </div>
+            <div className="label">
+              {
+                isAddingToFavorites ? (
+                  <Icon type="loading" />
+                ) : (
+                  <Icon
+                    className="fav-icon"
+                    type="heart"
+                    theme={favFoodIds.includes(currentFoodConsumed.food_id) ? 'filled' : null}
+                    onClick={() => this.handleFavorite(currentFoodConsumed.food_id)}
+                  />
+                )
+              }
             </div>
           </div>
 
