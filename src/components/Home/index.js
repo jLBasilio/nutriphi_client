@@ -215,8 +215,9 @@ class Home extends Component {
   }
 
   handleFoodSelect = async (foodIndex) => {
-    const { searchedFood, user, resetSearch } = this.props;
+    const { searchedFood: preSearch, user, resetSearch } = this.props;
     const { mealCart, mealCartIds } = this.state;
+    const searchedFood = preSearch.filter(food => !mealCartIds.includes(food.food_id));
 
     const gramsEPPerExchange = parseFloat(searchedFood[foodIndex].food_gramsEPPerExchange);
     const mlEPPerExchange = parseFloat(searchedFood[foodIndex].food_mlEPPerExchange);
@@ -327,6 +328,8 @@ class Home extends Component {
 
     return (
       <div className="home">
+
+
 
         <Modal
           className="meal-modal"
@@ -446,8 +449,6 @@ class Home extends Component {
                         </div>
                       </div>
                     </div>
-
-
                   ))
                 }
               </div>
