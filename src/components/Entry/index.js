@@ -286,29 +286,37 @@ class Entry extends Component {
                           <div className="macro">
                             CHO
                             <div className="macro-value">
-                              {`${foodElement.food_choPerExchange}g`}
+                              {`${foodElement.food_choPerExchange
+                                * foodElement.food_exchangePerMeasure
+                              }g`}
                             </div>
                           </div>
                           <div className="macro">
                             PRO
                             <div className="macro-value">
-                              {`${foodElement.food_proPerExchange}g`}
+                              {`${foodElement.food_proPerExchange
+                                * foodElement.food_exchangePerMeasure
+                              }g`}
                             </div>
                           </div>
                           <div className="macro">
                             FAT
                             <div className="macro-value">
-                              {`${foodElement.food_fatPerExchange}g`}
+                              {`${foodElement.food_fatPerExchange
+                                * foodElement.food_exchangePerMeasure
+                              }g`}
                             </div>
                           </div>
                         </div>
 
                         <div className="card-row">
                           <div className="total-label">
-                            Total Kcal
+                            Total:
                           </div>
                           <div className="total-label">
-                            {`${foodElement.food_directKcalPerMeasure}g`}
+                            {`${foodElement.food_directKcalPerMeasure
+                              * foodElement.food_exchangePerMeasure
+                            }kcal`}
                           </div>
                         </div>
                       </div>
