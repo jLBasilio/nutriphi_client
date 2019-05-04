@@ -281,22 +281,37 @@ class Entry extends Component {
                         </div>
                       )}
                     >
-                      <Tag
-                        color={
-                          constants.tagColors[foodElement.food_primaryClassification.split('-')[0]]
-                        }
-                      >
-                        {foodElement.food_primaryClassification.split('-')[0]}
-                      </Tag>
-                      {
-                        foodElement.food_secondaryClassification && (
-                          <Tag
-                            color={constants.tagColors[foodElement.food_secondaryClassification]}
-                          >
-                            {foodElement.food_secondaryClassification}
-                          </Tag>
-                        )
-                      }
+                      <div className="card-body">
+                        <div className="card-row">
+                          <div className="macro">
+                            CHO
+                            <div className="macro-value">
+                              {`${foodElement.food_choPerExchange}g`}
+                            </div>
+                          </div>
+                          <div className="macro">
+                            PRO
+                            <div className="macro-value">
+                              {`${foodElement.food_proPerExchange}g`}
+                            </div>
+                          </div>
+                          <div className="macro">
+                            FAT
+                            <div className="macro-value">
+                              {`${foodElement.food_fatPerExchange}g`}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="card-row">
+                          <div className="total-label">
+                            Total Kcal
+                          </div>
+                          <div className="total-label">
+                            {`${foodElement.food_directKcalPerMeasure}g`}
+                          </div>
+                        </div>
+                      </div>
                     </Card>
                   </Col>
                 ))
