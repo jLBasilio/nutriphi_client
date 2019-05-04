@@ -11,3 +11,7 @@ export const searchFood = ({
 }) => (
   axios.get(`${url}/search/${foodClass}?skip=${skip}&take=${take}&q=${q}`)
 );
+
+export const searchRaw = ({ q, foodClass }) => (
+  axios.get(`${url}/search/raw/${foodClass}?&q=${q}`)
+);

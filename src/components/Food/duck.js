@@ -11,6 +11,7 @@ const actions = {
   FETCH_FAVORITES: 'FOOD/FETCH_FAVORITES',
   SEARCH_FAVORITES: 'FOOD/SEARCH_FAVORITES',
   SEARCH_FOOD: 'FOOD/SEARCH_FOOD',
+  SEARCH_RAW: 'FOOD/SEARCH_RAW',
   RESET_SEARCH: 'FOOD/RESET_SEARCH',
   SHOW_MODAL: 'FOOD/SHOW_MODAL'
 };
@@ -63,7 +64,31 @@ export const searchFood = ({
     skip, take, q, foodClass
   }),
   meta: {
-    onFailure: () => message.error('Server error', 4)
+    onFailure: (response) => {
+      switch (response.response.data.status) {
+        case 404:
+          message.error('No items', 4);
+          break;
+        default:
+          message.error('Server error', 4);
+      }
+    }
+  }
+});
+
+export const searchRaw = ({ q, foodClass }) => ({
+  type: actions.SEARCH_FOOD,
+  promise: foodApi.searchRaw({ q, foodClass }),
+  meta: {
+    onFailure: (response) => {
+      switch (response.response.data.status) {
+        case 404:
+          message.error('No items', 4);
+          break;
+        default:
+          message.error('Server error', 4);
+      }
+    }
   }
 });
 
@@ -75,7 +100,15 @@ export const searchFavorites = ({
     skip, take, q, uid
   }),
   meta: {
-    onFailure: () => message.error('Server error', 4)
+    onFailure: (response) => {
+      switch (response.response.data.status) {
+        case 404:
+          message.error('No items', 4);
+          break;
+        default:
+          message.error('Server error', 4);
+      }
+    }
   }
 });
 
@@ -113,6 +146,22 @@ const reducer = (state = initialState, action) => {
           ...prevState,
           food: payload.data.data,
           foodCount: parseInt(payload.data.data[0].total, 10)
+        }),
+        finish: prevState => ({
+          ...prevState,
+          isFetching: false
+        })
+      });
+
+    case actions.SEARCH_RAW:
+      return handle(state, action, {
+        start: prevState => ({
+          ...prevState,
+          isFetching: true
+        }),
+        success: prevState => ({
+          ...prevState,
+          searchedFood: payload.data.data
         }),
         finish: prevState => ({
           ...prevState,

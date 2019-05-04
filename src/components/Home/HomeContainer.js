@@ -13,18 +13,26 @@ import {
   toggleDeleteModal,
   editLog,
   deleteLog,
-  setPeriodEditing
+  setPeriodEditing,
+  toggleMealModal
 } from './duck';
 import {
   addToFavorites,
   deleteFromFavorites,
-  getFavoriteIds
+  getFavoriteIds,
+  searchRaw,
+  resetSearch
 } from '../Food/duck';
 
 
 const mapStateToProps = (state) => {
   const { user } = state.login;
-  const { favFoodIds, isAddingToFavorites } = state.food;
+  const {
+    searchedFood,
+    favFoodIds,
+    isAddingToFavorites,
+    isFetching
+  } = state.food;
   const {
     isFetchingLogs,
     userLogs,
@@ -36,7 +44,8 @@ const mapStateToProps = (state) => {
     showEditModal,
     isEditing,
     showDeleteModal,
-    isDeleting
+    isDeleting,
+    showCreateMealModal
   } = state.home;
 
   return {
@@ -53,7 +62,10 @@ const mapStateToProps = (state) => {
     showDeleteModal,
     isDeleting,
     favFoodIds,
-    isAddingToFavorites
+    isAddingToFavorites,
+    showCreateMealModal,
+    searchedFood,
+    isFetching
   };
 };
 
@@ -79,6 +91,9 @@ const mapDispatchToProps = dispatch => ({
   toggleDeleteModal: () => {
     dispatch(toggleDeleteModal());
   },
+  toggleMealModal: () => {
+    dispatch(toggleMealModal());
+  },
   editLog: (logInfo) => {
     dispatch(editLog(logInfo));
   },
@@ -102,6 +117,12 @@ const mapDispatchToProps = dispatch => ({
   },
   getFavoriteIds: (uid) => {
     dispatch(getFavoriteIds(uid));
+  },
+  searchRaw: ({ q, foodClass }) => {
+    dispatch(searchRaw({ q, foodClass }));
+  },
+  resetSearch: () => {
+    dispatch(resetSearch());
   }
 });
 

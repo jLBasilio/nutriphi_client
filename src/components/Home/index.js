@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import {
+  AutoComplete,
   Button,
   Divider,
   Empty,
   Icon,
+  Input,
   InputNumber,
   message,
   Modal,
   Popover,
   Progress,
+  Select,
   Spin,
   Tag
 } from 'antd';
@@ -18,18 +21,22 @@ import './home.scss';
 import * as constants from '../../constants';
 import * as pageTitles from '../../constants/pages';
 
+const { Option } = Select;
 class Home extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       showPopups: false,
-      // skip: 0,
-      // take: 10,
+      skip: 0,
+      take: 16,
       currentFoodConsumed: 'default',
       gramsml: null,
       measure: null,
-      deleting: false
+      deleting: false,
+      mealCart: [],
+      mealCartIds: [],
+      foodSearched: null
     };
   }
 
@@ -186,7 +193,6 @@ class Home extends Component {
 
   handleFavorite = (foodId) => {
     const { favFoodIds } = this.props;
-
     if (favFoodIds.includes(foodId)) {
       const { deleteFromFavorites, user: { id: uid } } = this.props;
       deleteFromFavorites({ uid, foodId });
@@ -196,13 +202,87 @@ class Home extends Component {
     }
   }
 
+  handleMealInput = (value) => {
+    this.setState({ foodSearched: value });
+  }
+
+  handleFoodSearch = (q) => {
+    const { searchRaw } = this.props;
+    if (q.length > 2) {
+      searchRaw({ q, foodClass: 'all' });
+    }
+  }
+
+  handleFoodSelect = async (foodIndex) => {
+    const { searchedFood, user, resetSearch } = this.props;
+    const { mealCart, mealCartIds } = this.state;
+    const [updatedMealCart, updatedMealCardIds] = [[...mealCart], [...mealCartIds]];
+    const gramsEPPerExchange = parseFloat(searchedFood[foodIndex].food_gramsEPPerExchange);
+    const mlEPPerExchange = parseFloat(searchedFood[foodIndex].food_mlEPPerExchange);
+    const gramsConsumed = gramsEPPerExchange
+      * parseFloat(searchedFood[foodIndex].food_exchangePerMeasure);
+    const mlConsumed = mlEPPerExchange
+      * parseFloat(searchedFood[foodIndex].food_exchangePerMeasure);
+    const exchangePerMeasure = parseFloat(searchedFood[foodIndex].food_exchangePerMeasure);
+    const choGrams = parseFloat(searchedFood[foodIndex].food_choPerExchange);
+    const proGrams = parseFloat(searchedFood[foodIndex].food_proPerExchange);
+    const fatGrams = parseFloat(searchedFood[foodIndex].food_fatPerExchange);
+
+    updatedMealCart.push({
+      ...searchedFood[foodIndex],
+      gramsConsumed: gramsConsumed ? parseFloat(gramsConsumed.toFixed(2)) : null,
+      mlConsumed: mlConsumed ? parseFloat(mlConsumed.toFixed(2)) : null,
+      totalKcalConsumed: parseFloat((parseFloat(searchedFood[foodIndex].food_directKcalPerMeasure)
+        * exchangePerMeasure).toFixed(2)),
+      choGrams: parseFloat((choGrams * exchangePerMeasure).toFixed(2)),
+      proGrams: parseFloat((proGrams * exchangePerMeasure).toFixed(2)),
+      fatGrams: parseFloat((fatGrams * exchangePerMeasure).toFixed(2)),
+      user: user.id,
+      food: searchedFood[foodIndex].food_id
+
+    });
+
+    updatedMealCardIds.push(searchedFood[foodIndex].food_id);
+
+    await this.handleMealInput(null);
+    this.setState({
+      foodSearched: null,
+      mealCart: updatedMealCart,
+      mealCartIds: updatedMealCardIds
+    }, () => resetSearch());
+  }
+
+  handleDeleteFromCart = (foodIndex) => {
+    const { mealCart, mealCartIds } = this.state;
+    const [updatedMealCart, updatedMealCartIds] = [[...mealCart], [...mealCartIds]];
+    updatedMealCart.splice(foodIndex, 1);
+    updatedMealCartIds.splice(foodIndex, 1);
+    this.setState({ mealCart: updatedMealCart, mealCartIds: updatedMealCartIds });
+  }
+
+  handleFoodMealModal = (cartIndex) => {
+    const { mealCart } = this.state;
+
+    console.log(mealCart[cartIndex]);
+
+  }
+
+  handleMealModal = () => {
+    const { toggleMealModal } = this.props;
+    this.setState({ showPopups: false });
+    toggleMealModal();
+  }
+
   render() {
     const {
       showPopups,
       currentFoodConsumed,
       gramsml,
       measure,
-      deleting
+      deleting,
+      mealCart,
+      mealCartIds,
+      foodSearched
     } = this.state;
     const {
       dateToday,
@@ -217,7 +297,10 @@ class Home extends Component {
       isEditing,
       isDeleting,
       isAddingToFavorites,
-      favFoodIds
+      favFoodIds,
+      showCreateMealModal,
+      searchedFood,
+      isFetching
     } = this.props;
     const totalCho = userLogs.reduce((accCho, log) => accCho + log.consumed_choGrams, 0);
     const totalPro = userLogs.reduce((accPro, log) => accPro + log.consumed_proGrams, 0);
@@ -238,6 +321,134 @@ class Home extends Component {
 
     return (
       <div className="home">
+        <Modal
+          className="meal-modal"
+          title="Create meal"
+          visible={showCreateMealModal}
+          onCancel={this.handleMealModal}
+          footer={(
+            <div className="meal-footer">
+              <div className="button-container">
+                <Button
+                  className="save-button"
+                  onClick={this.handleMealModal}
+                >
+                  Cancel
+                </Button>
+              </div>
+              <div className="button-container">
+                <Button
+                  type="primary"
+                  className="save-button"
+                  disabled={!mealCart.length}
+                  onClick={this.handleSaveMeal}
+                >
+                  {
+                    isAddingToFavorites
+                      ? <Icon type="loading" />
+                      : 'Save'
+                  }
+                </Button>
+              </div>
+            </div>
+
+          )}
+        >
+          <div className="meal-body">
+            <AutoComplete
+              className="meal-search"
+              placeholder="Search for food"
+              onSearch={this.handleFoodSearch}
+              onSelect={this.handleFoodSelect}
+              dataSource={
+                searchedFood
+                  .filter(food => !mealCartIds.includes(food.food_id))
+                  .map((food, index) => ({
+                    value: index,
+                    text: food.food_filipinoName || food.food_englishName,
+                    label: food.food_filipinoName || food.food_englishName,
+                    payload: food
+                  }))
+              }
+              value={foodSearched}
+              onChange={this.handleMealInput}
+            >
+              {
+                isFetching ? (
+                  <Input suffix={ <Icon type="loading" /> } />
+                ) : (
+                  <Input suffix={ <span /> } />
+                )
+              }
+            </AutoComplete>
+            <div className="meal-cart">
+              <div className="cart-title">
+                Foods
+              </div>
+              <div className="cart-body">
+                {
+                  mealCart.map((cartFood, index) => (
+
+                    <div key={cartFood.food_id} className="cart-row">
+                      <div className="cart-row-left">
+                        {`${cartFood.food_filipinoName || cartFood.food_englishName} `}
+                        <Tag
+                          className="log-tag"
+                          color={
+                            constants.tagColors[cartFood.food_primaryClassification.split('-')[0]]
+                          }
+                        >
+                          {cartFood.food_primaryClassification.split('-')[0]}
+                        </Tag>
+                        {
+                          cartFood.food_secondaryClassification && (
+                            <Tag
+                              className="log-tag"
+                              color={
+                                constants.tagColors[cartFood.food_secondaryClassification]
+                              }
+                            >
+                              {cartFood.food_secondaryClassification}
+                            </Tag>
+                          )
+                        }
+                        <div className="kcal">
+                          {`${cartFood.mlConsumed
+                            ? cartFood.mlConsumed
+                            : cartFood.gramsConsumed}${cartFood.mlConsumed
+                            ? 'ml'
+                            : 'g'} 
+                          - ${cartFood.totalKcalConsumed}kcal`}
+                        </div>
+                      </div>
+                      <div className="cart-row-right">
+                        <div className="icon-container">
+                          <Icon
+                            className="action-icon"
+                            onClick={() => this.handleFoodMealModal(index)}
+                            theme="filled"
+                            type="edit"
+                          />
+                        </div>
+                        <div className="icon-container">
+                          <Icon
+                            className="action-icon"
+                            onClick={() => this.handleDeleteFromCart(index)}
+                            type="close"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+
+                  ))
+                }
+              </div>
+
+            </div>
+          </div>
+        </Modal>
+
         <div className="home-body">
           <div className="date">
             {
@@ -557,12 +768,17 @@ class Home extends Component {
             <Link to="/entry" key="dinner" onClick={() => this.handleAddEntry(constants.DINNER)}>
               <div className="link">Dinner</div>
             </Link>,
-            <Link to="/exercise" key="exercise" onClick={this.handleExercise}>
-              <div className="link">Exercise</div>
-            </Link>
+            <div
+              key="meal"
+              className="link"
+              onClick={this.handleMealModal}
+              role="none"
+            >
+              Meal
+            </div>
           ]}
           placement="topLeft"
-          title="Add Log"
+          title="Add"
           trigger="click"
           visible={showPopups}
           onVisibleChange={this.handleAddClick}
@@ -792,6 +1008,8 @@ class Home extends Component {
             </div>
           </div>
         </Modal>
+
+
       </div>
     );
   }

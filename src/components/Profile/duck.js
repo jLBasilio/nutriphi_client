@@ -34,7 +34,8 @@ const initialState = {
 };
 
 const reducer = (state = initialState, action) => {
-  const { type, payload } = action;
+  const { type } = action;
+  // const { type, payload } = action;
 
   switch (type) {
     case actions.HEALTH_EDIT:

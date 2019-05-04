@@ -61,10 +61,6 @@
           background-color: $default-bg;
         }
 
-        &:last-child {
-          border-bottom: 1px solid $greywhite;
-        }
-
         .log-left {
           float: left;
           text-align: left;
@@ -164,5 +160,93 @@
       width: 50px;
     }
   }
+}
 
+
+.ant-modal {
+  &.meal-modal {
+
+    .ant-modal-body {
+      .meal-body {
+        .meal-search {
+          width: 100%;
+        }
+      }
+
+      .meal-cart {
+
+        .cart-title {
+          border-bottom: .03rem solid $black-line;
+          font-weight: bold;
+          margin-top: 1rem;
+        }
+
+        .cart-body {
+          font-size: .8rem;
+
+          .cart-row {
+            align-items: center;
+            border-bottom: 1px solid $greywhite;
+            display: flex;
+            height: 3.5rem;
+            padding: 0 .5rem;
+
+            &:hover {
+              background-color: $card-bg;
+            }
+
+            .cart-row-left {
+              flex: 1;
+              font-weight: bold;
+
+              .kcal {
+                font-weight: normal;
+              }
+            }
+
+            .cart-row-right {
+              align-items: center;
+              display: flex;
+
+              .icon-container {
+
+                font-size: .9rem;
+
+                &:last-child {
+                  padding-left: .8rem;
+                }
+              }
+            }
+          }
+        }
+
+      }
+    }
+
+    .ant-modal-footer {
+      .meal-footer {
+        display: flex;
+        justify-content: flex-end;
+
+        .button-container {
+          flex: 1;
+
+          .ant-btn-primary {
+            background-color: $base-kahel;
+            border: 0;
+            color: $white;
+
+            &:hover {
+              background-color: $secondary-kahel;
+            }
+          }
+
+          &:last-child {
+            flex: 0;
+            padding-left: .5rem;
+          }
+        }
+      }
+    }
+  }
 }

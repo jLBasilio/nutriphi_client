@@ -5,7 +5,7 @@ export const SIGNUP = 'SIGN UP';
 export const PROFILE = 'PROFILE';
 export const ABOUT = 'ABOUT';
 
-export const ALL = 'ALL FOODS';
+export const ALL = 'ALL FOOD';
 export const FAVORITES = 'FAVORITES';
 export const VEGETABLE = 'VEGETABLE';
 export const FRUIT = 'FRUIT';

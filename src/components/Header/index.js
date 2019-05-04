@@ -195,6 +195,13 @@ class Header extends Component {
                   }
                 </SubMenu>
 
+                <Menu.Item key="meal" onClick={this.clickedLink}>
+                  <Link to="/meal">
+                    <Icon type="heart" />
+                    Meal
+                  </Link>
+                </Menu.Item>
+
                 <Menu.Item key="about" onClick={this.clickedLink}>
                   <Link to="/about">
                     <Icon type="question-circle" />

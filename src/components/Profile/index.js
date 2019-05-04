@@ -264,7 +264,8 @@ class Profile extends Component {
   }
 
   handleGoalConfirm = async () => {
-    const { healthEdit, user, getUser } = this.props;
+    // const { healthEdit, user, getUser } = this.props;
+    const { user } = this.props;
 
     const {
       goalKg,

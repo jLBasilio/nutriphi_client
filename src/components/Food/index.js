@@ -306,7 +306,7 @@ class Food extends Component {
                         </div>
                       )}
                     >
-                      PUt kcal here plz
+
                     </Card>
                   </Col>
                 ))
@@ -362,7 +362,38 @@ class Food extends Component {
                         </div>
                       )}
                     >
-                      Put kcal here plz
+                      <div className="card-body">
+
+                        <div className="card-row">
+                          <div className="macro">
+                            CHO
+                            <div className="macro-value">
+                              {`${foodElement.food_choPerExchange}g`}
+                            </div>
+                          </div>
+                          <div className="macro">
+                            PRO
+                            <div className="macro-value">
+                              {`${foodElement.food_proPerExchange}g`}
+                            </div>
+                          </div>
+                          <div className="macro">
+                            FAT
+                            <div className="macro-value">
+                              {`${foodElement.food_fatPerExchange}g`}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="card-row">
+                          <div className="total-label">
+                            Total Kcal
+                          </div>
+                          <div className="total-label">
+                            {`${foodElement.food_directKcalPerMeasure}g`}
+                          </div>
+                        </div>
+                      </div>
                     </Card>
                   </Col>
                 ))
