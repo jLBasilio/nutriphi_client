@@ -16,7 +16,8 @@ const actions = {
   TOGGLE_DELETE: 'HOME/TOGGLE_DELETE',
   EDIT_LOG: 'HOME/EDIT_LOG',
   DELETE_LOG: 'HOME/DELETE_LOG',
-  TOGGLE_MEAL: 'HOME/TOGGLE_MEAL'
+  TOGGLE_MEAL: 'HOME/TOGGLE_MEAL',
+  TOGGLE_MEALEDIT: 'HOME/TOGGLE_MEAL_EDIT'
 };
 
 export const logout = () => ({
@@ -77,6 +78,10 @@ export const toggleMealModal = () => ({
   type: actions.TOGGLE_MEAL
 });
 
+export const toggleMealEdit = () => ({
+  type: actions.TOGGLE_MEALEDIT
+});
+
 export const editLog = logInfo => (dispatch) => {
   dispatch({
     type: actions.EDIT_LOG,
@@ -129,7 +134,8 @@ const initialState = {
   isEditing: false,
   showDeleteModal: false,
   isDeleting: false,
-  showCreateMealModal: true
+  showCreateMealModal: true,
+  showEditFoodMeal: false
 };
 
 const reducer = (state = initialState, action) => {
@@ -267,6 +273,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         showCreateMealModal: !state.showCreateMealModal
+      };
+
+    case actions.TOGGLE_MEALEDIT:
+      return {
+        ...state,
+        showEditFoodMeal: !state.showEditFoodMeal
       };
 
     default:

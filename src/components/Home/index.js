@@ -36,7 +36,8 @@ class Home extends Component {
       deleting: false,
       mealCart: [],
       mealCartIds: [],
-      foodSearched: null
+      foodSearched: null,
+      currentFoodMeal: 'default'
     };
   }
 
@@ -216,7 +217,7 @@ class Home extends Component {
   handleFoodSelect = async (foodIndex) => {
     const { searchedFood, user, resetSearch } = this.props;
     const { mealCart, mealCartIds } = this.state;
-    const [updatedMealCart, updatedMealCardIds] = [[...mealCart], [...mealCartIds]];
+
     const gramsEPPerExchange = parseFloat(searchedFood[foodIndex].food_gramsEPPerExchange);
     const mlEPPerExchange = parseFloat(searchedFood[foodIndex].food_mlEPPerExchange);
     const gramsConsumed = gramsEPPerExchange
@@ -228,7 +229,7 @@ class Home extends Component {
     const proGrams = parseFloat(searchedFood[foodIndex].food_proPerExchange);
     const fatGrams = parseFloat(searchedFood[foodIndex].food_fatPerExchange);
 
-    updatedMealCart.push({
+    const updatedMealCart = [{
       ...searchedFood[foodIndex],
       gramsConsumed: gramsConsumed ? parseFloat(gramsConsumed.toFixed(2)) : null,
       mlConsumed: mlConsumed ? parseFloat(mlConsumed.toFixed(2)) : null,
@@ -239,10 +240,14 @@ class Home extends Component {
       fatGrams: parseFloat((fatGrams * exchangePerMeasure).toFixed(2)),
       user: user.id,
       food: searchedFood[foodIndex].food_id
+    },
+    ...mealCart
+    ];
 
-    });
-
-    updatedMealCardIds.push(searchedFood[foodIndex].food_id);
+    const updatedMealCardIds = [
+      searchedFood[foodIndex].food_id,
+      ...mealCartIds
+    ];
 
     await this.handleMealInput(null);
     this.setState({
@@ -262,9 +267,11 @@ class Home extends Component {
 
   handleFoodMealModal = (cartIndex) => {
     const { mealCart } = this.state;
-
-    console.log(mealCart[cartIndex]);
-
+    const { toggleMealEdit } = this.props;
+    const foodToEdit = mealCart[cartIndex];
+    this.setState({
+      currentFoodMeal: foodToEdit
+    }, () => toggleMealEdit());
   }
 
   handleMealModal = () => {
@@ -305,11 +312,10 @@ class Home extends Component {
     const totalCho = userLogs.reduce((accCho, log) => accCho + log.consumed_choGrams, 0);
     const totalPro = userLogs.reduce((accPro, log) => accPro + log.consumed_proGrams, 0);
     const totalFat = userLogs.reduce((accFat, log) => accFat + log.consumed_fatGrams, 0);
+    const totalKcal = userLogs.reduce((kcal, log) => kcal + log.consumed_totalKcalConsumed, 0); 
     const percentCho = parseFloat(((totalCho / user.choPerDay) * 100).toFixed(2));
     const percentPro = parseFloat(((totalPro / user.proPerDay) * 100).toFixed(2));
     const percentFat = parseFloat(((totalFat / user.fatPerDay) * 100).toFixed(2));
-    const totalKcal = (totalCho + totalPro) * constants.KCAL_PER_PRO_MUL
-      + totalFat * constants.KCAL_PER_FAT_MUL;
     const userKcal = user.goalTEA;
 
     let dateSelectedSplit = [];
@@ -321,6 +327,7 @@ class Home extends Component {
 
     return (
       <div className="home">
+
         <Modal
           className="meal-modal"
           title="Create meal"
