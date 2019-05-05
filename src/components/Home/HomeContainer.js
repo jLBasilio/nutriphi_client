@@ -15,7 +15,9 @@ import {
   deleteLog,
   setPeriodEditing,
   toggleMealModal,
-  toggleMealEdit
+  toggleMealEdit,
+  toggleNameMealModal,
+  addMeal
 } from './duck';
 import {
   addToFavorites,
@@ -47,7 +49,9 @@ const mapStateToProps = (state) => {
     showDeleteModal,
     isDeleting,
     showCreateMealModal,
-    showEditFoodMeal
+    showEditFoodMeal,
+    showNameMealModal,
+    isSavingMeal
   } = state.home;
 
   return {
@@ -68,7 +72,9 @@ const mapStateToProps = (state) => {
     showCreateMealModal,
     searchedFood,
     isFetching,
-    showEditFoodMeal
+    showEditFoodMeal,
+    showNameMealModal,
+    isSavingMeal
   };
 };
 
@@ -99,6 +105,12 @@ const mapDispatchToProps = dispatch => ({
   },
   toggleMealEdit: () => {
     dispatch(toggleMealEdit());
+  },
+  toggleNameMealModal: () => {
+    dispatch(toggleNameMealModal());
+  },
+  addMeal: (mealInfo) => {
+    dispatch(addMeal(mealInfo));
   },
   editLog: (logInfo) => {
     dispatch(editLog(logInfo));

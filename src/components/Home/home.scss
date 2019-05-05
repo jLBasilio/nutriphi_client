@@ -41,10 +41,33 @@
       }
 
       .today-title {
+        align-items: center;
         border-bottom: 1px solid $greywhite;
-        font-size: 1.05rem;
+        display: flex;
+        font-size: .95rem;
         padding: .5rem 0;
         text-align: left;
+
+        .today-title-one {
+          flex: 1;
+
+          .create-meal-button {
+            background-color: $base-kahel;
+            border: 0;
+            border-radius: 8px;
+            color: $white;
+            width: 6rem;
+
+            &:hover {
+              background-color: $secondary-kahel;
+            }
+          }
+
+          &:last-child {
+            flex: 0;
+          }
+        }
+
       }
 
       .log {
@@ -164,6 +187,25 @@
 
 
 .ant-modal {
+  .button-container {
+    flex: 1;
+
+    .ant-btn-primary {
+      background-color: $base-kahel;
+      border: 0;
+      color: $white;
+
+      &:hover {
+        background-color: $secondary-kahel;
+      }
+    }
+
+    &:last-child {
+      flex: 0;
+      padding-left: .5rem;
+    }
+  }
+
   &.meal-modal {
 
     .ant-modal-body {
@@ -174,7 +216,6 @@
       }
 
       .meal-cart {
-
         .cart-title {
           border-bottom: .03rem solid $black-line;
           font-weight: bold;
@@ -183,12 +224,16 @@
 
         .cart-body {
           font-size: .8rem;
+          max-height: 15rem;
+          overflow-x: hidden;
+          overflow-y: auto;
 
           .cart-row {
             align-items: center;
             border-bottom: 1px solid $greywhite;
             display: flex;
-            height: 3.5rem;
+            height: auto;
+            min-height: 4.5rem;
             padding: 0 .5rem;
 
             &:hover {
@@ -196,7 +241,10 @@
             }
 
             .cart-row-left {
-              flex: 1;
+              @include for-tablet-portrait-up {
+                flex: 4.5;
+              }
+              flex: 3;
               font-weight: bold;
 
               .kcal {
@@ -207,6 +255,7 @@
             .cart-row-right {
               align-items: center;
               display: flex;
+              flex: 1;
 
               .icon-container {
 
@@ -227,25 +276,6 @@
       .meal-footer {
         display: flex;
         justify-content: flex-end;
-
-        .button-container {
-          flex: 1;
-
-          .ant-btn-primary {
-            background-color: $base-kahel;
-            border: 0;
-            color: $white;
-
-            &:hover {
-              background-color: $secondary-kahel;
-            }
-          }
-
-          &:last-child {
-            flex: 0;
-            padding-left: .5rem;
-          }
-        }
       }
     }
   }

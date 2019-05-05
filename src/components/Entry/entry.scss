@@ -157,10 +157,32 @@
     flex-direction: column;
 
     .macro-update {
+      align-items: center;
       border-bottom: .02rem solid $black-line;
       display: flex;
       justify-content: space-between;
       padding-bottom: .5rem;
+
+      &:nth-child(2) {
+        padding: 5px 8px;
+      }
+
+      .total-kcal {
+        @include for-tablet-portrait-up {
+          font-size: 1rem;
+        }
+
+        flex: 1;
+        font-size: .8rem;
+        font-weight: bold;
+        padding-bottom: 0;
+        text-align: left;
+
+        &:last-child {
+          font-weight: normal;
+          text-align: right;
+        }
+      }
 
       .macro-one {
         border-right: .02rem solid $black-line;
@@ -171,6 +193,16 @@
         &:last-child {
           border: 0;
         }
+
+        .macro-one-value {
+          @include for-tablet-portrait-up {
+            font-size: 1rem;
+          }
+
+          font-size: .8rem;
+          font-weight: normal;
+        }
+
       }
     }
 

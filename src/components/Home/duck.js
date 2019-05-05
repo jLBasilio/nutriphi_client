@@ -2,6 +2,7 @@ import { handle } from 'redux-pack';
 import { message } from 'antd';
 import * as authApi from '../../api/user';
 import * as logApi from '../../api/log';
+import * as mealApi from '../../api/meal';
 
 const actions = {
   LOGOUT: 'AUTH/LOGOUT',
@@ -17,7 +18,9 @@ const actions = {
   EDIT_LOG: 'HOME/EDIT_LOG',
   DELETE_LOG: 'HOME/DELETE_LOG',
   TOGGLE_MEAL: 'HOME/TOGGLE_MEAL',
-  TOGGLE_MEALEDIT: 'HOME/TOGGLE_MEAL_EDIT'
+  TOGGLE_MEALEDIT: 'HOME/TOGGLE_MEALEDIT',
+  TOGGLE_NAMEMEAL: 'HOME/TOGGLE_NAMEMEAL',
+  ADD_MEAL: 'HOME/ADD_MEAL'
 };
 
 export const logout = () => ({
@@ -82,6 +85,29 @@ export const toggleMealEdit = () => ({
   type: actions.TOGGLE_MEALEDIT
 });
 
+export const toggleNameMealModal = () => ({
+  type: actions.TOGGLE_NAMEMEAL
+});
+
+export const addMeal = mealInfo => (dispatch) => {
+  dispatch({
+    type: actions.ADD_MEAL,
+    promise: mealApi.addMeal(mealInfo),
+    meta: {
+      onSuccess: () => {
+        message.success('Meal created', 4);
+        dispatch(toggleNameMealModal());
+        dispatch(toggleMealModal());
+      },
+      onFailure: () => {
+        message.error('Server error', 4);
+        dispatch(toggleNameMealModal());
+        dispatch(toggleMealModal());
+      }
+    }
+  });
+};
+
 export const editLog = logInfo => (dispatch) => {
   dispatch({
     type: actions.EDIT_LOG,
@@ -134,8 +160,10 @@ const initialState = {
   isEditing: false,
   showDeleteModal: false,
   isDeleting: false,
-  showCreateMealModal: true,
-  showEditFoodMeal: false
+  showCreateMealModal: false,
+  showEditFoodMeal: false,
+  showNameMealModal: false,
+  isSavingMeal: false
 };
 
 const reducer = (state = initialState, action) => {
@@ -223,6 +251,21 @@ const reducer = (state = initialState, action) => {
         })
       });
 
+    case actions.ADD_MEAL:
+      return handle(state, action, {
+        start: prevState => ({
+          ...prevState,
+          isSavingMeal: true
+        }),
+        success: prevState => ({
+          ...prevState
+        }),
+        finish: prevState => ({
+          ...prevState,
+          isSavingMeal: false
+        })
+      });
+
     case actions.LOG_CLEANUP:
       return {
         ...state,
@@ -279,6 +322,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         showEditFoodMeal: !state.showEditFoodMeal
+      };
+
+    case actions.TOGGLE_NAMEMEAL:
+      return {
+        ...state,
+        showNameMealModal: !state.showNameMealModal
       };
 
     default:
