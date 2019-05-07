@@ -8,6 +8,7 @@ import login from './Login/duck';
 import signup from './Signup/duck';
 import profile from './Profile/duck';
 import about from './About/duck';
+import meal from './Meal/duck';
 
 const reducers = combineReducers({
   entry,
@@ -17,7 +18,8 @@ const reducers = combineReducers({
   signup,
   food,
   profile,
-  about
+  about,
+  meal
 });
 
 export default reducers;

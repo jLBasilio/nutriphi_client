@@ -214,8 +214,10 @@ class Home extends Component {
   }
 
   handleFoodSearch = (q) => {
-    const { searchRaw } = this.props;
-    if (q.length > 2) {
+    const { searchRaw, resetSearch } = this.props;
+    if (!q.length) {
+      resetSearch();
+    } else if (q.length > 2) {
       searchRaw({ q, foodClass: 'all' });
     }
   }
@@ -496,6 +498,15 @@ class Home extends Component {
       };
 
       addMeal(mealInfo);
+      this.setState({
+        mealCart: [],
+        mealCartIds: [],
+        foodSearched: null,
+        currentFoodMeal: 'default',
+        currentFoodMealIndex: null,
+        mealTotalKcal: 0,
+        mealName: null
+      });
     }
   }
 
@@ -583,6 +594,7 @@ class Home extends Component {
           </div>
         </Modal>
 
+        { /* For editing food inside meal */ }
         <Modal
           title={currentFoodMeal.food_filipinoName || currentFoodMeal.food_englishName}
           visible={showEditFoodMeal}
@@ -764,12 +776,7 @@ class Home extends Component {
               Measurement
             </div>
             <div className="macros-value">
-              {currentFoodMeal
-                ? currentFoodMeal.food_servingMeasurement
-                  ? currentFoodMeal.food_servingMeasurement
-                  : 'N/A'
-                : null
-              }
+              {currentFoodMeal.food_servingMeasurement || 'N/A'}
             </div>
           </div>
         </Modal>
@@ -797,11 +804,7 @@ class Home extends Component {
                   disabled={!mealCart.length}
                   onClick={this.handleNameMeal}
                 >
-                  {
-                    isAddingToFavorites
-                      ? <Icon type="loading" />
-                      : 'Save'
-                  }
+                  Save
                 </Button>
               </div>
             </div>
@@ -1251,6 +1254,14 @@ class Home extends Component {
 
         <Popover
           content={[
+            <div
+              key="meal"
+              className="link"
+              onClick={this.handleMealModal}
+              role="none"
+            >
+              Create meal
+            </div>,
             <Link to="/entry" key="breakfast" onClick={() => this.handleAddEntry(constants.BREAKFAST)}>
               <div className="link">Breakfast</div>
             </Link>,
@@ -1259,15 +1270,7 @@ class Home extends Component {
             </Link>,
             <Link to="/entry" key="dinner" onClick={() => this.handleAddEntry(constants.DINNER)}>
               <div className="link">Dinner</div>
-            </Link>,
-            <div
-              key="meal"
-              className="link"
-              onClick={this.handleMealModal}
-              role="none"
-            >
-              Meal
-            </div>
+            </Link>
           ]}
           placement="topLeft"
           title="Add"

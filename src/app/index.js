@@ -16,6 +16,7 @@ import Login from '../components/Login/LoginContainer';
 import Signup from '../components/Signup/SignupContainer';
 import Profile from '../components/Profile/ProfileContainer';
 import About from '../components/About/AboutContainer';
+import Meal from '../components/Meal/MealContainer';
 
 import * as pageTitles from '../constants/pages';
 
@@ -44,7 +45,8 @@ class App extends Component {
             <React.Fragment>
               <Header />
               <Switch>
-                <Route exact path="/" component={Home} />
+                <Route exact path="/s" component={Home} />
+                <Route exact path="/food/meal" component={Meal} />
                 <Route exact path="/food/favorites" render={() => <Food toFetch="favorites" title={pageTitles.FAVORITES} />} />
                 <Route exact path="/food/all" render={() => <Food toFetch="all" title={pageTitles.ALL} />} />
                 <Route exact path="/food/vegetable" render={() => <Food toFetch="vegetable" title={pageTitles.VEGETABLE} />} />
@@ -59,7 +61,7 @@ class App extends Component {
                 <Route exact path="/entry" component={Entry} />
                 <Route exact path="/about" component={About} />
                 <Route exact path="/profile" component={Profile} />
-                <Redirect to="/food/all" />
+                <Redirect to="/food/meal" />
               </Switch>
             </React.Fragment>
           ) : (

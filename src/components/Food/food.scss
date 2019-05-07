@@ -17,9 +17,12 @@
 
       .ant-card {
         background-color: $card-bg;
+        border-radius: 5px;
         box-shadow: $card-shadow;
 
         .ant-card-head {
+          color: $black-line;
+          font-weight: bold;
           padding: 0 1.2rem;
 
           .ant-card-head-title {
@@ -28,6 +31,7 @@
 
             .food-tag {
               display: flex;
+              font-weight: normal;
 
               .icon-section {
                 color: $base-kahel;
