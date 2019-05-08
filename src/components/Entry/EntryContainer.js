@@ -6,9 +6,15 @@ import {
   searchFood,
   setPeriod,
   toggleModal,
-  addToLog
+  addToLog,
+  toggleMealModal,
+  addMeal
 } from './duck';
 import { changePage } from '../Header/duck';
+import {
+  searchMeal,
+  resetSearch as resetMealSearch
+} from '../Meal/duck';
 import { addToFavorites, deleteFromFavorites } from '../Food/duck';
 
 const mapStateToProps = (state) => {
@@ -19,8 +25,14 @@ const mapStateToProps = (state) => {
     isFetching,
     hasSearched,
     showModal,
-    isAddingLog
+    isAddingLog,
+    showMealModal
   } = state.entry;
+  const {
+    searchedMeal,
+    isFetching: isFetchingMeal,
+    searchedMealCount
+  } = state.meal;
   const { user: { id: user } } = state.login;
   const { dateSelected } = state.home;
   const { favFoodIds, isAddingToFavorites } = state.food;
@@ -30,13 +42,17 @@ const mapStateToProps = (state) => {
     searchedFood,
     searchedFoodCount,
     isFetching,
+    isFetchingMeal,
     hasSearched,
     showModal,
     isAddingLog,
     user,
     dateSelected,
     favFoodIds,
-    isAddingToFavorites
+    isAddingToFavorites,
+    searchedMeal,
+    searchedMealCount,
+    showMealModal
   };
 };
 
@@ -51,8 +67,17 @@ const mapDispatchToProps = dispatch => ({
       skip, take, q, foodClass
     }));
   },
+  searchMeal: (qInfo) => {
+    dispatch(searchMeal(qInfo));
+  },
+  resetMealSearch: () => {
+    dispatch(resetMealSearch());
+  },
   addToLog: (foodInfo) => {
     dispatch(addToLog(foodInfo));
+  },
+  addMeal: (logs) => {
+    dispatch(addMeal(logs));
   },
   addToFavorites: ({ uid, foodId }) => {
     dispatch(addToFavorites({ uid, foodId }));
@@ -68,6 +93,9 @@ const mapDispatchToProps = dispatch => ({
   },
   toggleModal: () => {
     dispatch(toggleModal());
+  },
+  toggleMealModal: () => {
+    dispatch(toggleMealModal());
   }
 });
 

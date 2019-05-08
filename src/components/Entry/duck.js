@@ -8,7 +8,9 @@ const actions = {
   SEARCH_FOOD: 'ENTRY/SEARCH_FOOD',
   ADD_LOG: 'ENTRY/ADD_LOG',
   RESET_SEARCH: 'ENTRY/RESET_SEARCH',
-  SHOW_MODAL: 'ENTRY/SHOW_MODAL'
+  SHOW_MODAL: 'ENTRY/SHOW_MODAL',
+  TOGGLE_MEAL: 'ENTRY/TOGGLE_MEAL',
+  ADD_MEAL: 'ENTRY/ADD_MEAL'
 };
 
 export const setPeriod = period => ({
@@ -37,12 +39,25 @@ export const addToLog = logInfo => ({
   }
 });
 
+export const addMeal = ({ logs }) => ({
+  type: actions.ADD_MEAL,
+  promise: logApi.addMeal({ logs }),
+  meta: {
+    onSuccess: () => message.success('Successfully added to log', 4),
+    onFailure: () => message.error('Server error', 4)
+  }
+});
+
 export const resetSearch = () => ({
   type: actions.RESET_SEARCH
 });
 
 export const toggleModal = () => ({
   type: actions.SHOW_MODAL
+});
+
+export const toggleMealModal = () => ({
+  type: actions.TOGGLE_MEAL
 });
 
 const initialState = {
@@ -52,7 +67,8 @@ const initialState = {
   searchedFood: [],
   hasSearched: false,
   searchedFoodCount: null,
-  showModal: false
+  showModal: false,
+  showMealModal: false
 };
 
 const reducer = (state = initialState, action) => {
@@ -101,6 +117,21 @@ const reducer = (state = initialState, action) => {
         })
       });
 
+    case actions.ADD_MEAL:
+      return handle(state, action, {
+        start: prevState => ({
+          ...prevState,
+          isAddingLog: true
+        }),
+        success: prevState => ({
+          ...prevState
+        }),
+        finish: prevState => ({
+          ...prevState,
+          isAddingLog: false
+        })
+      });
+
     case actions.RESET_SEARCH:
       return {
         ...state,
@@ -113,6 +144,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         showModal: !state.showModal
+      };
+
+    case actions.TOGGLE_MEAL:
+      return {
+        ...state,
+        showMealModal: !state.showMealModal
       };
 
     default:

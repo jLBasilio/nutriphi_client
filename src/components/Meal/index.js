@@ -11,7 +11,6 @@ import {
   InputNumber,
   message,
   Modal,
-  Pagination,
   Row,
   Tag
 } from 'antd';

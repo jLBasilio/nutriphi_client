@@ -10,6 +10,7 @@ import {
   InputNumber,
   Modal,
   Pagination,
+  Radio,
   Row,
   Tag
 } from 'antd';
@@ -20,7 +21,7 @@ import * as pageTitles from '../../constants/pages';
 import * as dateUtil from '../../utils/date.util';
 
 const { Search } = Input;
-
+const { Group: RadioGroup } = Radio;
 class Entry extends Component {
   constructor(props) {
     super(props);
@@ -33,18 +34,22 @@ class Entry extends Component {
       currentSearched: null,
       confirmedSearch: null,
       currentFood: 'default',
+      currentMeal: { ingredient: [] },
       measure: 1,
-      gramsml: null
+      gramsml: null,
+      searchType: 'food'
     };
   }
 
   componentDidMount() {
     const {
       changePage,
-      resetSearch
+      resetSearch,
+      resetMealSearch
     } = this.props;
     changePage(pageTitles.ENTRY);
     resetSearch();
+    resetMealSearch();
   }
 
   handleSearch = (q) => {
@@ -52,24 +57,37 @@ class Entry extends Component {
     if (!q.length) {
       message.error('Input something', 4);
     } else if (q !== previousSearched && q.length > 2) {
-      const { searchFood } = this.props;
-      const { skip, take } = this.state;
-      searchFood({
-        skip, take, q, foodClass: 'all'
-      });
+      const {
+        searchFood,
+        searchMeal,
+        user
+      } = this.props;
+      const { skip, take, searchType } = this.state;
+
+      if (searchType === 'food') {
+        searchFood({
+          skip, take, q, foodClass: 'all'
+        });
+      } else if (searchType === 'meal') {
+        searchMeal({
+          skip, take, q, uid: user
+        });
+      }
+
       this.setState({ previousSearched: q, confirmedSearch: q });
     }
   }
 
   handleSearchChange = (e) => {
     if (!e.target.value.length) {
-      const { resetSearch } = this.props;
+      const { resetSearch, resetMealSearch } = this.props;
       this.setState({
         previousSearched: null,
         currentSearched: null,
         confirmedSearch: null
       });
       resetSearch();
+      resetMealSearch();
     } else {
       this.setState({ currentSearched: e.target.value });
     }
@@ -158,7 +176,6 @@ class Entry extends Component {
 
   handleFavorite = (foodId) => {
     const { favFoodIds } = this.props;
-
     if (favFoodIds.includes(foodId)) {
       const { deleteFromFavorites, user: uid } = this.props;
       deleteFromFavorites({ uid, foodId });
@@ -166,6 +183,58 @@ class Entry extends Component {
       const { addToFavorites, user: uid } = this.props;
       addToFavorites({ uid, foodId });
     }
+  }
+
+  handleClickedMeal = (meal) => {
+    const { toggleMealModal } = this.props;
+    this.setState({
+      currentMeal: meal
+    }, () => toggleMealModal());
+  }
+
+  closeMealModal = async () => {
+    const { toggleMealModal } = this.props;
+    this.setState({
+      currentMeal: { ingredient: [] }
+    }, () => toggleMealModal());
+  }
+
+  handleChange = (e) => {
+    const { name, value } = e.target;
+    const { resetSearch, resetMealSearch } = this.props;
+    this.setState({
+      [name]: value,
+      previousSearched: null,
+      currentSearched: null,
+      confirmedSearch: null
+    }, () => {
+      resetSearch();
+      resetMealSearch();
+    });
+  }
+
+  handleAddMealToLog = async () => {
+    const { currentMeal } = this.state;
+    const { user, period, addMeal } = this.props;
+    let { dateSelected: dateConsumed } = this.props;
+    let presentTime = await dateUtil.generatePresent();
+    [, presentTime] = presentTime.split('T');
+    dateConsumed = `${dateConsumed}T${presentTime}`;
+
+    const logs = [];
+    currentMeal.ingredient.forEach(ingred => (
+      logs.push({
+        user,
+        period,
+        foodId: ingred.food.id,
+        gramsmlConsumed: parseFloat(ingred.gramsConsumed || ingred.mlConsumed),
+        dateConsumed
+      })
+    ));
+
+    const toSend = { logs };
+    console.log(toSend);
+    addMeal(toSend);
   }
 
   render() {
@@ -178,7 +247,11 @@ class Entry extends Component {
       showModal,
       period,
       favFoodIds,
-      isAddingToFavorites
+      isAddingToFavorites,
+      isFetchingMeal,
+      searchedMeal,
+      searchedMealCount,
+      showMealModal
     } = this.props;
 
     const {
@@ -187,34 +260,132 @@ class Entry extends Component {
       currentSearched,
       confirmedSearch,
       measure,
-      gramsml
+      gramsml,
+      searchType,
+      currentMeal
     } = this.state;
 
     return (
       <div className="entry">
         <div className="entry-body">
-          <div className="search-add">
-            {`Add food to logs (${period.toUpperCase()})`}
-          </div>
 
-          <Search
-            className="search"
-            enterButton
-            placeholder="Search food to add"
-            onSearch={this.handleSearch}
-            onChange={this.handleSearchChange}
-            value={currentSearched}
-          />
+          <Modal
+            className="meal-modal"
+            title={currentMeal.mealName}
+            visible={showMealModal}
+            onCancel={this.closeMealModal}
+            footer={(
+              <div className="meal-footer">
+                <div className="button-container">
+                  <Button
+                    className="save-button"
+                    onClick={this.closeMealEdit}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+                <div className="button-container">
+                  <Button
+                    type="primary"
+                    className="save-button"
+                    onClick={this.handleAddMealToLog}
+                  >
+                    <Icon type="check" />
+                  </Button>
+                </div>
+              </div>
+
+            )}
+          >
+            <div className="meal-body">
+              <div className="meal-cart">
+                <div className="cart-title">
+                  {`${currentMeal.mealTotalKcal}kcal`}
+                </div>
+                <div className="cart-body">
+                  {
+                    currentMeal && currentMeal.ingredient.map(ingredient => (
+                      <div key={ingredient.id} className="cart-row">
+                        <div className="cart-row-left">
+                          {`${ingredient.food.filipinoName || ingredient.food.englishName} `}
+                          <Tag
+                            className="log-tag"
+                            color={
+                              constants.tagColors[ingredient.food.primaryClassification.split('-')[0]]
+                            }
+                          >
+                            {ingredient.food.primaryClassification.split('-')[0]}
+                          </Tag>
+                          {
+                            ingredient.food.secondaryClassification && (
+                              <Tag
+                                className="log-tag"
+                                color={
+                                  constants.tagColors[ingredient.food.secondaryClassification]
+                                }
+                              >
+                                {ingredient.food.secondaryClassification}
+                              </Tag>
+                            )
+                          }
+                          <div className="kcal">
+                            {`${ingredient.mlConsumed || ingredient.gramsConsumed}${ingredient.mlConsumed
+                              ? 'ml'
+                              : 'g'} 
+                              - ${ingredient.totalKcalConsumed}kcal`}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  }
+                </div>
+              </div>
+            </div>
+          </Modal>
+          <div className="search-add">
+            <div className="search-row">
+              {`Add ${searchType} to logs (${period.toUpperCase()})`}
+            </div>
+            <div className="search-row">
+              <Search
+                className="search"
+                enterButton
+                placeholder={`Search ${searchType} to add`}
+                onSearch={this.handleSearch}
+                onChange={this.handleSearchChange}
+                value={currentSearched}
+              />
+            </div>
+            <div className="search-row">
+              <RadioGroup
+                className="radio-group"
+                name="searchType"
+                onChange={this.handleChange}
+                value={searchType}
+              >
+                <Radio value="food">Food</Radio>
+                <Radio value="meal">Meal</Radio>
+              </RadioGroup>
+            </div>
+          </div>
           <Row gutter={24}>
             {
-              searchedFoodCount && (
-                <div className="showing">
-                  {`SHOWING ${searchedFoodCount} RESULT/S FOR "${confirmedSearch}"` }
-                </div>
+              searchType === 'food' ? (
+                searchedFoodCount && (
+                  <div className="showing">
+                    {`SHOWING ${searchedFoodCount} RESULT/S FOR "${confirmedSearch}"` }
+                  </div>
+                )
+              ) : (
+                searchedMealCount && (
+                  <div className="showing">
+                    {`SHOWING ${searchedMealCount} RESULT/S FOR "${confirmedSearch}"` }
+                  </div>
+                )
               )
             }
             {
-              isFetching && (
+              (isFetching || isFetchingMeal) && (
                 constants.emptyCards.map(element => (
                   <Col
                     key={element}
@@ -323,6 +494,100 @@ class Entry extends Component {
                     </Card>
                   </Col>
                 ))
+              ) : searchedMeal.length && !isFetching ? (
+                searchedMeal.map((mealElement, index) => (
+                  <Col
+                    key={mealElement.id}
+                    className="meal-col"
+                    xs={24}
+                    md={8}
+                    lg={6}
+                  >
+                    <Card
+                      className="meal-card"
+                      hoverable
+                      loading={isFetching}
+                      onClick={() => this.handleClickedMeal(mealElement)}
+                      title={(
+                        <div className="title-container">
+                          <div className="food-title">
+                            {mealElement.mealName}
+                          </div>
+                        </div>
+                      )}
+                    >
+                      <div className="card-body">
+                        <div className="ingredients-row">
+                          {
+                            mealElement.ingredient.map(ingredient => (
+                              <div key={ingredient.id} className="one-ingredient">
+                                <div className="ingredient-name">
+                                  {`${ingredient.food.filipinoName || ingredient.food.englishName} `}
+                                  <Tag
+                                    className="log-tag"
+                                    color={
+                                      constants.tagColors[ingredient.food.primaryClassification.split('-')[0]]
+                                    }
+                                  >
+                                    {ingredient.food.primaryClassification.split('-')[0]}
+                                  </Tag>
+                                  {
+                                    ingredient.food.secondaryClassification && (
+                                      <Tag
+                                        className="log-tag"
+                                        color={
+                                          constants
+                                            .tagColors[ingredient.food.secondaryClassification]
+                                        }
+                                      >
+                                        {ingredient.food.secondaryClassification}
+                                      </Tag>
+                                    )
+                                  }
+                                  <div className="kcal">
+                                    {`${ingredient.mlConsumed || ingredient.gramsConsumed}${ingredient.mlConsumed
+                                      ? 'ml'
+                                      : 'g'} 
+                                      - ${ingredient.totalKcalConsumed}kcal`}
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                          }
+                        </div>
+                        <div className="card-row">
+                          <div className="macro">
+                            CHO
+                            <div className="macro-value">
+                              {`${mealElement.mealChoGrams}g`}
+                            </div>
+                          </div>
+                          <div className="macro">
+                            PRO
+                            <div className="macro-value">
+                              {`${mealElement.mealProGrams}g`}
+                            </div>
+                          </div>
+                          <div className="macro">
+                            FAT
+                            <div className="macro-value">
+                              {`${mealElement.mealFatGrams}g`}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="card-row">
+                          <div className="total-label">
+                            Total:
+                          </div>
+                          <div className="total-label">
+                            {`${mealElement.mealTotalKcal}kcal`}
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  </Col>
+                ))
               ) : null
             }
           </Row>
@@ -406,7 +671,6 @@ class Entry extends Component {
               </div>
             ]}
           >
-
             <div className="label-container">
               <div className="label">
                 {currentFood.food_englishName}
@@ -502,7 +766,6 @@ class Entry extends Component {
                 {currentFood.food_servingMeasurement || 'N/A'}
               </div>
             </div>
-
           </Modal>
         </div>
       </div>

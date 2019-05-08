@@ -18,7 +18,7 @@ import * as constants from '../../constants';
 import * as signupUtil from '../../utils/signup.util';
 
 const { Option } = Select;
-const RadioGroup = Radio.Group;
+const { Group: RadioGroup } = Radio;
 
 class Signup extends Component {
   constructor(props) {
