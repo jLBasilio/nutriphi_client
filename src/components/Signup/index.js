@@ -16,6 +16,7 @@ import './signup.scss';
 import * as pageTitles from '../../constants/pages';
 import * as constants from '../../constants';
 import * as signupUtil from '../../utils/signup.util';
+import * as dateUtil from '../../utils/date.util';
 
 const { Option } = Select;
 const { Group: RadioGroup } = Radio;
@@ -282,7 +283,7 @@ class Signup extends Component {
     }
   }
 
-  handleConfirm = () => {
+  handleConfirm = async () => {
     const {
       dbwKg,
       confirmSignup,
@@ -314,6 +315,9 @@ class Signup extends Component {
       goalTEA
     } = this.state;
 
+    const presentTime = await dateUtil.generatePresent();
+    const startDate = presentTime.split('T')[0];
+
     confirmSignup({
       firstName,
       lastName,
@@ -338,7 +342,8 @@ class Signup extends Component {
       weeksToComplete,
       kcalAddSubToGoal,
       baseTEA,
-      goalTEA
+      goalTEA,
+      startDate
     });
   }
 
