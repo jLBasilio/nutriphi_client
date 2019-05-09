@@ -238,6 +238,38 @@ class Food extends Component {
                 </div>
               )
             }
+
+            {
+              hasSearched && searchedFoodCount ? (
+                <div className="pagination-div">
+                  <Pagination
+                    className="pagination"
+                    pageSize={defaultSize}
+                    total={searchedFoodCount}
+                    hideOnSinglePage
+                    size="small"
+                    onChange={this.handlePageChangeFromSearch}
+                  />
+                </div>
+              ) : hasSearched && !searchedFoodCount ? (
+                <div className="pagination-div">
+                  {`NO RESULTS FOR "${confirmedSearch}"`}
+                </div>
+              ) : !isFetching && (
+                <div className="pagination-div">
+                  <Pagination
+                    className="pagination"
+                    current={currentPageNumber}
+                    pageSize={defaultSize}
+                    total={foodCount}
+                    hideOnSinglePage
+                    size="small"
+                    onChange={this.handlePageChange}
+                  />
+                </div>
+              )
+            }
+
             {
               isFetching && (
                 constants.emptyCards.map(element => (
@@ -445,37 +477,6 @@ class Food extends Component {
               )
             }
           </Row>
-          {
-            hasSearched && searchedFoodCount ? (
-              <div className="pagination-div">
-                <Pagination
-                  className="pagination"
-                  pageSize={defaultSize}
-                  total={searchedFoodCount}
-                  hideOnSinglePage
-                  size="small"
-                  onChange={this.handlePageChangeFromSearch}
-                />
-              </div>
-            ) : hasSearched && !searchedFoodCount ? (
-              <div className="pagination-div">
-                {`NO RESULTS FOR "${confirmedSearch}"`}
-              </div>
-            ) : !isFetching && (
-              <div className="pagination-div">
-                <Pagination
-                  className="pagination"
-                  current={currentPageNumber}
-                  pageSize={defaultSize}
-                  total={foodCount}
-                  hideOnSinglePage
-                  size="small"
-                  onChange={this.handlePageChange}
-                />
-              </div>
-            )
-          }
-
           <Modal
             title={currentFood.food_filipinoName || currentFood.food_englishName}
             visible={showModal}

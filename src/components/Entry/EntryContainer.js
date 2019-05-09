@@ -8,14 +8,18 @@ import {
   toggleModal,
   addToLog,
   toggleMealModal,
-  addMeal
+  addMeal,
+  searchFavorites
 } from './duck';
 import { changePage } from '../Header/duck';
 import {
   searchMeal,
   resetSearch as resetMealSearch
 } from '../Meal/duck';
-import { addToFavorites, deleteFromFavorites } from '../Food/duck';
+import {
+  addToFavorites,
+  deleteFromFavorites
+} from '../Food/duck';
 
 const mapStateToProps = (state) => {
   const {
@@ -65,6 +69,13 @@ const mapDispatchToProps = dispatch => ({
   }) => {
     dispatch(searchFood({
       skip, take, q, foodClass
+    }));
+  },
+  searchFavorites: ({
+    skip, take, q, uid
+  }) => {
+    dispatch(searchFavorites({
+      skip, take, q, uid
     }));
   },
   searchMeal: (qInfo) => {

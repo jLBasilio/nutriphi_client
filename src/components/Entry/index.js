@@ -60,6 +60,7 @@ class Entry extends Component {
       const {
         searchFood,
         searchMeal,
+        searchFavorites,
         user
       } = this.props;
       const { skip, take, searchType } = this.state;
@@ -70,6 +71,10 @@ class Entry extends Component {
         });
       } else if (searchType === 'meal') {
         searchMeal({
+          skip, take, q, uid: user
+        });
+      } else if (searchType === 'favorites') {
+        searchFavorites({
           skip, take, q, uid: user
         });
       }
@@ -199,7 +204,7 @@ class Entry extends Component {
     }, () => toggleMealModal());
   }
 
-  handleChange = (e) => {
+  handleRadioChange = (e) => {
     const { name, value } = e.target;
     const { resetSearch, resetMealSearch } = this.props;
     this.setState({
@@ -360,11 +365,12 @@ class Entry extends Component {
               <RadioGroup
                 className="radio-group"
                 name="searchType"
-                onChange={this.handleChange}
+                onChange={this.handleRadioChange}
                 value={searchType}
               >
-                <Radio value="food">Food</Radio>
-                <Radio value="meal">Meal</Radio>
+                <Radio value="food">Foods</Radio>
+                <Radio value="favorites">Favorites</Radio>
+                <Radio value="meal">Meals</Radio>
               </RadioGroup>
             </div>
           </div>
@@ -624,6 +630,16 @@ class Entry extends Component {
                 </div>
                 <div className="macro-one">
                   {`FAT: ${parseFloat((currentFood.food_fatPerExchange * measure).toFixed(2))}g`}
+                </div>
+              </div>,
+              <div className="macro-update" key="macro-kcal">
+                <div className="total-kcal">
+                  Total
+                </div>
+                <div className="total-kcal">
+                  {`${(currentFood.food_exchangePerMeasure
+                    * currentFood.food_directKcalPerMeasure
+                    * measure).toFixed(2)}kcal`}
                 </div>
               </div>,
 

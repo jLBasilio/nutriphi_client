@@ -545,6 +545,7 @@ class Home extends Component {
       showNameMealModal,
       isSavingMeal
     } = this.props;
+
     const totalCho = userLogs.reduce((accCho, log) => accCho + log.consumed_choGrams, 0);
     const totalPro = userLogs.reduce((accPro, log) => accPro + log.consumed_proGrams, 0);
     const totalFat = userLogs.reduce((accFat, log) => accFat + log.consumed_fatGrams, 0);

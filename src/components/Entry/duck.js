@@ -2,10 +2,12 @@ import { handle } from 'redux-pack';
 import { message } from 'antd';
 import * as foodApi from '../../api/food';
 import * as logApi from '../../api/log';
+import * as favoriteApi from '../../api/favorite';
 
 const actions = {
   SET_PERIOD: 'ENTRY/SET_PERIOD',
   SEARCH_FOOD: 'ENTRY/SEARCH_FOOD',
+  SEARCH_FAVORITE: 'ENTRY/SEARCH_FAVORITE',
   ADD_LOG: 'ENTRY/ADD_LOG',
   RESET_SEARCH: 'ENTRY/RESET_SEARCH',
   SHOW_MODAL: 'ENTRY/SHOW_MODAL',
@@ -27,6 +29,26 @@ export const searchFood = ({
   }),
   meta: {
     onFailure: () => message.error('Server error', 4)
+  }
+});
+
+export const searchFavorites = ({
+  skip, take, q, uid
+}) => ({
+  type: actions.SEARCH_FAVORITE,
+  promise: favoriteApi.searchFavorites({
+    skip, take, q, uid
+  }),
+  meta: {
+    onFailure: (response) => {
+      switch (response.response.data.status) {
+        case 404:
+          message.error('No items', 4);
+          break;
+        default:
+          message.error('Server error', 4);
+      }
+    }
   }
 });
 
@@ -82,6 +104,26 @@ const reducer = (state = initialState, action) => {
       };
 
     case actions.SEARCH_FOOD:
+      return handle(state, action, {
+        start: prevState => ({
+          ...prevState,
+          isFetching: true
+        }),
+        success: prevState => ({
+          ...prevState,
+          searchedFood: payload.data.data,
+          searchedFoodCount: payload.data.data.length
+            ? parseInt(payload.data.data[0].total, 10)
+            : null,
+          hasSearched: true
+        }),
+        finish: prevState => ({
+          ...prevState,
+          isFetching: false
+        })
+      });
+
+    case actions.SEARCH_FAVORITE:
       return handle(state, action, {
         start: prevState => ({
           ...prevState,

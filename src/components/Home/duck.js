@@ -51,10 +51,25 @@ export const userLogCleanup = () => ({
   type: actions.LOG_CLEANUP
 });
 
-export const fetchLogs = ({ userId, date }) => ({
-  type: actions.FETCH_LOGS,
-  promise: logApi.fetchLogs({ userId, date })
-});
+export const fetchLogs = ({ userId, date }) => (dispatch) => {
+  dispatch({
+    type: actions.FETCH_LOGS,
+    promise: logApi.fetchLogs({ userId, date }),
+    meta: {
+      onSuccess: (response, getState) => {
+        const [userLogs, userKcal] = [
+          getState().home.userLogs,
+          getState().login.user.goalTEA
+        ];
+        const dayKcal = userLogs.reduce((logAcc, curr) => logAcc
+          + parseFloat(curr.consumed_totalKcalConsumed), 0);
+        if (dayKcal >= userKcal) {
+          message.info('You have completed your daily calorie intake');
+        }
+      }
+    }
+  });
+};
 
 export const fetchPeriod = ({ userId, date, period }) => (dispatch) => {
   dispatch({
