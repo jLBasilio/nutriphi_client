@@ -37,7 +37,7 @@ export const validateTimeSpan = async (poundDiff, weeks) => {
 };
 
 export const getDiffWeeks = async (toDateString) => {
-  let diff = (new Date(toDateString) - new Date(Date.now()).getTime()) / 1000;
+  let diff = (new Date(toDateString) - new Date().getTime()) / 1000;
   diff /= (60 * 60 * 24 * 7);
   return Math.round(diff);
 };

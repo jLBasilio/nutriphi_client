@@ -315,8 +315,8 @@ class Signup extends Component {
       goalTEA
     } = this.state;
 
-    const presentTime = await dateUtil.generatePresent();
-    const startDate = presentTime.split('T')[0];
+    let startDate = await dateUtil.generatePresent();
+    [startDate, ,] = startDate.split('T');
 
     confirmSignup({
       firstName,

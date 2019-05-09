@@ -56,7 +56,7 @@ class Home extends Component {
     changePage(pageTitles.HOME);
 
     if (!dateToday) {
-      const date = new Date(Date.now());
+      const date = new Date();
       const dateFormatted = `${date.getFullYear()}-${(date.getMonth() < 10 ? '0' : '') + (date.getMonth() + 1)}-${(date.getDate() < 10 ? '0' : '') + date.getDate()}`;
 
       setTodayDate(dateFormatted);

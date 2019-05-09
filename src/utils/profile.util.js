@@ -12,7 +12,7 @@ export const getBMIClass = async (bmi) => {
 };
 
 export const calculateDaysLeft = async (dateSet) => {
-  const timeDiff = Math.abs(new Date(Date.now()).getTime() - new Date(dateSet).getTime());
+  const timeDiff = Math.abs(new Date().getTime() - new Date(dateSet).getTime());
   const dayDifference = Math.ceil(timeDiff / (1000 * 3600 * 24));
   const weeksLeft = Math.floor(dayDifference / 7);
   const daysLeft = dayDifference % 7;
