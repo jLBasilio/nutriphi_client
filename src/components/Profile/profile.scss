@@ -5,10 +5,10 @@
 .profile {
   .profile-body {
     @include for-tablet-portrait-up {
-      padding: 7rem 5rem 0;
+      padding: 7rem 2.5rem 0;
     }
     @include for-small-desktop-up {
-      padding: 7rem 10rem 0;
+      padding: 7rem 5rem 0;
     }
 
     padding: 6rem 1rem 0;
@@ -65,16 +65,22 @@
           }
         }
 
+        .graph {
+          background-color: $card-bg;
+          border-radius: 5px;
+          margin-bottom: 1rem;
+        }
+
         .card-content {
           align-items: center;
           background-color: $card-bg;
           border-top: 1px solid $greywhite;
           display: flex;
           justify-content: center;
-          padding: 0 .5rem;
 
           .desc-side {
             flex: 2;
+            padding: 0 .5rem;
 
             .one-desc {
               border-bottom: 1px solid $greywhite;
@@ -99,6 +105,37 @@
 
             }
           }
+
+          .dot-row {
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            padding: 0 .5rem;
+            width: 100%;
+
+            .one-dot {
+              font-size: 1rem;
+              overflow: hidden;
+              padding-right: .03rem;
+
+              .dot-check {
+                color: $base-green;
+              }
+
+              .dot-under {
+                color: $base-kahel;
+              }
+
+              .dot-over {
+                color: $base-kahel;
+              }
+
+              .dot-empty {
+                color: $black-line;
+              }
+            }
+
+          }
         }
 
         &:last-child {
@@ -108,7 +145,7 @@
           }
 
           border-bottom: 1px solid $greywhite;
-          margin-top: 1rem;
+          margin: 1.3rem 0;
         }
       }
     }

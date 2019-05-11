@@ -6,6 +6,7 @@ import {
   Switch
 } from 'react-router-dom';
 import 'antd/dist/antd.css';
+import 'frappe-charts/dist/frappe-charts.min.css';
 
 import Entry from '../components/Entry/EntryContainer';
 import Food from '../components/Food/FoodContainer';
@@ -61,7 +62,7 @@ class App extends Component {
                 <Route exact path="/entry" component={Entry} />
                 <Route exact path="/about" component={About} />
                 <Route exact path="/profile" component={Profile} />
-                <Redirect to="/entry" />
+                <Redirect to="/profile" />
               </Switch>
             </React.Fragment>
           ) : (

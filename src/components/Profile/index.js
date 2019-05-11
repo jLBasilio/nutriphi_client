@@ -7,7 +7,8 @@ import {
   Input,
   message,
   Modal,
-  Select
+  Select,
+  Tooltip
 } from 'antd';
 import './profile.scss';
 
@@ -15,6 +16,8 @@ import * as constants from '../../constants';
 import * as pageTitles from '../../constants/pages';
 import * as profileUtil from '../../utils/profile.util';
 import * as signupUtil from '../../utils/signup.util';
+
+import Graph from '../Graph';
 
 const { Option } = Select;
 class Profile extends Component {
@@ -50,8 +53,15 @@ class Profile extends Component {
   }
 
   componentDidMount() {
-    const { changePage } = this.props;
+    const {
+      changePage,
+      fetchProgress,
+      fetchClassDist,
+      user
+    } = this.props;
     changePage(pageTitles.PROFILE);
+    fetchProgress(user.id);
+    fetchClassDist(user.id);
     this.resetFromUser();
   }
 
@@ -223,7 +233,7 @@ class Profile extends Component {
   checkGoalChange = () => {
     const { user } = this.props;
     const { goalKg, lifestyleMultiplier, endDate } = this.state;
-    
+
     if (parseFloat(user.goalKg) === goalKg
       && parseFloat(user.lifestyleMultiplier) === lifestyleMultiplier
       && user.endDate === endDate) {
@@ -331,7 +341,10 @@ class Profile extends Component {
       user,
       showHealthEdit,
       showGoalEdit,
-      isEditing
+      isEditing,
+      dayProgress,
+      dateToday,
+      classDist
     } = this.props;
     const {
       heightCm,
@@ -349,10 +362,318 @@ class Profile extends Component {
       healthButtonDisabled,
       goalButtonDisabled
     } = this.state;
+
+    const dayProg = {
+      labels: [],
+      datasets: [
+        { values: [] }
+      ]
+    };
+
+    const classProg = {
+      labels: [],
+      datasets: [
+        { values: [] }
+      ]
+    };
+
+    dayProgress.forEach((progress) => {
+      const date = progress.date.split('-');
+      dayProg.labels.push(`${date[1]}-${date[2]}`);
+      dayProg.datasets[0].values.push(progress.totalKcal);
+    });
+
+    const tagColors = [];
+    if (classDist) {
+      const classKeys = classDist && Object.keys(classDist);
+      classKeys.forEach((key) => {
+        classProg.labels.push(key);
+        classProg.datasets[0].values.push(classDist[key]);
+        tagColors.push(constants.tagColorsHex[key]);
+      });
+    }
+
     return (
       <div className="profile">
         <div className="profile-body">
           <div className="first-row">
+            <Modal
+              className="edit-modal"
+              title="Edit Health Information"
+              visible={showHealthEdit}
+              onCancel={this.handleHealthEdit}
+              footer={(
+                <div className="one-row">
+                  <div className="button-container">
+                    <Button
+                      className="back-button"
+                      type="primary"
+                      onClick={this.handleHealthCancel}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                  <div className="button-container">
+                    <Button
+                      className="next-button"
+                      type="primary"
+                      onClick={this.handleHealthConfirm}
+                      loading={isEditing}
+                      disabled={healthButtonDisabled}
+                    >
+                      Save
+                    </Button>
+                  </div>
+                </div>
+              )}
+            >
+              <div className="label-container">
+                <div className="label">
+                  Update your weight or height.
+                </div>
+              </div>
+              <Divider />
+
+              <div className="edit-row">
+                <div className="edit-container">
+                  <div className="edit-title">
+                    Weight (kg)
+                  </div>
+                  <Input
+                    className="edit-input"
+                    name="weightKg"
+                    onChange={this.handleWeightEdit}
+                    type="number"
+                    value={weightKg}
+                    min={30}
+                  />
+                </div>
+                <div className="edit-container">
+                  <div className="edit-title">
+                    Weight (lbs)
+                  </div>
+                  <Input
+                    className="edit-input"
+                    onChange={this.handleWeightEdit}
+                    name="weightLbs"
+                    type="number"
+                    value={weightLbs}
+                    min={66}
+                  />
+                </div>
+              </div>
+
+              <div className="edit-row">
+                <div className="edit-container">
+                  <div className="edit-title">
+                    Height (cm)
+                  </div>
+                  <Input
+                    className="edit-input"
+                    name="heightCm"
+                    onChange={this.handleHeightEdit}
+                    type="number"
+                    value={heightCm}
+                    min={129}
+                  />
+                </div>
+                <div className="edit-container">
+                  <div className="edit-title">
+                    Height (ft)
+                  </div>
+                  <Input
+                    className="edit-input"
+                    onChange={this.handleHeightEdit}
+                    name="heightFt"
+                    type="number"
+                    value={heightFt}
+                    min={4}
+                  />
+                </div>
+                <div className="edit-container">
+                  <div className="edit-title">
+                    Height (in)
+                  </div>
+                  <Input
+                    className="edit-input"
+                    onChange={this.handleHeightEdit}
+                    name="heightInch"
+                    type="number"
+                    value={heightInch}
+                    min={heightFt === 4 ? 3 : 0}
+                  />
+                </div>
+              </div>
+            </Modal>
+
+            <Modal
+              className="edit-modal"
+              title="Edit Health Information"
+              visible={showGoalEdit}
+              onCancel={this.handleGoalEdit}
+              footer={(
+                <div className="one-row">
+                  <div className="button-container">
+                    <Button
+                      className="back-button"
+                      type="primary"
+                      onClick={this.handleGoalCancel}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                  <div className="button-container">
+                    <Button
+                      className="next-button"
+                      type="primary"
+                      onClick={this.handleGoalConfirm}
+                      loading={isEditing}
+                      disabled={goalButtonDisabled}
+                    >
+                      Save
+                    </Button>
+                  </div>
+                </div>
+              )}
+            >
+
+              <div className="label-container">
+                <div className="label">
+                  Edit or update your weight.
+                  Updating your goal weight means a fresh start.
+                </div>
+              </div>
+
+              <Divider />
+
+              <div className="edit-row">
+                <div className="edit-container">
+                  <div className="edit-title">
+                    Lifestyle
+                  </div>
+                  <Select
+                    placeholder="Select current lifestyle"
+                    value={constants.lifestyle[parseFloat(lifestyleMultiplier)]}
+                    onChange={this.handlelifestyleMultiplier}
+                  >
+                    <Option value={constants.BED_REST}>Bed rest</Option>
+                    <Option value={constants.SEDENTARY}>Sedentary</Option>
+                    <Option value={constants.LIGHT}>Light</Option>
+                    <Option value={constants.MODERATE}>Moderate</Option>
+                    <Option value={constants.VERY_ACTIVE}>Very Active</Option>
+                  </Select>
+                </div>
+                <div className="edit-container">
+                  <div className="edit-title">
+                    Goal
+                  </div>
+                  <Select disabled value={target}>
+                    <Option value={constants.LOSE}>Lose</Option>
+                    <Option value={constants.GAIN}>Gain</Option>
+                    <Option value={constants.MAINTAIN}>Maintain</Option>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="edit-row">
+                <div className="edit-container">
+                  <div className="edit-title">
+                    Goal weight (kg)
+                  </div>
+                  <Input
+                    className="edit-input"
+                    onChange={this.handleWeightEdit}
+                    name="goalKg"
+                    type="number"
+                    value={goalKg}
+                  />
+                </div>
+                <div className="edit-container">
+                  <div className="edit-title">
+                    Goal weight (lbs)
+                  </div>
+                  <Input
+                    className="edit-input"
+                    onChange={this.handleWeightEdit}
+                    name="goalLbs"
+                    type="number"
+                    value={goalLbs}
+                  />
+                </div>
+              </div>
+
+              <Divider />
+              {
+                parseFloat(user.goalKg) !== goalKg && weightKg !== goalKg ? (
+                  <div className="edit-row">
+                    <div className="edit-container">
+                      <div className="edit-title">
+                        {`(Recommended week/s from now: ${poundDiff ? poundDiff.toFixed(0) : null})`}
+                      </div>
+                      <DatePicker className="form-bar" onChange={this.handleEndDate} />
+                    </div>
+                  </div>
+                ) : null
+              }
+            </Modal>
+
+            <div className="profile-card">
+              <div className="card-title">
+                <div className="icon">
+                  <Icon className="icon-left" type="line-chart" />
+                  Progress Status
+                </div>
+              </div>
+              <div className="graph">
+                {
+                  dayProg.labels.length && dayProg.datasets.length && (
+                    <Graph
+                      title="Calorie intake in two weeks"
+                      type="bar"
+                      stacked
+                      data={{
+                        labels: [...dayProg.labels],
+                        datasets: [...dayProg.datasets],
+                        yMarkers: [{
+                          label: 'Your daily calorie requirement',
+                          value: user.goalTEA,
+                          options: { labelPos: 'left' }
+                        }]
+                      }}
+                      colors={['#2ecc71']}
+                      barOptions={{
+                        spaceRatio: 0.1
+                      }}
+                      tooltipOptions={{
+                        formatTooltipX: a => `${dateToday.split('-')[0]}-${a}`,
+                        formatTooltipY: a => `${a} kcal`
+                      }}
+                    />
+                  )
+                }
+              </div>
+
+              <div className="graph">
+                {
+                  classProg.labels.length && classProg.datasets.length && (
+                    <Graph
+                      title="Food class percentage"
+                      type="percentage"
+                      height={180}
+                      data={{
+                        labels: [...classProg.labels],
+                        datasets: [...classProg.datasets]
+                      }}
+                      colors={[...tagColors]}
+                      tooltipOptions={{
+                        formatTooltipX: a => `${dateToday.split('-')[0]}-${a}`,
+                        formatTooltipY: a => `${a} kcal`
+                      }}
+                    />
+                  )
+                }
+              </div>
+            </div>
             <div className="profile-card">
 
               <div className="personal-section">
@@ -561,276 +882,6 @@ class Profile extends Component {
               </div>
             </div>
 
-            <Modal
-              className="edit-modal"
-              title="Edit Health Information"
-              visible={showHealthEdit}
-              onCancel={this.handleHealthEdit}
-              footer={(
-                <div className="one-row">
-                  <div className="button-container">
-                    <Button
-                      className="back-button"
-                      type="primary"
-                      onClick={this.handleHealthCancel}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                  <div className="button-container">
-                    <Button
-                      className="next-button"
-                      type="primary"
-                      onClick={this.handleHealthConfirm}
-                      loading={isEditing}
-                      disabled={healthButtonDisabled}
-                    >
-                      Save
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-            >
-              <div className="label-container">
-                <div className="label">
-                  Update your weight or height.
-                </div>
-              </div>
-              <Divider />
-
-              <div className="edit-row">
-                <div className="edit-container">
-                  <div className="edit-title">
-                    Weight (kg)
-                  </div>
-                  <Input
-                    className="edit-input"
-                    name="weightKg"
-                    onChange={this.handleWeightEdit}
-                    type="number"
-                    value={weightKg}
-                    min={30}
-                  />
-                </div>
-                <div className="edit-container">
-                  <div className="edit-title">
-                    Weight (lbs)
-                  </div>
-                  <Input
-                    className="edit-input"
-                    onChange={this.handleWeightEdit}
-                    name="weightLbs"
-                    type="number"
-                    value={weightLbs}
-                    min={66}
-                  />
-                </div>
-              </div>
-
-              <div className="edit-row">
-                <div className="edit-container">
-                  <div className="edit-title">
-                    Height (cm)
-                  </div>
-                  <Input
-                    className="edit-input"
-                    name="heightCm"
-                    onChange={this.handleHeightEdit}
-                    type="number"
-                    value={heightCm}
-                    min={129}
-                  />
-                </div>
-                <div className="edit-container">
-                  <div className="edit-title">
-                    Height (ft)
-                  </div>
-                  <Input
-                    className="edit-input"
-                    onChange={this.handleHeightEdit}
-                    name="heightFt"
-                    type="number"
-                    value={heightFt}
-                    min={4}
-                  />
-                </div>
-                <div className="edit-container">
-                  <div className="edit-title">
-                    Height (in)
-                  </div>
-                  <Input
-                    className="edit-input"
-                    onChange={this.handleHeightEdit}
-                    name="heightInch"
-                    type="number"
-                    value={heightInch}
-                    min={heightFt === 4 ? 3 : 0}
-                  />
-                </div>
-              </div>
-            </Modal>
-
-            <Modal
-              className="edit-modal"
-              title="Edit Health Information"
-              visible={showGoalEdit}
-              onCancel={this.handleGoalEdit}
-              footer={(
-                <div className="one-row">
-                  <div className="button-container">
-                    <Button
-                      className="back-button"
-                      type="primary"
-                      onClick={this.handleGoalCancel}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                  <div className="button-container">
-                    <Button
-                      className="next-button"
-                      type="primary"
-                      onClick={this.handleGoalConfirm}
-                      loading={isEditing}
-                      disabled={goalButtonDisabled}
-                    >
-                      Save
-                    </Button>
-                  </div>
-                </div>
-            )}
-            >
-
-              <div className="label-container">
-                <div className="label">
-                  Edit or update your weight.
-                  Updating your goal weight means a fresh start.
-                </div>
-              </div>
-
-              <Divider />
-
-              <div className="edit-row">
-                <div className="edit-container">
-                  <div className="edit-title">
-                    Lifestyle
-                  </div>
-                  <Select
-                    placeholder="Select current lifestyle"
-                    value={constants.lifestyle[parseFloat(lifestyleMultiplier)]}
-                    onChange={this.handlelifestyleMultiplier}
-                  >
-                    <Option value={constants.BED_REST}>Bed rest</Option>
-                    <Option value={constants.SEDENTARY}>Sedentary</Option>
-                    <Option value={constants.LIGHT}>Light</Option>
-                    <Option value={constants.MODERATE}>Moderate</Option>
-                    <Option value={constants.VERY_ACTIVE}>Very Active</Option>
-                  </Select>
-                </div>
-                <div className="edit-container">
-                  <div className="edit-title">
-                    Goal
-                  </div>
-                  <Select disabled value={target}>
-                    <Option value={constants.LOSE}>Lose</Option>
-                    <Option value={constants.GAIN}>Gain</Option>
-                    <Option value={constants.MAINTAIN}>Maintain</Option>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="edit-row">
-                <div className="edit-container">
-                  <div className="edit-title">
-                    Goal weight (kg)
-                  </div>
-                  <Input
-                    className="edit-input"
-                    onChange={this.handleWeightEdit}
-                    name="goalKg"
-                    type="number"
-                    value={goalKg}
-                  />
-                </div>
-                <div className="edit-container">
-                  <div className="edit-title">
-                    Goal weight (lbs)
-                  </div>
-                  <Input
-                    className="edit-input"
-                    onChange={this.handleWeightEdit}
-                    name="goalLbs"
-                    type="number"
-                    value={goalLbs}
-                  />
-                </div>
-              </div>
-
-              <Divider />
-              {
-                parseFloat(user.goalKg) !== goalKg && weightKg !== goalKg ? (
-                  <div className="edit-row">
-                    <div className="edit-container">
-                      <div className="edit-title">
-                        {`(Recommended week/s from now: ${poundDiff ? poundDiff.toFixed(0) : null})`}
-                      </div>
-                      <DatePicker className="form-bar" onChange={this.handleEndDate} />
-                    </div>
-                  </div>
-                ) : null
-              }
-            </Modal>
-
-            <div className="profile-card">
-              <div className="card-title">
-                Personal Information
-              </div>
-
-              <div className="card-content">
-                <div className="pic-side">
-                  <img src="profile/male.png" alt="male.png" />
-                </div>
-
-                <div className="desc-side">
-                  <div className="one-desc">
-                    <div className="desc-key">
-                      Name:
-                    </div>
-                    <div className="desc-value">
-                      {`\u00A0\u00A0${user.firstName} ${user.lastName}`}
-                    </div>
-                  </div>
-
-                  <div className="one-desc">
-                    <div className="desc-key">
-                      Sex:
-                    </div>
-                    <div className="desc-value">
-                      {`\u00A0\u00A0${user.sex}`}
-                    </div>
-                  </div>
-
-                  <div className="one-desc">
-                    <div className="desc-key">
-                      Birthday:
-                    </div>
-                    <div className="desc-value">
-                      {user.birthday}
-                    </div>
-                  </div>
-
-                  <div className="one-desc">
-                    <div className="desc-key">
-                      Age:
-                    </div>
-                    <div className="desc-value">
-                      {`\u00A0\u00A0${user.age}`}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

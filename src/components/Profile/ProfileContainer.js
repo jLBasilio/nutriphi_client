@@ -6,7 +6,9 @@ import { getUser, getSession } from '../Login/duck';
 import {
   toggleHealthEdit,
   toggleGoalEdit,
-  healthEdit
+  healthEdit,
+  fetchProgress,
+  fetchClassDist
 } from './duck';
 
 const mapStateToProps = (state) => {
@@ -14,13 +16,19 @@ const mapStateToProps = (state) => {
   const {
     showHealthEdit,
     showGoalEdit,
-    isEditing
+    isEditing,
+    dayProgress,
+    classDist
   } = state.profile;
+  const { dateToday } = state.home;
   return {
     user,
     showHealthEdit,
     showGoalEdit,
-    isEditing
+    isEditing,
+    dayProgress,
+    dateToday,
+    classDist
   };
 };
 
@@ -30,6 +38,12 @@ const mapDispatchToProps = dispatch => ({
   },
   getUser: (uid) => {
     dispatch(getUser(uid));
+  },
+  fetchProgress: (uid) => {
+    dispatch(fetchProgress(uid));
+  },
+  fetchClassDist: (uid) => {
+    dispatch(fetchClassDist(uid));
   },
   getSession: () => {
     dispatch(getSession());

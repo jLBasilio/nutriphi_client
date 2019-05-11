@@ -48,6 +48,19 @@ export const tagColors = {
   beverage: 'lime'
 };
 
+export const tagColorsHex = {
+  all: '#fff',
+  vegetable: '#52c41a',
+  fruit: '#722ed1',
+  rice: '#ffd591',
+  milk: '#13c2c2',
+  meat: '#f5222d',
+  sugar: '#eb2f96',
+  fat: '#fa541c',
+  free: '#1890ff',
+  beverage: '#a0d911'
+};
+
 export const months = {
   '01': 'January',
   '02': 'February',
