@@ -1291,6 +1291,7 @@ class Home extends Component {
 
         { /* For editing log */}
         <Modal
+          className="log-modal"
           title={currentFoodConsumed.food_filipinoName || currentFoodConsumed.food_englishName}
           visible={showEditModal}
           onCancel={this.handleModalClose}

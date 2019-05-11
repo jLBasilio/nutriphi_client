@@ -617,6 +617,7 @@ class Entry extends Component {
           }
 
           <Modal
+            className="entry-modal"
             title={currentFood.food_filipinoName || currentFood.food_englishName}
             visible={showModal}
             onCancel={this.handleModalClose}

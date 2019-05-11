@@ -478,6 +478,7 @@ class Food extends Component {
             }
           </Row>
           <Modal
+            className="food-modal"
             title={currentFood.food_filipinoName || currentFood.food_englishName}
             visible={showModal}
             onCancel={this.handleModalClose}

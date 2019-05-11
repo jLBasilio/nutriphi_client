@@ -691,6 +691,7 @@ class Signup extends Component {
           }
 
           <Modal
+            className="confirm-signup"
             title="Confirm Signup"
             visible={showConfirmModal}
             onCancel={this.handleCancel}
