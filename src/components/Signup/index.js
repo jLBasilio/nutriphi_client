@@ -266,7 +266,7 @@ class Signup extends Component {
       const { weeksToComplete, poundDiff, target } = this.state;
       const kcalAddSubToGoal = await signupUtil.validateTimeSpan(poundDiff, weeksToComplete);
       if (!kcalAddSubToGoal && target !== 'maintain') {
-        message.error(`Max healthy ${target} exceeded (2lbs/week)`, 4);
+        message.error('Please increase the time span', 4);
       } else {
         const { signup } = this.props;
         const { lifestyleMultiplier, weightKg } = this.state;
@@ -534,6 +534,7 @@ class Signup extends Component {
                   prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
                   suffix="cm"
                   min={129}
+                  max={182}
                 />
               </div>
 

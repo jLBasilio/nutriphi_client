@@ -716,7 +716,7 @@ class Meal extends Component {
                   {
                     currentEditingIngredients.length ? (
                       currentEditingIngredients.map((ingredient, index) => (
-                        <div key={ingredient.food.id} className="cart-row">
+                        <div key={`${ingredient.food.id}${index}`} className="cart-row">
                           <div className="cart-row-left">
                             {`${ingredient.food.filipinoName || ingredient.food.englishName} `}
                             <Tag

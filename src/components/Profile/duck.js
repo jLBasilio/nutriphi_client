@@ -2,31 +2,76 @@ import { handle } from 'redux-pack';
 import { message } from 'antd';
 import * as userApi from '../../api/user';
 import * as logApi from '../../api/log';
+import * as profileUtil from '../../utils/profile.util';
+import { getUser } from '../Login/duck';
 
 const actions = {
-  TOGGLE_HEALTH: 'HOME/TOGGLE_HEALTH',
-  TOGGLE_GOAL: 'HOME/TOGGLE_GOAL',
-  FETCH_PROGRESS: 'HOME/FETCH_PROGRESS',
-  FETCH_DIST: 'HOME/FETCH_DIST',
-  HEALTH_EDIT: 'HOME/HEALTH_EDIT'
+  TOGGLE_HEALTH: 'PROFILE/TOGGLE_HEALTH',
+  TOGGLE_GOAL: 'PROFILE/TOGGLE_GOAL',
+  TOGGLE_GOALCONFIRM: 'PROFILE/TOGGLE_GOALCONFIRM',
+  FETCH_PROGRESS: 'PROFILE/FETCH_PROGRESS',
+  FETCH_DIST: 'PROFILE/FETCH_DIST',
+  FETCH_WEIGHT: 'PROFILE/FETCH_WEIGHT',
+  SET_TIME: 'PROFILE/SET_TIME',
+  HEALTH_EDIT: 'PROFILE/HEALTH_EDIT'
 };
 
-export const toggleHealthEdit = () => ({
-  type: actions.TOGGLE_HEALTH
+export const toggleHealthEdit = toggle => ({
+  type: actions.TOGGLE_HEALTH,
+  payload: toggle
 });
 
-export const toggleGoalEdit = () => ({
-  type: actions.TOGGLE_GOAL
+export const toggleGoalEdit = toggle => ({
+  type: actions.TOGGLE_GOAL,
+  payload: toggle
 });
 
-export const healthEdit = userInfo => ({
-  type: actions.HEALTH_EDIT,
-  promise: userApi.editHealth(userInfo),
+export const toggleGoalConfirm = toggle => ({
+  type: actions.TOGGLE_GOALCONFIRM,
+  payload: toggle
+});
+
+export const setTime = time => ({
+  type: actions.SET_TIME,
+  payload: time
+});
+
+export const fetchWeight = uid => ({
+  type: actions.FETCH_WEIGHT,
+  promise: logApi.fetchWeight(uid),
   meta: {
-    onSuccess: () => message.success('Successfully updated information'),
-    onFailure: () => message.error('Failed in updating information')
+    onFailure: () => message.error('Error in retrieving information')
   }
 });
+
+export const healthEdit = userInfo => (dispatch) => {
+  dispatch({
+    type: actions.HEALTH_EDIT,
+    promise: userApi.editHealth(userInfo),
+    meta: {
+      onSuccess: async (result, getState) => {
+        await dispatch(getUser(userInfo.id));
+        await dispatch(fetchWeight(userInfo.id));
+        const { user } = getState().login;
+        if ((user.target === 'gain' && (user.weightKg >= user.goalKg
+          || user.weightLbs >= user.goalLbs))
+          || (user.target === 'lose' && (user.weightKg <= user.goalKg
+          || user.weightLbs <= user.goalLbs))) {
+          message.success('Congratulations on achieving the goal weight!');
+        } else {
+          message.success('Successfully updated information');
+        }
+
+        if (userInfo.endDate) {
+          const timeLeft = await profileUtil.calculateDaysLeft(userInfo.endDate);
+          const { weeksLeft, daysLeft } = timeLeft;
+          dispatch(setTime({ weeksLeft, daysLeft }));
+        }
+      },
+      onFailure: () => message.error('Failed in updating information')
+    }
+  });
+};
 
 export const fetchProgress = uid => ({
   type: actions.FETCH_PROGRESS,
@@ -50,8 +95,14 @@ const initialState = {
   isSaving: false,
   isEditing: false,
   isFetchingProgress: false,
-  dayProgress: [],
-  classDist: null
+  dayProgress: null,
+  classDist: null,
+  weightHist: null,
+  healthButtonDisabled: false,
+  goalButtonDisabled: false,
+  showGoalConfirm: false,
+  weeksLeft: null,
+  daysLeft: null
 };
 
 const reducer = (state = initialState, action) => {
@@ -62,7 +113,8 @@ const reducer = (state = initialState, action) => {
       return handle(state, action, {
         start: prevState => ({
           ...prevState,
-          isEditing: true
+          isEditing: true,
+          healthButtonDisabled: true
         }),
         success: prevState => ({
           ...prevState
@@ -70,7 +122,10 @@ const reducer = (state = initialState, action) => {
         finish: prevState => ({
           ...prevState,
           isEditing: false,
-          showHealthEdit: false
+          healthButtonDisabled: false,
+          showHealthEdit: false,
+          showGoalConfirm: false,
+          showGoalEdit: false
         })
       });
 
@@ -106,16 +161,45 @@ const reducer = (state = initialState, action) => {
         })
       });
 
+    case actions.FETCH_WEIGHT:
+      return handle(state, action, {
+        start: prevState => ({
+          ...prevState,
+          isFetchingProgress: true
+        }),
+        success: prevState => ({
+          ...prevState,
+          weightHist: payload.data.data
+        }),
+        finish: prevState => ({
+          ...prevState,
+          isFetchingProgress: false
+        })
+      });
+
     case actions.TOGGLE_HEALTH:
       return {
         ...state,
-        showHealthEdit: !state.showHealthEdit
+        showHealthEdit: payload
       };
 
     case actions.TOGGLE_GOAL:
       return {
         ...state,
-        showGoalEdit: !state.showGoalEdit
+        showGoalEdit: payload
+      };
+
+    case actions.TOGGLE_GOALCONFIRM:
+      return {
+        ...state,
+        showGoalConfirm: payload
+      };
+
+    case actions.SET_TIME:
+      return {
+        ...state,
+        weeksLeft: payload.weeksLeft,
+        daysLeft: payload.daysLeft
       };
 
     default:

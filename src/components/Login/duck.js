@@ -51,6 +51,7 @@ const initialState = {
   isLoggingIn: false,
   isLoggingOut: false,
   isGettingSession: false,
+  isFetchingUser: false,
   user: null
 };
 
@@ -92,9 +93,17 @@ const reducer = (state = initialState, action) => {
 
     case actions.GET_USER:
       return handle(state, action, {
+        start: prevState => ({
+          ...prevState,
+          isFetchingUser: true
+        }),
         success: prevState => ({
           ...prevState,
           user: payload.data.data
+        }),
+        finish: prevState => ({
+          ...prevState,
+          isFetchingUser: false
         })
       });
 

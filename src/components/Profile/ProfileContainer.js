@@ -2,23 +2,32 @@ import { connect } from 'react-redux';
 import Profile from '.';
 
 import { changePage } from '../Header/duck';
-import { getUser, getSession } from '../Login/duck';
+import { getSession } from '../Login/duck';
 import {
   toggleHealthEdit,
   toggleGoalEdit,
   healthEdit,
   fetchProgress,
-  fetchClassDist
+  fetchClassDist,
+  fetchWeight,
+  setTime,
+  toggleGoalConfirm
 } from './duck';
 
 const mapStateToProps = (state) => {
-  const { user } = state.login;
+  const { user, isFetchingUser } = state.login;
   const {
     showHealthEdit,
     showGoalEdit,
     isEditing,
     dayProgress,
-    classDist
+    classDist,
+    healthButtonDisabled,
+    goalButtonDisabled,
+    showGoalConfirm,
+    weightHist,
+    weeksLeft,
+    daysLeft
   } = state.profile;
   const { dateToday } = state.home;
   return {
@@ -28,7 +37,14 @@ const mapStateToProps = (state) => {
     isEditing,
     dayProgress,
     dateToday,
-    classDist
+    classDist,
+    healthButtonDisabled,
+    goalButtonDisabled,
+    isFetchingUser,
+    showGoalConfirm,
+    weightHist,
+    weeksLeft,
+    daysLeft
   };
 };
 
@@ -36,26 +52,32 @@ const mapDispatchToProps = dispatch => ({
   changePage: (newPage) => {
     dispatch(changePage(newPage));
   },
-  getUser: (uid) => {
-    dispatch(getUser(uid));
-  },
   fetchProgress: (uid) => {
     dispatch(fetchProgress(uid));
   },
   fetchClassDist: (uid) => {
     dispatch(fetchClassDist(uid));
   },
+  fetchWeight: (uid) => {
+    dispatch(fetchWeight(uid));
+  },
   getSession: () => {
     dispatch(getSession());
   },
-  toggleHealthEdit: () => {
-    dispatch(toggleHealthEdit());
+  toggleHealthEdit: (toggle) => {
+    dispatch(toggleHealthEdit(toggle));
   },
-  toggleGoalEdit: () => {
-    dispatch(toggleGoalEdit());
+  toggleGoalEdit: (toggle) => {
+    dispatch(toggleGoalEdit(toggle));
+  },
+  toggleGoalConfirm: (toggle) => {
+    dispatch(toggleGoalConfirm(toggle));
   },
   healthEdit: (userInfo) => {
     dispatch(healthEdit(userInfo));
+  },
+  setTime: (time) => {
+    dispatch(setTime(time));
   }
 });
 

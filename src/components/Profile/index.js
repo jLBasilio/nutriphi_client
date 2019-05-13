@@ -8,7 +8,7 @@ import {
   message,
   Modal,
   Select,
-  Tooltip
+  Spin
 } from 'antd';
 import './profile.scss';
 
@@ -16,6 +16,7 @@ import * as constants from '../../constants';
 import * as pageTitles from '../../constants/pages';
 import * as profileUtil from '../../utils/profile.util';
 import * as signupUtil from '../../utils/signup.util';
+import * as dateUtil from '../../utils/date.util';
 
 import Graph from '../Graph';
 
@@ -25,7 +26,6 @@ class Profile extends Component {
     super(props);
 
     this.state = {
-      bmiClass: null,
       weightKg: null,
       weightLbs: null,
       goalKg: null,
@@ -38,17 +38,14 @@ class Profile extends Component {
       lifestyleMultiplier: null,
       endDate: null,
       weeksToComplete: null,
-      weeksLeft: null,
-      daysLeft: null,
       choPerDay: null,
       proPerDay: null,
       fatPerDay: null,
-      kcalAddSubToGoal: null,
       baseTEA: null,
       goalTEA: null,
-
-      healthButtonDisabled: true,
-      goalButtonDisabled: true
+      showSecond: false,
+      dbwKg: null,
+      dbwLbs: null
     };
   }
 
@@ -57,87 +54,169 @@ class Profile extends Component {
       changePage,
       fetchProgress,
       fetchClassDist,
+      fetchWeight,
       user
     } = this.props;
     changePage(pageTitles.PROFILE);
     fetchProgress(user.id);
     fetchClassDist(user.id);
+    fetchWeight(user.id);
     this.resetFromUser();
+  }
+
+  async componentDidUpdate() {
+    const {
+      user,
+      weeksLeft: wleft,
+      daysLeft: dleft,
+      setTime
+    } = this.props;
+    if (wleft === null && dleft === null) {
+      const timeLeft = await profileUtil.calculateDaysLeft(user.endDate);
+      const { weeksLeft, daysLeft } = timeLeft;
+      setTime({ weeksLeft, daysLeft });
+    }
   }
 
   resetFromUser = async () => {
     const { user } = this.props;
     try {
       this.setState({
-        bmiClass: user.bmiClass,
         heightCm: parseFloat(user.heightCm),
         heightFt: parseFloat(user.heightFt),
         heightInch: parseFloat(user.heightInch),
         weightKg: parseFloat(user.weightKg),
         weightLbs: parseFloat(user.weightLbs),
-        target: user.target,
         lifestyleMultiplier: parseFloat(user.lifestyleMultiplier),
-        goalKg: parseFloat(user.goalKg),
-        goalLbs: parseFloat(user.goalLbs),
-        poundDiff: Math.abs(parseFloat(
-          (parseFloat(user.weightLbs) - parseFloat(user.goalLbs)).toFixed(2)
-        )),
         endDate: user.endDate,
         weeksToComplete: user.weeksToComplete,
-        goalTEA: user.goalTEA,
-        baseTEA: user.baseTEA
+        target: 'maintain',
+        poundDiff: 0,
+        dbwKg: null,
+        dbwLbs: null,
+        goalKg: user.weightKg,
+        goalLbs: user.weightLbs,
+        choPerDay: null,
+        proPerDay: null,
+        fatPerDay: null
       });
-
-      if (user.target !== 'maintain') {
-        const timeLeft = await profileUtil.calculateDaysLeft(user.endDate);
-        const { weeksLeft, daysLeft } = timeLeft;
-        this.setState({ weeksLeft, daysLeft });
-      }
     } catch (err) {
       throw new Error(err);
     }
   }
 
   handleHealthEdit = () => {
-    const { toggleHealthEdit } = this.props;
-    this.resetFromUser();
-    this.setState({ healthButtonDisabled: true });
-    toggleHealthEdit();
+    const { toggleHealthEdit, isEditing } = this.props;
+    if (!isEditing) {
+      this.resetFromUser();
+      toggleHealthEdit(true);
+    }
   }
 
-  handleGoalEdit = () => {
-    const { toggleGoalEdit } = this.props;
-    this.resetFromUser();
-    this.setState({ goalButtonDisabled: true });
-    toggleGoalEdit();
+  handleGoalEdit = async () => {
+    const { user, toggleGoalEdit, isEditing } = this.props;
+    const { sex, heightCm } = user;
+    if (!isEditing) {
+      this.resetFromUser();
+      const { dbwKg, dbwLbs } = await signupUtil.getDBW({ sex, heightCm });
+      this.setState({
+        dbwKg,
+        dbwLbs,
+        lifestyleMultiplier: null,
+        showSecond: false
+      }, () => {
+        toggleGoalEdit(true);
+      });
+    }
   }
 
-  handleHeightEdit = (e) => {
-    const height = e.target.value;
+  handleHeightEdit = async (e) => {
     const { heightFt, heightInch } = this.state;
-    let otherValue = 0;
-
+    const height = e.target.value;
     if (e.target.name === 'heightFt') {
-      otherValue = height * 30.48 + heightInch * 2.54;
+      const heightCm = height * 30.48 + heightInch * 2.54;
       this.setState({
-        heightFt: height,
-        heightCm: parseFloat(otherValue.toFixed(2))
-      }, () => this.checkHealthChange());
+        heightFt: parseFloat(height),
+        heightCm: parseFloat(heightCm.toFixed(2)),
+        showSecond: false
+      });
     } else if (e.target.name === 'heightInch') {
-      otherValue = height * 2.54 + heightFt * 30.48;
+      const heightCm = height * 2.54 + heightFt * 30.48;
       this.setState({
-        heightInch: height,
-        heightCm: parseFloat(otherValue.toFixed(2))
-      }, () => this.checkHealthChange());
+        heightInch: parseFloat(height),
+        heightCm: parseFloat(heightCm.toFixed(2)),
+        showSecond: false,
+        target: null,
+        weeksToComplete: null
+      });
     } else if (e.target.name === 'heightCm') {
       let inchez = (height / 2.54).toFixed(0);
       const feetz = Math.floor(inchez / 12);
       inchez %= 12;
       this.setState({
-        heightCm: height,
+        heightCm: parseFloat(height),
         heightFt: feetz,
-        heightInch: inchez
-      }, () => this.checkHealthChange());
+        heightInch: inchez,
+        showSecond: false
+      });
+    }
+  }
+
+  validateNext = () => {
+    const {
+      weightKg,
+      weightLbs,
+      heightCm,
+      heightFt
+    } = this.state;
+
+    const subsetObj = {
+      weightKg,
+      weightLbs,
+      heightCm,
+      heightFt
+    };
+
+    const subsetObjVal = Object.values(subsetObj);
+    if (
+      subsetObjVal.includes(null)
+      || subsetObjVal.includes('')
+      || subsetObjVal.includes(0)) {
+      message.error('Please fill out all the fields.', 4);
+      return false;
+    }
+    if (weightKg < 30) {
+      message.error('Please adjust the weight.', 4);
+      return false;
+    }
+    if (heightCm < 129 || heightCm > 182) {
+      message.error('Please adjust the height.', 4);
+      return false;
+    }
+
+    return true;
+  }
+
+  handleNext = async () => {
+    if (await this.validateNext()) {
+      const { user: { sex } } = this.props;
+      const {
+        heightCm,
+        weightKg,
+        goalKg,
+        weightLbs,
+        goalLbs
+      } = this.state;
+
+      const { dbwKg, dbwLbs } = await signupUtil.getDBW({ sex, heightCm });
+      this.setState({
+        dbwKg,
+        dbwLbs,
+        showSecond: true,
+        target: weightKg > goalKg ? 'lose' : weightKg < goalKg ? 'gain' : 'maintain',
+        weeksToComplete: Math.abs(Math.ceil(weightLbs - goalLbs)),
+        endDate: null
+      });
     }
   }
 
@@ -160,8 +239,9 @@ class Profile extends Component {
       this.setState({
         weightKg: parseFloat(weight),
         weightLbs: newLbs,
-        poundDiff: holder < 1 ? 1 : holder
-      }, () => this.checkHealthChange());
+        poundDiff: holder < 1 ? 1 : holder,
+        showSecond: false
+      });
     } else if (e.target.name === 'weightLbs') {
       const kgWeight = parseFloat((weight / 2.2).toFixed(2));
       const bmi = await signupUtil.getBMIFromGoal({ goalKg: kgWeight, heightCm });
@@ -172,8 +252,9 @@ class Profile extends Component {
       this.setState({
         weightKg: kgWeight,
         weightLbs: weight,
-        poundDiff: holder < 1 ? 1 : holder
-      }, () => this.checkHealthChange());
+        poundDiff: holder < 1 ? 1 : holder,
+        showSecond: false
+      });
     } else if (e.target.name === 'goalKg') {
       const bmi = await signupUtil.getBMIFromGoal({ goalKg: weight, heightCm });
       const newGoalLbs = parseFloat((weight * 2.2).toFixed(2));
@@ -185,8 +266,9 @@ class Profile extends Component {
         goalKg: parseFloat(weight),
         goalLbs: newGoalLbs,
         target: weightKg > weight ? 'lose' : weightKg < weight ? 'gain' : 'maintain',
-        poundDiff: holder < 1 ? 1 : holder
-      }, () => this.checkGoalChange());
+        poundDiff: holder < 1 ? 1 : holder,
+        endDate: null
+      });
     } else if (e.target.name === 'goalLbs') {
       const goalKg = parseFloat((weight / 2.2).toFixed(2));
       const bmi = await signupUtil.getBMIFromGoal({ goalKg, heightCm });
@@ -198,53 +280,26 @@ class Profile extends Component {
         goalKg,
         goalLbs: parseFloat(weight),
         target: weightLbs > weight ? 'lose' : weightLbs < weight ? 'gain' : 'maintain',
-        poundDiff: holder < 1 ? 1 : holder
-      }, () => this.checkGoalChange());
+        poundDiff: holder < 1 ? 1 : holder,
+        endDate: null
+      });
     }
   }
 
   handlelifestyleMultiplier = (lifestyleMultiplier) => {
     this.setState({
-      lifestyleMultiplier, goalButtonDisabled: false
-    }, () => this.checkGoalChange());
+      lifestyleMultiplier
+    });
   }
 
   handleEndDate = async (date, dateString) => {
     this.setState({
       endDate: dateString,
-      weeksToComplete: await signupUtil.getDiffWeeks(dateString),
-      goalButtonDisabled: false
+      weeksToComplete: await signupUtil.getDiffWeeks(dateString)
     });
   }
 
-  checkHealthChange = () => {
-    const { user } = this.props;
-    const { weightKg, heightCm } = this.state;
-
-
-    if (parseFloat(user.weightKg) === weightKg
-      && parseFloat(user.heightCm) === heightCm) {
-      this.setState({ healthButtonDisabled: true });
-    } else {
-      this.setState({ healthButtonDisabled: false });
-    }
-  }
-
-  checkGoalChange = () => {
-    const { user } = this.props;
-    const { goalKg, lifestyleMultiplier, endDate } = this.state;
-
-    if (parseFloat(user.goalKg) === goalKg
-      && parseFloat(user.lifestyleMultiplier) === lifestyleMultiplier
-      && user.endDate === endDate) {
-      this.setState({ goalButtonDisabled: true });
-    } else {
-      this.setState({ goalButtonDisabled: false });
-    }
-  }
-
-  handleHealthConfirm = () => {
-    const { healthEdit, user, getUser } = this.props;
+  validateHealth = () => {
     const {
       weightKg,
       weightLbs,
@@ -254,7 +309,6 @@ class Profile extends Component {
     } = this.state;
 
     const toSend = {
-      id: user.id,
       weightKg,
       weightLbs,
       heightCm,
@@ -267,73 +321,181 @@ class Profile extends Component {
       || subsetObjVal.includes(0)
       || subsetObjVal.includes(NaN)) {
       message.error('Please fill out the form correctly.');
-    } else {
+      return false;
+    }
+
+    return true;
+  }
+
+  handleHealthConfirm = async () => {
+    const { healthEdit, user } = this.props;
+    if (this.validateHealth()) {
+      const {
+        weightKg,
+        weightLbs,
+        heightCm,
+        heightFt,
+        heightInch
+      } = this.state;
+
+      let dateOfChange = await dateUtil.generatePresent();
+      [dateOfChange, ,] = dateOfChange.split('T');
+
+      const toSend = {
+        id: user.id,
+        weightKg,
+        weightLbs,
+        heightCm,
+        heightFt,
+        heightInch,
+        dateOfChange
+      };
       healthEdit(toSend);
-      getUser(user.id);
     }
   }
 
-  handleGoalConfirm = async () => {
-    // const { healthEdit, user, getUser } = this.props;
-    const { user } = this.props;
-
+  validateGoal = async () => {
     const {
       goalKg,
       goalLbs,
       lifestyleMultiplier,
       target,
-      endDate,
       poundDiff,
-      weeksToComplete
+      weeksToComplete,
+      endDate
     } = this.state;
 
-    const toSend = {
-      id: user.id,
+    const subsetObj = {
       goalKg,
       goalLbs,
       lifestyleMultiplier,
       target
     };
 
-    const subsetObjVal = Object.values(toSend);
+    const subsetObjVal = Object.values(subsetObj);
     if (subsetObjVal.includes(null)
       || subsetObjVal.includes('')
       || subsetObjVal.includes(0)
       || subsetObjVal.includes(NaN)) {
-      message.error('Please fill out the form correctly.');
-    } else {
+      message.error('Please fill out the form correctlyzz.');
+      return false;
+    }
 
-      let kcalAddSubToGoal;
+    const kcalAddSubToGoal = await signupUtil.validateTimeSpan(poundDiff, weeksToComplete);
+    if ((!kcalAddSubToGoal || endDate === null || weeksToComplete <= 0) && target !== 'maintain') {
+      message.error('Please increase the time span', 4);
+      return false;
+    }
+    // console.table({ baseTEA, goalTEA, endDate, poundDiff, weeksToComplete });
+    return true;
+  }
 
-      // If changed goal
-      if (parseFloat(user.goalKg) !== goalKg) {
-        // If goal date is still the same, prompt change.
-        if (user.endDate === endDate) {
-          message.error('Please set the time span');
-          return;
-        }
+  handleGoalSave = async () => {
+    if (await this.validateGoal()) {
+      const { toggleGoalConfirm } = this.props;
+      const {
+        poundDiff,
+        weeksToComplete,
+        weightKg,
+        lifestyleMultiplier,
+        target
+      } = this.state;
 
-        // Validate goal date
-        kcalAddSubToGoal = await signupUtil.validateTimeSpan(poundDiff, weeksToComplete);
-        if (!kcalAddSubToGoal || kcalAddSubToGoal < 0) {
-          message.error('Please increase the time');
-          return;
-        }
+      const kcalAddSubToGoal = await signupUtil.validateTimeSpan(poundDiff, weeksToComplete);
+      const baseTEA = await signupUtil.getTEA(weightKg, lifestyleMultiplier);
+      const goalTEA = target === 'lose'
+        ? (baseTEA - kcalAddSubToGoal)
+        : target === 'gain'
+          ? (baseTEA + kcalAddSubToGoal)
+          : baseTEA;
+      const { choPerDay, proPerDay, fatPerDay } = await signupUtil.getNutriDist(goalTEA);
 
-      }
+      this.setState({
+        choPerDay,
+        proPerDay,
+        fatPerDay,
+        goalTEA,
+        baseTEA
+      }, () => {
+        toggleGoalConfirm(true);
+      });
     }
   }
 
-  handleHealthCancel = () => {
-    const { toggleHealthEdit } = this.props;
-    toggleHealthEdit();
-    this.resetFromUser();
+  handleGoalConfirm = async () => {
+    const { user: { id }, healthEdit } = this.props;
+    const {
+      weightKg,
+      weightLbs,
+      heightCm,
+      heightFt,
+      heightInch,
+      dbwKg,
+      lifestyleMultiplier,
+      target,
+      goalKg,
+      goalLbs,
+      poundDiff,
+      weeksToComplete,
+      baseTEA,
+      goalTEA,
+      choPerDay,
+      proPerDay,
+      fatPerDay,
+      endDate
+    } = this.state;
+
+    let dateOfChange = await dateUtil.generatePresent();
+    [dateOfChange, ,] = dateOfChange.split('T');
+
+    const toSend = {
+      id,
+      weightKg: parseFloat(weightKg),
+      weightLbs: parseFloat(weightLbs),
+      heightCm: parseFloat(heightCm),
+      heightFt: parseFloat(heightFt),
+      heightInch: parseFloat(heightInch),
+      dbwKg,
+      lifestyleMultiplier: parseFloat(lifestyleMultiplier),
+      target,
+      goalKg: parseFloat(goalKg),
+      goalLbs: parseFloat(goalLbs),
+      baseTEA,
+      goalTEA,
+      poundDiff,
+      weeksToComplete,
+      choPerDay,
+      proPerDay,
+      fatPerDay,
+      endDate,
+      dateOfChange
+    };
+
+    healthEdit(toSend);
   }
 
-  handleGoalCancel = () => {
-    const { toggleGoalEdit } = this.props;
-    toggleGoalEdit();
-    this.resetFromUser();
+  handleHealthCancel = () => {
+    const { isEditing, toggleHealthEdit } = this.props;
+    if (!isEditing) {
+      toggleHealthEdit(false);
+      this.resetFromUser();
+    }
+  }
+
+  handleGoalCancel = async () => {
+    const { toggleGoalEdit, isEditing } = this.props;
+    if (!isEditing) {
+      await toggleGoalEdit(false);
+      this.resetFromUser();
+      this.setState({ showSecond: false });
+    }
+  }
+
+  handleGoalConfirmCancel = () => {
+    const { isEditing, toggleGoalConfirm } = this.props;
+    if (!isEditing) {
+      toggleGoalConfirm(false);
+    }
   }
 
   render() {
@@ -344,23 +506,32 @@ class Profile extends Component {
       isEditing,
       dayProgress,
       dateToday,
-      classDist
+      classDist,
+      healthButtonDisabled,
+      isFetchingUser,
+      showGoalConfirm,
+      weightHist,
+      weeksLeft,
+      daysLeft,
     } = this.props;
+
     const {
       heightCm,
       heightFt,
       heightInch,
       weightKg,
       weightLbs,
-      lifestyleMultiplier,
       target,
       goalKg,
       goalLbs,
       poundDiff,
-      weeksLeft,
-      daysLeft,
-      healthButtonDisabled,
-      goalButtonDisabled
+      showSecond,
+      dbwKg,
+      dbwLbs,
+      goalTEA,
+      choPerDay,
+      proPerDay,
+      fatPerDay
     } = this.state;
 
     const dayProg = {
@@ -377,11 +548,20 @@ class Profile extends Component {
       ]
     };
 
-    dayProgress.forEach((progress) => {
-      const date = progress.date.split('-');
-      dayProg.labels.push(`${date[1]}-${date[2]}`);
-      dayProg.datasets[0].values.push(progress.totalKcal);
-    });
+    const weightProg = {
+      labels: [],
+      datasets: [
+        { values: [] }
+      ]
+    };
+
+    if (dayProgress) {
+      dayProgress.forEach((progress) => {
+        const date = progress.date.split('-');
+        dayProg.labels.push(`${date[1]}-${date[2]}`);
+        dayProg.datasets[0].values.push(progress.totalKcal);
+      });
+    }
 
     const tagColors = [];
     if (classDist) {
@@ -393,15 +573,400 @@ class Profile extends Component {
       });
     }
 
+    if (weightHist) {
+      weightHist.forEach((hist) => {
+        const [, month, day] = hist.dateOfChange.split('-');
+        weightProg.labels.push(`${month}-${day}`);
+        weightProg.datasets[0].values.push(hist.weightKg);
+      });
+    }
+
     return (
       <div className="profile">
         <div className="profile-body">
+
+          {
+            (user.target === 'gain' && (user.weightLbs >= user.goalLbs))
+            || (user.target === 'lose' && (user.weightLbs <= user.goalLbs)) ? (
+              <div className="first-row">
+                <div className="profile-card success-card">
+                  <div className="card-title">
+                    Congratulations on reaching your goal! Please set a new one.
+                  </div>
+                </div>
+              </div>
+              ) : user.target !== 'maintain' && weeksLeft <= 0 && daysLeft <= 0 && (
+              <div className="first-row">
+                <div className="profile-card dead-card">
+                  <div className="card-title">
+                    You have reached your set time. Please set a new goal.
+                  </div>
+                </div>
+              </div>
+              )
+          }
+
+          <Modal
+            className="confirm-signup"
+            title="Confirm Signup"
+            visible={showGoalConfirm}
+            onCancel={this.handleGoalConfirmCancel}
+            footer={(
+              <div className="one-row">
+                <div className="button-container">
+                  <Button
+                    className="back-button"
+                    type="primary"
+                    onClick={this.handleGoalConfirmCancel}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+                <div className="button-container">
+                  <Button
+                    className="next-button"
+                    type="primary"
+                    onClick={this.handleGoalConfirm}
+                    loading={isEditing}
+                  >
+                    OK
+                  </Button>
+                </div>
+              </div>
+            )}
+          >
+            <div className="label-container">
+              <div className="label">
+                {`${user.firstName} ${user.lastName} - ${user.sex} `}
+              </div>
+            </div>
+
+            <Divider />
+
+            <div className="nut-info nut-subinfo">
+              Weight Information
+            </div>
+
+            <Divider />
+
+            <div className="info-row">
+              <div className="macros">
+                Current Weight
+              </div>
+              <div className="macros-value">
+                {`${user.weightKg} kg | ${user.weightLbs} lbs`}
+              </div>
+            </div>
+
+            <Divider />
+
+            <div className="info-row">
+              <div className="macros">
+                Goal Weight
+              </div>
+              <div className="macros-value">
+                {`${goalKg} kg | ${goalLbs} lbs`}
+              </div>
+            </div>
+
+            <Divider />
+
+            <div className="info-row">
+              <div className="macros">
+                {`kcal/day to ${target ? target.toUpperCase() : null}`}
+              </div>
+              <div className="macros-value">
+                {`${goalTEA}kcal`}
+              </div>
+            </div>
+
+            <Divider />
+
+            <div className="nut-info">
+              Nutrition Requirement
+              <div className="nut-subinfo">
+                You need to have these everyday to reach your goal:
+              </div>
+            </div>
+
+            <Divider />
+
+            <div className="info-row">
+              <div className="macros">
+                Carbohydrate (CHO)
+              </div>
+              <div className="macros-value">
+                {`${choPerDay}g`}
+              </div>
+            </div>
+
+            <Divider />
+
+            <div className="info-row">
+              <div className="macros">
+                Protein (PRO)
+              </div>
+              <div className="macros-value">
+                {`${proPerDay}g`}
+              </div>
+            </div>
+
+            <Divider />
+
+            <div className="info-row">
+              <div className="macros">
+                Fat (FAT)
+              </div>
+              <div className="macros-value">
+                {`${fatPerDay}g`}
+              </div>
+            </div>
+
+            <Divider />
+
+            <div className="nut-info">
+              <div className="nut-subinfo">
+                Click OK to Sign Up.
+              </div>
+            </div>
+
+          </Modal>
           <div className="first-row">
+            <div className="profile-card">
+              <div className="personal-section">
+                <div className="card-title">
+                  <div className="icon">
+                    <Icon className="icon-left" type="info-circle" theme="filled" />
+                    Personal
+                  </div>
+                </div>
+                <div className="card-content">
+                  <div className="desc-side">
+                    <div className="one-desc">
+                      <div className="desc-key">
+                        Name
+                      </div>
+                      <div className="desc-value">
+                        {`\u00A0\u00A0${user.firstName} ${user.lastName}`}
+                      </div>
+                    </div>
+
+                    <div className="one-desc">
+                      <div className="desc-key">
+                        Sex
+                      </div>
+                      <div className="desc-value">
+                        {`\u00A0\u00A0${user.sex}`}
+                      </div>
+                    </div>
+
+                    <div className="one-desc">
+                      <div className="desc-key">
+                        Birthday
+                      </div>
+                      <div className="desc-value">
+                        {user.birthday}
+                      </div>
+                    </div>
+                    {/*
+                    <div className="one-desc">
+                      <div className="desc-key">
+                        Age
+                      </div>
+                      <div className="desc-value">
+                        {`\u00A0\u00A0${user.age}`}
+                      </div>
+                    </div>
+                    */}
+                  </div>
+                </div>
+              </div>
+
+              <div className="personal-section">
+                <div className="card-title">
+                  <div className="icon">
+                    <Icon className="icon-left" type="heart" theme="filled" />
+                    Health
+                  </div>
+                  <div className="action-button">
+                    {
+                      isFetchingUser ? (
+                        <Icon type="loading" />
+                      ) : (
+                        <Button
+                          type="edit-button"
+                          className="create-meal-button"
+                          onClick={this.handleHealthEdit}
+                        >
+                          Update Weight
+                        </Button>
+                      )
+                    }
+                  </div>
+                </div>
+
+                <div className="card-content">
+                  {
+                    isFetchingUser ? (
+                      <div className="log-loader">
+                        <Spin />
+                      </div>
+                    ) : (
+                      <div className="desc-side">
+                        <div className="one-desc">
+                          <div className="desc-key">
+                            Height
+                          </div>
+                          <div className="desc-value">
+                            {`${user.heightCm}cm |
+                              ${(user.heightFt).split('.')[0]}ft 
+                              ${(user.heightInch).split('.')[0]}in`
+                            }
+                          </div>
+                        </div>
+
+                        <div className="one-desc">
+                          <div className="desc-key">
+                            Current weight
+                          </div>
+                          <div className="desc-value">
+                            {`\u00A0${user.weightKg}kg | ${user.weightLbs}lbs`}
+                          </div>
+                        </div>
+
+                        <div className="one-desc">
+                          <div className="desc-key">
+                            BMI
+                          </div>
+                          <div className="desc-value">
+                            {`\u00A0${user.bmi} (${user.bmiClass})`}
+                          </div>
+                        </div>
+
+                        <div className="one-desc">
+                          <div className="desc-key">
+                            Lifestyle
+                          </div>
+                          <div className="desc-value">
+                            {constants.lifestyle[parseFloat(user.lifestyleMultiplier)]}
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  }
+                </div>
+              </div>
+
+              <div className="personal-section">
+                <div className="card-title">
+                  <div className="icon">
+                    <Icon className="icon-left" type="clock-circle" theme="filled" />
+                    Goal
+                  </div>
+                  <div className="action-button">
+                    {
+                      isFetchingUser ? (
+                        <Icon type="loading" />
+                      ) : (
+                        <Button
+                          type="edit-button"
+                          className="create-meal-button"
+                          onClick={this.handleGoalEdit}
+                        >
+                          New Goal
+                        </Button>
+                      )
+                    }
+                  </div>
+                </div>
+
+
+                <div className="card-content">
+                  <div className="desc-side">
+                    <div className="one-desc">
+                      <div className="desc-key">
+                        Goal
+                      </div>
+                      <div className="desc-value">
+                        {`${(user.target).toUpperCase()} weight`}
+                      </div>
+                    </div>
+                    {
+                      user.target !== 'maintain' && (
+                        <React.Fragment>
+                          <div className="one-desc">
+                            <div className="desc-key">
+                              Goal weight
+                            </div>
+                            <div className="desc-value">
+                              {`\u00A0${user.goalKg}kg | ${user.goalLbs}lbs`}
+                            </div>
+                          </div>
+
+                          <div className="one-desc">
+                            <div className="desc-key">
+                              Time set
+                            </div>
+                            <div className="desc-value">
+                              {`${user.endDate} (${user.weeksToComplete} week/s)`}
+                            </div>
+                          </div>
+
+                          <div className="one-desc">
+                            <div className="desc-key">
+                              Time left
+                            </div>
+                            <div className="desc-value">
+                              {`${weeksLeft >= 0
+                                ? weeksLeft : 0} week/s, ${daysLeft >= 0
+                                ? daysLeft : 0} days`
+                              }
+                            </div>
+                          </div>
+                        </React.Fragment>
+                      )
+                    }
+                    <div className="one-desc">
+                      <div className="desc-key">
+                        Kcal per day
+                      </div>
+                      <div className="desc-value">
+                        {`${user.goalTEA}kcal`}
+                      </div>
+                    </div>
+                    <div className="one-desc">
+                      <div className="desc-key">
+                        Carbohydrate per day
+                      </div>
+                      <div className="desc-value">
+                        {`${user.choPerDay}g`}
+                      </div>
+                    </div>
+                    <div className="one-desc">
+                      <div className="desc-key">
+                        Protein per day
+                      </div>
+                      <div className="desc-value">
+                        {`${user.proPerDay}g`}
+                      </div>
+                    </div>
+                    <div className="one-desc">
+                      <div className="desc-key">
+                        Fat per day
+                      </div>
+                      <div className="desc-value">
+                        {`${user.fatPerDay}g`}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <Modal
               className="edit-modal"
               title="Edit Health Information"
               visible={showHealthEdit}
-              onCancel={this.handleHealthEdit}
+              onCancel={this.handleHealthCancel}
               footer={(
                 <div className="one-row">
                   <div className="button-container">
@@ -419,7 +984,10 @@ class Profile extends Component {
                       type="primary"
                       onClick={this.handleHealthConfirm}
                       loading={isEditing}
-                      disabled={healthButtonDisabled}
+                      disabled={(weightKg === parseFloat(user.weightKg)
+                        && heightCm === parseFloat(user.heightCm))
+                        || healthButtonDisabled
+                      }
                     >
                       Save
                     </Button>
@@ -427,8 +995,8 @@ class Profile extends Component {
                 </div>
               )}
             >
-              <div className="label-container">
-                <div className="label">
+              <div className="subtitle-container">
+                <div className="subtitle">
                   Update your weight or height.
                 </div>
               </div>
@@ -475,6 +1043,7 @@ class Profile extends Component {
                     type="number"
                     value={heightCm}
                     min={129}
+                    max={182}
                   />
                 </div>
                 <div className="edit-container">
@@ -485,9 +1054,10 @@ class Profile extends Component {
                     className="edit-input"
                     onChange={this.handleHeightEdit}
                     name="heightFt"
-                    type="number"
+                    type="tel"
                     value={heightFt}
                     min={4}
+                    max={5}
                   />
                 </div>
                 <div className="edit-container">
@@ -501,6 +1071,7 @@ class Profile extends Component {
                     type="number"
                     value={heightInch}
                     min={heightFt === 4 ? 3 : 0}
+                    max={11}
                   />
                 </div>
               </div>
@@ -510,7 +1081,7 @@ class Profile extends Component {
               className="edit-modal"
               title="Edit Health Information"
               visible={showGoalEdit}
-              onCancel={this.handleGoalEdit}
+              onCancel={this.handleGoalCancel}
               footer={(
                 <div className="one-row">
                   <div className="button-container">
@@ -522,25 +1093,25 @@ class Profile extends Component {
                       Cancel
                     </Button>
                   </div>
-                  <div className="button-container">
-                    <Button
-                      className="next-button"
-                      type="primary"
-                      onClick={this.handleGoalConfirm}
-                      loading={isEditing}
-                      disabled={goalButtonDisabled}
-                    >
-                      Save
-                    </Button>
-                  </div>
+                  {
+                    showSecond && (
+                      <div className="button-container">
+                        <Button
+                          className="next-button"
+                          type="primary"
+                          onClick={this.handleGoalSave}
+                        >
+                          Save
+                        </Button>
+                      </div>
+                    )
+                  }
                 </div>
               )}
             >
-
-              <div className="label-container">
-                <div className="label">
-                  Edit or update your weight.
-                  Updating your goal weight means a fresh start.
+              <div className="subtitle-container">
+                <div className="subtitle">
+                  Set a new Goal
                 </div>
               </div>
 
@@ -549,79 +1120,181 @@ class Profile extends Component {
               <div className="edit-row">
                 <div className="edit-container">
                   <div className="edit-title">
-                    Lifestyle
+                    Weight (kg)
                   </div>
-                  <Select
-                    placeholder="Select current lifestyle"
-                    value={constants.lifestyle[parseFloat(lifestyleMultiplier)]}
-                    onChange={this.handlelifestyleMultiplier}
+                  <Input
+                    className="edit-input"
+                    name="weightKg"
+                    onChange={this.handleWeightEdit}
+                    type="number"
+                    value={weightKg}
+                    min={30}
+                  />
+                </div>
+                <div className="edit-container">
+                  <div className="edit-title">
+                    Weight (lbs)
+                  </div>
+                  <Input
+                    className="edit-input"
+                    onChange={this.handleWeightEdit}
+                    name="weightLbs"
+                    type="number"
+                    value={weightLbs}
+                    min={66}
+                  />
+                </div>
+              </div>
+              <div className="edit-row">
+                <div className="edit-container">
+                  <div className="edit-title">
+                    Height (cm)
+                  </div>
+                  <Input
+                    className="edit-input"
+                    name="heightCm"
+                    onChange={this.handleHeightEdit}
+                    type="number"
+                    value={heightCm}
+                    min={129}
+                    max={182}
+                  />
+                </div>
+                <div className="edit-container">
+                  <div className="edit-title">
+                    Height (ft)
+                  </div>
+
+                  <Input
+                    className="edit-input"
+                    onChange={this.handleHeightEdit}
+                    name="heightFt"
+                    type="number"
+                    value={heightFt}
+                    min={4}
+                    max={5}
+                  />
+                </div>
+                <div className="edit-container">
+                  <div className="edit-title">
+                    Height (in)
+                  </div>
+                  <Input
+                    className="edit-input"
+                    onChange={this.handleHeightEdit}
+                    name="heightInch"
+                    type="number"
+                    value={heightInch}
+                    min={heightFt === 4 ? 3 : 0}
+                    max={11}
+                  />
+                </div>
+              </div>
+              <div className="edit-row">
+                <div className="button-container">
+                  <Button
+                    className="next-button"
+                    type="primary"
+                    onClick={this.handleNext}
                   >
-                    <Option value={constants.BED_REST}>Bed rest</Option>
-                    <Option value={constants.SEDENTARY}>Sedentary</Option>
-                    <Option value={constants.LIGHT}>Light</Option>
-                    <Option value={constants.MODERATE}>Moderate</Option>
-                    <Option value={constants.VERY_ACTIVE}>Very Active</Option>
-                  </Select>
-                </div>
-                <div className="edit-container">
-                  <div className="edit-title">
-                    Goal
-                  </div>
-                  <Select disabled value={target}>
-                    <Option value={constants.LOSE}>Lose</Option>
-                    <Option value={constants.GAIN}>Gain</Option>
-                    <Option value={constants.MAINTAIN}>Maintain</Option>
-                  </Select>
+                    Next
+                  </Button>
                 </div>
               </div>
-
-              <div className="edit-row">
-                <div className="edit-container">
-                  <div className="edit-title">
-                    Goal weight (kg)
-                  </div>
-                  <Input
-                    className="edit-input"
-                    onChange={this.handleWeightEdit}
-                    name="goalKg"
-                    type="number"
-                    value={goalKg}
-                  />
-                </div>
-                <div className="edit-container">
-                  <div className="edit-title">
-                    Goal weight (lbs)
-                  </div>
-                  <Input
-                    className="edit-input"
-                    onChange={this.handleWeightEdit}
-                    name="goalLbs"
-                    type="number"
-                    value={goalLbs}
-                  />
-                </div>
-              </div>
-
-              <Divider />
               {
-                parseFloat(user.goalKg) !== goalKg && weightKg !== goalKg ? (
-                  <div className="edit-row">
-                    <div className="edit-container">
-                      <div className="edit-title">
-                        {`(Recommended week/s from now: ${poundDiff ? poundDiff.toFixed(0) : null})`}
+                showSecond && (
+                  <React.Fragment>
+                    <div className="edit-row">
+                      <div className="edit-container">
+                        <div className="edit-title">
+                          Recommended Weight:
+                        </div>
+                        <div className="edit-title">
+                          {`${dbwKg} kg OR ${dbwLbs} lbs`}
+                        </div>
                       </div>
-                      <DatePicker className="form-bar" onChange={this.handleEndDate} />
                     </div>
-                  </div>
-                ) : null
+                    <div className="edit-row">
+                      <div className="edit-container">
+                        <div className="edit-title">
+                          Lifestyle
+                        </div>
+                        <Select
+                          placeholder="Select current lifestyle"
+                          onChange={this.handlelifestyleMultiplier}
+                        >
+                          <Option value={constants.BED_REST}>Bed rest</Option>
+                          <Option value={constants.SEDENTARY}>Sedentary</Option>
+                          <Option value={constants.LIGHT}>Light</Option>
+                          <Option value={constants.MODERATE}>Moderate</Option>
+                          <Option value={constants.VERY_ACTIVE}>Very Active</Option>
+                        </Select>
+                      </div>
+                      <div className="edit-container">
+                        <div className="edit-title">
+                          Goal
+                        </div>
+                        <Select disabled value={target || 'Set goal'}>
+                          <Option value={constants.LOSE}>Lose</Option>
+                          <Option value={constants.GAIN}>Gain</Option>
+                          <Option value={constants.MAINTAIN}>Maintain</Option>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="edit-row">
+                      <div className="edit-container">
+                        <div className="edit-title">
+                          Goal weight (kg)
+                        </div>
+                        <Input
+                          className="edit-input"
+                          onChange={this.handleWeightEdit}
+                          name="goalKg"
+                          type="number"
+                          value={goalKg}
+                        />
+                      </div>
+                      <div className="edit-container">
+                        <div className="edit-title">
+                          Goal weight (lbs)
+                        </div>
+                        <Input
+                          className="edit-input"
+                          onChange={this.handleWeightEdit}
+                          name="goalLbs"
+                          type="number"
+                          value={goalLbs}
+                        />
+                      </div>
+                    </div>
+
+                    <Divider />
+                    {
+                      target !== 'maintain' ? (
+                        <div className="edit-row">
+                          <div className="edit-container">
+                            <div className="edit-title">
+                              {`(Recommended week/s from now: ${poundDiff ? poundDiff.toFixed(0) : null})`}
+                            </div>
+                            <DatePicker className="form-bar" onChange={this.handleEndDate} />
+                          </div>
+                        </div>
+                      ) : null
+                    }
+                  </React.Fragment>
+                )
               }
             </Modal>
 
+            {
             <div className="profile-card">
-              <div className="card-title">
-                <div className="icon">
-                  <Icon className="icon-left" type="line-chart" />
-                  Progress Status
+              <div className="personal-section">
+                <div className="card-title">
+                  <div className="icon">
+                    <Icon className="icon-left" type="line-chart" />
+                    Progress Status
+                  </div>
                 </div>
               </div>
               <div className="graph">
@@ -652,7 +1325,32 @@ class Profile extends Component {
                   )
                 }
               </div>
-
+              <div className="graph">
+                {
+                  weightProg.labels.length
+                    && weightProg.datasets.length && (
+                    <Graph
+                      title="Weight changes"
+                      type="line"
+                      height={150}
+                      colors={['#2ecc71']}
+                      data={{
+                        labels: [...weightProg.labels],
+                        datasets: [...weightProg.datasets],
+                        yMarkers: [{
+                          label: 'Your goal weight',
+                          value: user.goalKg,
+                          options: { labelPos: 'left' }
+                        }]
+                      }}
+                      tooltipOptions={{
+                        formatTooltipX: a => `${dateToday.split('-')[0]}-${a}`,
+                        formatTooltipY: a => `${a}kg`
+                      }}
+                    />
+                  )
+                }
+              </div>
               <div className="graph">
                 {
                   classProg.labels.length && classProg.datasets.length && (
@@ -665,223 +1363,12 @@ class Profile extends Component {
                         datasets: [...classProg.datasets]
                       }}
                       colors={[...tagColors]}
-                      tooltipOptions={{
-                        formatTooltipX: a => `${dateToday.split('-')[0]}-${a}`,
-                        formatTooltipY: a => `${a} kcal`
-                      }}
                     />
                   )
                 }
               </div>
             </div>
-            <div className="profile-card">
-
-              <div className="personal-section">
-                <div className="card-title">
-                  <div className="icon">
-                    <Icon className="icon-left" type="info-circle" theme="filled" />
-                    Personal Information
-                  </div>
-                </div>
-
-                <div className="card-content">
-                  <div className="desc-side">
-                    <div className="one-desc">
-                      <div className="desc-key">
-                        Name
-                      </div>
-                      <div className="desc-value">
-                        {`\u00A0\u00A0${user.firstName} ${user.lastName}`}
-                      </div>
-                    </div>
-
-                    <div className="one-desc">
-                      <div className="desc-key">
-                        Sex
-                      </div>
-                      <div className="desc-value">
-                        {`\u00A0\u00A0${user.sex}`}
-                      </div>
-                    </div>
-
-                    <div className="one-desc">
-                      <div className="desc-key">
-                        Birthday
-                      </div>
-                      <div className="desc-value">
-                        {user.birthday}
-                      </div>
-                    </div>
-
-                    <div className="one-desc">
-                      <div className="desc-key">
-                        Age
-                      </div>
-                      <div className="desc-value">
-                        {`\u00A0\u00A0${user.age}`}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="personal-section">
-                <div className="card-title">
-                  <div className="icon">
-                    <Icon className="icon-left" type="heart" theme="filled" />
-                    Health Information
-                  </div>
-                  <div className="action-button">
-                    <Icon
-                      className="edit-button"
-                      type="edit"
-                      theme="filled"
-                      onClick={this.handleHealthEdit}
-                    />
-                  </div>
-                </div>
-
-
-                <div className="card-content">
-                  <div className="desc-side">
-                    <div className="one-desc">
-                      <div className="desc-key">
-                        Height
-                      </div>
-                      <div className="desc-value">
-                        {`${user.heightCm}cm |
-                          ${(user.heightFt).split('.')[0]}ft 
-                          ${(user.heightInch).split('.')[0]}in`
-                        }
-                      </div>
-                    </div>
-
-                    <div className="one-desc">
-                      <div className="desc-key">
-                        Current weight
-                      </div>
-                      <div className="desc-value">
-                        {`\u00A0${user.weightKg}kg | ${user.weightLbs}lbs`}
-                      </div>
-                    </div>
-
-                    <div className="one-desc">
-                      <div className="desc-key">
-                        BMI
-                      </div>
-                      <div className="desc-value">
-                        {`\u00A0${user.bmi} (${user.bmiClass})`}
-                      </div>
-                    </div>
-
-                    <div className="one-desc">
-                      <div className="desc-key">
-                        Lifestyle
-                      </div>
-                      <div className="desc-value">
-                        {constants.lifestyle[parseFloat(user.lifestyleMultiplier)]}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="personal-section">
-                <div className="card-title">
-                  <div className="icon">
-                    <Icon className="icon-left" type="clock-circle" theme="filled" />
-                    Goal
-                  </div>
-                  <div className="action-button">
-                    <Icon
-                      className="edit-button"
-                      type="edit"
-                      theme="filled"
-                      onClick={this.handleGoalEdit}
-                    />
-                  </div>
-                </div>
-
-
-                <div className="card-content">
-                  <div className="desc-side">
-                    <div className="one-desc">
-                      <div className="desc-key">
-                        Goal
-                      </div>
-                      <div className="desc-value">
-                        {`${(user.target).toUpperCase()} weight`}
-                      </div>
-                    </div>
-                    {
-                      user.target !== 'maintain' && (
-                        <React.Fragment>
-                          <div className="one-desc">
-                            <div className="desc-key">
-                              Goal weight
-                            </div>
-                            <div className="desc-value">
-                              {`\u00A0${user.goalKg}kg | ${user.goalLbs}lbs`}
-                            </div>
-                          </div>
-
-                          <div className="one-desc">
-                            <div className="desc-key">
-                              Time set
-                            </div>
-                            <div className="desc-value">
-                              {`${user.endDate} (${user.weeksToComplete} week/s)`}
-                            </div>
-                          </div>
-
-                          <div className="one-desc">
-                            <div className="desc-key">
-                              Time left
-                            </div>
-                            <div className="desc-value">
-                              {`${weeksLeft} week/s, ${daysLeft} days`}
-                            </div>
-                          </div>
-                        </React.Fragment>
-                      )
-                    }
-                    <div className="one-desc">
-                      <div className="desc-key">
-                        Kcal per day
-                      </div>
-                      <div className="desc-value">
-                        {`${user.goalTEA}kcal`}
-                      </div>
-                    </div>
-                    <div className="one-desc">
-                      <div className="desc-key">
-                        Carbohydrate per day
-                      </div>
-                      <div className="desc-value">
-                        {`${user.choPerDay}g`}
-                      </div>
-                    </div>
-                    <div className="one-desc">
-                      <div className="desc-key">
-                        Protein per day
-                      </div>
-                      <div className="desc-value">
-                        {`${user.proPerDay}g`}
-                      </div>
-                    </div>
-                    <div className="one-desc">
-                      <div className="desc-key">
-                        Fat per day
-                      </div>
-                      <div className="desc-value">
-                        {`${user.fatPerDay}g`}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+            }
           </div>
         </div>
       </div>

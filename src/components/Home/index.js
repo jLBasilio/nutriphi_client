@@ -847,7 +847,7 @@ class Home extends Component {
                 {
                   mealCart.length ? (
                     mealCart.map((cartFood, index) => (
-                      <div key={cartFood.food_id} className="cart-row">
+                      <div key={`${cartFood.food_id}${index}`} className="cart-row">
                         <div className="cart-row-left">
                           {`${cartFood.food_filipinoName || cartFood.food_englishName} `}
                           <Tag

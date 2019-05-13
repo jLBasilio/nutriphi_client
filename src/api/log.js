@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const url = '/api/consumed';
+const wUrl = 'api/weight';
 
 export const fetchLogs = ({ userId, date }) => axios.get(`${url}/find/${userId}?date=${date}`);
 
@@ -9,6 +10,8 @@ export const fetchPeriod = ({ userId, date, period }) => axios.get(`${url}/find/
 export const fetchProgress = uid => axios.get(`${url}/find/progress/daily/${uid}`);
 
 export const fetchClassDist = uid => axios.get(`${url}/find/progress/class/${uid}`);
+
+export const fetchWeight = uid => axios.get(`${wUrl}/find/${uid}`);
 
 export const addToLog = foodInfo => axios.post(`${url}/add`, foodInfo);
 

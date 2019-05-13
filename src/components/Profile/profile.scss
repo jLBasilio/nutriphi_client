@@ -5,13 +5,13 @@
 .profile {
   .profile-body {
     @include for-tablet-portrait-up {
-      padding: 7rem 2.5rem 0;
+      padding: 6rem 2.5rem 0;
     }
     @include for-small-desktop-up {
-      padding: 7rem 5rem 0;
+      padding: 6rem 5rem 0;
     }
 
-    padding: 6rem 1rem 0;
+    padding: 4.5rem 1rem 0;
 
     .page-title {
       font-size: 1.1rem;
@@ -27,6 +27,7 @@
       display: flex;
       flex-direction: column;
 
+
       .profile-card {
         background-color: $white;
         border-radius: 5px;
@@ -35,108 +36,7 @@
         flex: 1;
         flex-direction: column;
         font-weight: bold;
-        padding: 0 1rem 1rem;
-
-        .card-title {
-          align-items: center;
-          display: flex;
-          font-size: 1.05rem;
-          margin-bottom: 0;
-          padding: .8rem .5rem;
-
-          .icon {
-            align-self: flex-start;
-            flex: 2;
-
-            .icon-left {
-              color: $black-line;
-              padding-right: 1rem;
-            }
-          }
-
-          .action-button {
-            text-align: right;
-
-            .edit-button {
-              &:hover {
-                cursor: pointer;
-              }
-            }
-          }
-        }
-
-        .graph {
-          background-color: $card-bg;
-          border-radius: 5px;
-          margin-bottom: 1rem;
-        }
-
-        .card-content {
-          align-items: center;
-          background-color: $card-bg;
-          border-top: 1px solid $greywhite;
-          display: flex;
-          justify-content: center;
-
-          .desc-side {
-            flex: 2;
-            padding: 0 .5rem;
-
-            .one-desc {
-              border-bottom: 1px solid $greywhite;
-              display: flex;
-              font-size: .8rem;
-              padding: .3rem 0;
-
-              .desc-key {
-                flex: 1;
-                font-weight: bold;
-                text-align: left;
-              }
-
-              .desc-value {
-                font-weight: normal;
-                text-align: right;
-              }
-
-              &:last-child {
-                border: 0;
-              }
-
-            }
-          }
-
-          .dot-row {
-            display: flex;
-            justify-content: center;
-            overflow: hidden;
-            padding: 0 .5rem;
-            width: 100%;
-
-            .one-dot {
-              font-size: 1rem;
-              overflow: hidden;
-              padding-right: .03rem;
-
-              .dot-check {
-                color: $base-green;
-              }
-
-              .dot-under {
-                color: $base-kahel;
-              }
-
-              .dot-over {
-                color: $base-kahel;
-              }
-
-              .dot-empty {
-                color: $black-line;
-              }
-            }
-
-          }
-        }
+        padding: .5rem 1rem 1rem;
 
         &:last-child {
           @include for-tablet-portrait-up {
@@ -145,7 +45,144 @@
           }
 
           border-bottom: 1px solid $greywhite;
-          margin: 1.3rem 0;
+          margin: 1rem 0;
+        }
+
+
+        .personal-section {
+          padding-bottom: .5rem;
+
+          .card-title {
+            display: flex;
+            font-size: 1.05rem;
+            margin-bottom: 0 !important;
+            padding: .5rem 0;
+
+            .icon {
+              flex: 1;
+              width: 8rem;
+
+              .icon-left {
+                color: $black-line;
+                padding-right: 1rem;
+              }
+            }
+
+            .action-button {
+              .create-meal-button {
+                background-color: $base-kahel;
+                border: 0;
+                border-radius: 8px;
+                color: $white;
+                height: 1.65rem;
+                width: 7.5rem;
+
+                &:hover {
+                  background-color: $secondary-kahel;
+                }
+              }
+            }
+          }
+
+          .graph {
+            background-color: $card-bg;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+          }
+
+          .card-content {
+            align-items: center;
+            background-color: $card-bg;
+            border-top: 1px solid $greywhite;
+            display: flex;
+            justify-content: center;
+            min-height: 5.5rem;
+
+            .log-loader {
+              text-align: center;
+            }
+
+            .desc-side {
+              flex: 2;
+              padding: 0 .5rem;
+
+              .one-desc {
+                border-bottom: 1px solid $greywhite;
+                display: flex;
+                font-size: .8rem;
+                padding: .3rem 0;
+
+                .desc-key {
+                  flex: 1;
+                  font-weight: bold;
+                  text-align: left;
+                }
+
+                .desc-value {
+                  font-weight: normal;
+                  text-align: right;
+                }
+
+                &:last-child {
+                  border: 0;
+                }
+
+              }
+            }
+
+            .dot-row {
+              display: flex;
+              justify-content: center;
+              overflow: hidden;
+              padding: 0 .5rem;
+              width: 100%;
+
+              .one-dot {
+                font-size: 1rem;
+                overflow: hidden;
+                padding-right: .03rem;
+
+                .dot-check {
+                  color: $base-green;
+                }
+
+                .dot-under {
+                  color: $base-kahel;
+                }
+
+                .dot-over {
+                  color: $base-kahel;
+                }
+
+                .dot-empty {
+                  color: $black-line;
+                }
+              }
+
+            }
+          }
+        }
+      }
+
+      .success-card {
+        color: $base-green;
+        font-size: 1rem;
+        margin-left: 0 !important;
+        padding: .5rem 1rem;
+
+        .card-title {
+          margin-bottom: 0;
+        }
+      }
+
+      .dead-card {
+        color: $red;
+        font-size: 1rem;
+        margin-left: 0 !important;
+        padding: 0 1rem;
+
+        .card-title {
+          margin-bottom: 0;
         }
       }
     }
@@ -155,39 +192,59 @@
 .ant-modal {
   &.edit-modal {
 
-    .edit-row {
-      @include for-tablet-portrait-up {
-        flex-direction: row;
-        font-size: 1rem;
+    .ant-modal-body {
+      .subtitle-container {
+        .subtitle {
+          font-weight: bold;
+        }
       }
 
-      display: flex;
-      font-weight: bold;
+      .edit-row {
+        @include for-tablet-portrait-up {
+          flex-direction: row;
+          font-size: 1rem;
+        }
 
-      .edit-container {
         display: flex;
-        flex-direction: column;
-        flex-grow: 0;
-        padding: 0 .25rem .5rem;
-        text-align: left;
-        width: 100%;
+        font-weight: bold;
+        justify-content: flex-end;
 
-        .edit-title {
-          font-size: .7rem;
-          padding-top: .3rem;
+        .button-container {
+          padding: 0 .25rem;
+
+          .next-button {
+            height: 1.6rem;
+          }
         }
 
-        .edit-input {
-          flex: 1;
-          width: 100%;
-        }
-      }
 
-      .ant-select {
-        &.ant-select-enabled {
+
+        .edit-container {
+          display: flex;
+          flex-direction: column;
+          flex-grow: 0;
+          padding: 0 .25rem .5rem;
+          text-align: left;
           width: 100%;
+
+          .edit-title {
+            font-size: .7rem;
+            padding-top: .3rem;
+          }
+
+          .edit-input {
+            flex: 1;
+            width: 100%;
+          }
+        }
+
+        .ant-select {
+          &.ant-select-enabled {
+            width: 100%;
+          }
         }
       }
     }
+
   }
 }
