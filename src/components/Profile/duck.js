@@ -12,6 +12,7 @@ const actions = {
   FETCH_PROGRESS: 'PROFILE/FETCH_PROGRESS',
   FETCH_DIST: 'PROFILE/FETCH_DIST',
   FETCH_WEIGHT: 'PROFILE/FETCH_WEIGHT',
+  PROJECT_WEIGHT: 'PROFILE/PROJECT_WEIGHT',
   SET_TIME: 'PROFILE/SET_TIME',
   HEALTH_EDIT: 'PROFILE/HEALTH_EDIT'
 };
@@ -34,6 +35,11 @@ export const toggleGoalConfirm = toggle => ({
 export const setTime = time => ({
   type: actions.SET_TIME,
   payload: time
+});
+
+export const projectWeight = ({ weightKg, weightLbs }) => ({
+  type: actions.PROJECT_WEIGHT,
+  payload: { weightKg, weightLbs }
 });
 
 export const fetchWeight = uid => ({
@@ -73,13 +79,24 @@ export const healthEdit = userInfo => (dispatch) => {
   });
 };
 
-export const fetchProgress = uid => ({
-  type: actions.FETCH_PROGRESS,
-  promise: logApi.fetchProgress(uid),
-  meta: {
-    onFailure: () => message.error('Error in retrieving information')
-  }
-});
+export const fetchProgress = uid => (dispatch) => {
+  dispatch({
+    type: actions.FETCH_PROGRESS,
+    promise: logApi.fetchProgress(uid),
+    meta: {
+      onSuccess: async (response, getState) => {
+        const { goalTEA, weightLbs: userLbs } = getState().login.user;
+        const kcal = response.data.data[response.data.data.length - 1].totalKcal;
+        const {
+          weightKg,
+          weightLbs
+        } = await profileUtil.projectWeight(kcal, parseFloat(goalTEA), parseFloat(userLbs));
+        dispatch(projectWeight({ weightLbs, weightKg }));
+      },
+      onFailure: () => message.error('Error in retrieving information')
+    }
+  });
+};
 
 export const fetchClassDist = uid => ({
   type: actions.FETCH_DIST,
@@ -102,7 +119,10 @@ const initialState = {
   goalButtonDisabled: false,
   showGoalConfirm: false,
   weeksLeft: null,
-  daysLeft: null
+  daysLeft: null,
+  dayKcal: null,
+  projectedKg: null,
+  projectedLbs: null
 };
 
 const reducer = (state = initialState, action) => {
@@ -176,6 +196,13 @@ const reducer = (state = initialState, action) => {
           isFetchingProgress: false
         })
       });
+
+    case actions.PROJECT_WEIGHT:
+      return {
+        ...state,
+        projectedKg: payload.weightKg,
+        projectedLbs: payload.weightLbs
+      };
 
     case actions.TOGGLE_HEALTH:
       return {

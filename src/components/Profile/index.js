@@ -513,6 +513,8 @@ class Profile extends Component {
       weightHist,
       weeksLeft,
       daysLeft,
+      projectedKg,
+      projectedLbs
     } = this.props;
 
     const {
@@ -879,7 +881,6 @@ class Profile extends Component {
                     }
                   </div>
                 </div>
-
 
                 <div className="card-content">
                   <div className="desc-side">
@@ -1350,6 +1351,13 @@ class Profile extends Component {
                     />
                   )
                 }
+                <div className="projected">
+                  {`Your weight in
+                    5 weeks will be ${projectedKg}kg
+                    or ${projectedLbs}lbs based on your
+                    calorie consumption today.`
+                  }
+                </div>
               </div>
               <div className="graph">
                 {

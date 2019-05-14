@@ -18,3 +18,11 @@ export const calculateDaysLeft = async (dateSet) => {
   const daysLeft = dayDifference % 7;
   return { weeksLeft, daysLeft };
 };
+
+export const projectWeight = async (currKcal, goalTEA, userLbs) => {
+  const perWeek = (currKcal - goalTEA) * 7;
+  const addLbs = (perWeek / 3500) * 5;
+  const weightLbs = parseFloat((userLbs + addLbs).toFixed(2));
+  const weightKg = parseFloat((weightLbs / 2.2).toFixed(2));
+  return { weightLbs, weightKg };
+};

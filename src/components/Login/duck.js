@@ -42,10 +42,18 @@ export const getUser = uid => ({
   promise: userApi.getUser(uid)
 });
 
-export const getSession = () => ({
-  type: actions.SESSION,
-  promise: userApi.getSession()
-});
+export const getSession = () => (dispatch) => {
+  dispatch({
+    type: actions.SESSION,
+    promise: userApi.getSession(),
+    meta: {
+      onSuccess: (response) => {
+        const { id } = response.data.data;
+        dispatch(getUser(id));
+      }
+    }
+  });
+};
 
 const initialState = {
   isLoggingIn: false,
@@ -103,7 +111,8 @@ const reducer = (state = initialState, action) => {
         }),
         finish: prevState => ({
           ...prevState,
-          isFetchingUser: false
+          isFetchingUser: false,
+          isGettingSession: false
         })
       });
 
@@ -112,14 +121,6 @@ const reducer = (state = initialState, action) => {
         start: prevState => ({
           ...prevState,
           isGettingSession: true
-        }),
-        success: prevState => ({
-          ...prevState,
-          user: payload.data.data
-        }),
-        finish: prevState => ({
-          ...prevState,
-          isGettingSession: false
         })
       });
 

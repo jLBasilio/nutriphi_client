@@ -27,7 +27,9 @@ const mapStateToProps = (state) => {
     showGoalConfirm,
     weightHist,
     weeksLeft,
-    daysLeft
+    daysLeft,
+    projectedKg,
+    projectedLbs
   } = state.profile;
   const { dateToday } = state.home;
   return {
@@ -44,7 +46,9 @@ const mapStateToProps = (state) => {
     showGoalConfirm,
     weightHist,
     weeksLeft,
-    daysLeft
+    daysLeft,
+    projectedKg,
+    projectedLbs
   };
 };
 
