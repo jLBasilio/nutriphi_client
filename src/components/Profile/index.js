@@ -734,7 +734,10 @@ class Profile extends Component {
 
           </Modal>
           <div className="first-row">
-            <div className="profile-card">
+            <div className={user.target === 'maintain'
+              ? 'profile-card short'
+              : 'profile-card long'}
+            >
               <div className="personal-section">
                 <div className="card-title">
                   <div className="icon">
@@ -906,7 +909,7 @@ class Profile extends Component {
 
                           <div className="one-desc">
                             <div className="desc-key">
-                              Time set
+                              Goal duration
                             </div>
                             <div className="desc-value">
                               {`${user.endDate} (${user.weeksToComplete} week/s)`}
@@ -1352,7 +1355,7 @@ class Profile extends Component {
                 }
                 <div className="projected">
                   {`Your projected weight in
-                    5 weeks will be ${projectedKg}kg
+                    5 weeks is ${projectedKg}kg
                     or ${projectedLbs}lbs based on your
                     calorie consumption today.`
                   }
