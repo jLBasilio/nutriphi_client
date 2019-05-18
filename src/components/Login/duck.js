@@ -8,7 +8,8 @@ const actions = {
   LOGIN: 'AUTH/LOGIN',
   LOGOUT: 'AUTH/LOGOUT',
   SESSION: 'AUTH/SESSION',
-  GET_USER: 'AUTH/GET_USER'
+  GET_USER: 'AUTH/GET_USER',
+  STOP_SESSION: 'AUTH/STOP_SESSION',
 };
 
 export const login = ({ userName, password }) => ({
@@ -42,14 +43,22 @@ export const getUser = uid => ({
   promise: userApi.getUser(uid)
 });
 
+export const stopSession = () => ({
+  type: actions.STOP_SESSION
+});
+
 export const getSession = () => (dispatch) => {
   dispatch({
     type: actions.SESSION,
     promise: userApi.getSession(),
     meta: {
       onSuccess: (response) => {
-        const { id } = response.data.data;
-        dispatch(getUser(id));
+        if (response.data.data) {
+          const { id } = response.data.data;
+          dispatch(getUser(id));
+        } else {
+          dispatch(stopSession(false));
+        }
       }
     }
   });
@@ -123,6 +132,12 @@ const reducer = (state = initialState, action) => {
           isGettingSession: true
         })
       });
+
+    case actions.STOP_SESSION:
+      return {
+        ...state,
+        isGettingSession: false
+      };
 
     default:
       return state;
