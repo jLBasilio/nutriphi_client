@@ -1288,7 +1288,6 @@ class Profile extends Component {
               }
             </Modal>
 
-            {
             <div className="profile-card">
               <div className="personal-section">
                 <div className="card-title">
@@ -1352,7 +1351,7 @@ class Profile extends Component {
                   )
                 }
                 <div className="projected">
-                  {`Your weight in
+                  {`Your projected weight in
                     5 weeks will be ${projectedKg}kg
                     or ${projectedLbs}lbs based on your
                     calorie consumption today.`
@@ -1376,7 +1375,6 @@ class Profile extends Component {
                 }
               </div>
             </div>
-            }
           </div>
         </div>
       </div>

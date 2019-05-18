@@ -58,6 +58,20 @@
             padding: 0 1rem .5rem;
             text-align: center;
           }
+
+          .chart-container {
+            .frappe-chart {
+              &.chart {
+                .y-markers {
+                  .line-horizontal {
+                    &.dashed {
+                      stroke: $base-kahel !important;
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
 
         .personal-section {
