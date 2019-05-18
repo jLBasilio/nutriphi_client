@@ -30,6 +30,7 @@ class Entry extends Component {
       skip: 0,
       take: 16,
       defaultSize: 16,
+      currentPageNumber: 1,
       previousSearched: null,
       currentSearched: null,
       confirmedSearch: null,
@@ -99,18 +100,34 @@ class Entry extends Component {
   }
 
   handlePageChangeFromSearch = (page) => {
-    const { searchFood } = this.props;
-    const { defaultSize, take, currentSearched } = this.state;
+    const { searchFood, fetchFavorites, user } = this.props;
+    const {
+      defaultSize,
+      take,
+      currentSearched,
+      searchType
+    } = this.state;
     const skip = (page - 1) * defaultSize;
 
-    searchFood({
-      skip, take, q: currentSearched, foodClass: 'all'
-    });
+    if (searchType === 'food') {
+      searchFood({
+        skip, take, q: currentSearched, foodClass: 'all'
+      });
+    } else if (searchType === 'favorites') {
+      fetchFavorites({
+        skip, take, uid: user
+      });
+    }
+
+    this.setState({ currentPageNumber: page });
   }
 
   showFoodModal = (foodIndex) => {
-    const { toggleModal, searchedFood } = this.props;
-    const currentFood = searchedFood[foodIndex];
+    const { food, toggleModal, searchedFood } = this.props;
+    const { searchType } = this.state;
+    const currentFood = searchType === 'favorites'
+      ? food[foodIndex]
+      : searchedFood[foodIndex];
     const gramsEPPerExchange = parseFloat(currentFood.food_gramsEPPerExchange);
     this.setState({
       currentFood,
@@ -123,8 +140,10 @@ class Entry extends Component {
   }
 
   handleModalClose = () => {
-    const { toggleModal } = this.props;
-    toggleModal();
+    const { isAddingLog, toggleModal } = this.props;
+    if (!isAddingLog) {
+      toggleModal();
+    }
   }
 
   handleMeasure = (measure) => {
@@ -197,16 +216,40 @@ class Entry extends Component {
     }, () => toggleMealModal());
   }
 
-  closeMealModal = async () => {
-    const { toggleMealModal } = this.props;
-    this.setState({
-      currentMeal: { ingredient: [] }
-    }, () => toggleMealModal());
+  closeMealModal = () => {
+    const { isAddingLog, toggleMealModal } = this.props;
+    if (!isAddingLog) {
+      this.setState({
+        currentMeal: { ingredient: [] }
+      }, () => toggleMealModal());
+    }
   }
 
   handleRadioChange = (e) => {
     const { name, value } = e.target;
-    const { resetSearch, resetMealSearch } = this.props;
+    const {
+      skip,
+      take
+    } = this.state;
+    const {
+      user,
+      resetSearch,
+      resetMealSearch,
+      fetchMeal,
+      fetchFavorites
+    } = this.props;
+
+    switch (value) {
+      case 'meal':
+        fetchMeal({ skip, take, uid: user });
+        break;
+      case 'favorites':
+        fetchFavorites({ skip, take, uid: user });
+        break;
+      default:
+        break;
+    }
+
     this.setState({
       [name]: value,
       previousSearched: null,
@@ -256,7 +299,10 @@ class Entry extends Component {
       isFetchingMeal,
       searchedMeal,
       searchedMealCount,
-      showMealModal
+      showMealModal,
+      meal,
+      food,
+      isFetchingFood
     } = this.props;
 
     const {
@@ -267,7 +313,8 @@ class Entry extends Component {
       measure,
       gramsml,
       searchType,
-      currentMeal
+      currentMeal,
+      currentPageNumber
     } = this.state;
 
     return (
@@ -284,7 +331,7 @@ class Entry extends Component {
                 <div className="button-container">
                   <Button
                     className="save-button"
-                    onClick={this.closeMealEdit}
+                    onClick={this.closeMealModal}
                   >
                     Cancel
                   </Button>
@@ -294,8 +341,13 @@ class Entry extends Component {
                     type="primary"
                     className="save-button"
                     onClick={this.handleAddMealToLog}
+                    disabled={isAddingLog}
                   >
-                    <Icon type="check" />
+                    {
+                      !isAddingLog
+                        ? <Icon type="check" />
+                        : <Icon type="loading" />
+                    }
                   </Button>
                 </div>
               </div>
@@ -349,7 +401,12 @@ class Entry extends Component {
           </Modal>
           <div className="search-add">
             <div className="search-row">
-              {`Add ${searchType} to logs (${period.toUpperCase()})`}
+              {
+                `Add food ${searchType === 'food'
+                  ? 'to logs'
+                  : `from ${searchType} to logs`
+                } (${period.toUpperCase()})`
+              }
             </div>
             <div className="search-row">
               <Search
@@ -374,6 +431,7 @@ class Entry extends Component {
               </RadioGroup>
             </div>
           </div>
+
           <Row gutter={24}>
             {
               searchType === 'food' ? (
@@ -390,8 +448,40 @@ class Entry extends Component {
                 )
               )
             }
+
             {
-              (isFetching || isFetchingMeal) && (
+              searchType === 'food' && hasSearched && searchedFoodCount && !isFetching ? (
+                <div className="pagination-div">
+                  <Pagination
+                    className="pagination"
+                    current={currentPageNumber}
+                    pageSize={defaultSize}
+                    total={searchedFoodCount}
+                    hideOnSinglePage
+                    size="small"
+                    onChange={this.handlePageChangeFromSearch}
+                  />
+                </div>
+              ) : searchType === 'favorites' && favFoodIds.length && !(isFetchingFood || isFetching) ? (
+                <div className="pagination-div">
+                  <Pagination
+                    className="pagination"
+                    current={currentPageNumber}
+                    pageSize={defaultSize}
+                    total={searchedFood.length || favFoodIds.length}
+                    hideOnSinglePage
+                    size="small"
+                    onChange={this.handlePageChangeFromSearch}
+                  />
+                </div>
+              ) : hasSearched && !searchedFoodCount && (
+                <div className="pagination-div">
+                  {`NO RESULTS FOR "${confirmedSearch}"`}
+                </div>
+              )
+            }
+            {
+              (isFetching || isFetchingMeal || isFetchingFood) && (
                 constants.emptyCards.map(element => (
                   <Col
                     key={element}
@@ -594,27 +684,197 @@ class Entry extends Component {
                     </Card>
                   </Col>
                 ))
+              ) : searchType === 'meal' && meal.length && !isFetching ? (
+                meal.map((mealElement, index) => (
+                  <Col
+                    key={mealElement.id}
+                    className="meal-col"
+                    xs={24}
+                    md={8}
+                    lg={6}
+                  >
+                    <Card
+                      className="meal-card"
+                      hoverable
+                      loading={isFetching}
+                      onClick={() => this.handleClickedMeal(mealElement)}
+                      title={(
+                        <div className="title-container">
+                          <div className="food-title">
+                            {mealElement.mealName}
+                          </div>
+                        </div>
+                      )}
+                    >
+                      <div className="card-body">
+                        <div className="ingredients-row">
+                          {
+                            mealElement.ingredient.map(ingredient => (
+                              <div key={ingredient.id} className="one-ingredient">
+                                <div className="ingredient-name">
+                                  {`${ingredient.food.filipinoName || ingredient.food.englishName} `}
+                                  <Tag
+                                    className="log-tag"
+                                    color={
+                                      constants.tagColors[ingredient.food.primaryClassification.split('-')[0]]
+                                    }
+                                  >
+                                    {ingredient.food.primaryClassification.split('-')[0]}
+                                  </Tag>
+                                  {
+                                    ingredient.food.secondaryClassification && (
+                                      <Tag
+                                        className="log-tag"
+                                        color={
+                                          constants
+                                            .tagColors[ingredient.food.secondaryClassification]
+                                        }
+                                      >
+                                        {ingredient.food.secondaryClassification}
+                                      </Tag>
+                                    )
+                                  }
+                                  <div className="kcal">
+                                    {`${ingredient.mlConsumed || ingredient.gramsConsumed}${ingredient.mlConsumed
+                                      ? 'ml'
+                                      : 'g'} 
+                                      - ${ingredient.totalKcalConsumed}kcal`}
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                          }
+                        </div>
+                        <div className="card-row">
+                          <div className="macro">
+                            CHO
+                            <div className="macro-value">
+                              {`${mealElement.mealChoGrams}g`}
+                            </div>
+                          </div>
+                          <div className="macro">
+                            PRO
+                            <div className="macro-value">
+                              {`${mealElement.mealProGrams}g`}
+                            </div>
+                          </div>
+                          <div className="macro">
+                            FAT
+                            <div className="macro-value">
+                              {`${mealElement.mealFatGrams}g`}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="card-row">
+                          <div className="total-label">
+                            Total:
+                          </div>
+                          <div className="total-label">
+                            {`${mealElement.mealTotalKcal}kcal`}
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  </Col>
+                ))
+              ) : searchType === 'favorites' && food.length && !isFetching ? (
+                food.map((foodElement, index) => (
+                  <Col
+                    key={foodElement.food_id}
+                    className="food-col"
+                    xs={24}
+                    md={8}
+                    lg={6}
+                  >
+                    <Card
+                      className="food-card"
+                      hoverable
+                      loading={isFetching}
+                      onClick={() => this.showFoodModal(index)}
+                      title={(
+                        <div className="title-container">
+                          <div className="food-title">
+                            {foodElement.food_filipinoName || foodElement.food_englishName}
+                          </div>
+
+                          <div className="food-tag">
+                            <div className="icon-section">
+                              <Tag
+                                color={
+                                  constants.tagColors[foodElement.food_primaryClassification.split('-')[0]]
+                                }
+                              >
+                                {foodElement.food_primaryClassification.split('-')[0]}
+                              </Tag>
+                              {
+                                foodElement.food_secondaryClassification && (
+                                  <Tag
+                                    color={
+                                      constants.tagColors[foodElement.food_secondaryClassification]
+                                    }
+                                  >
+                                    {foodElement.food_secondaryClassification}
+                                  </Tag>
+                                )
+                              }
+                            </div>
+                            <div className="icon-section">
+                              <Icon
+                                className="fav-icon"
+                                type="heart"
+                                theme={favFoodIds.includes(foodElement.food_id) ? 'filled' : null}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    >
+                      <div className="card-body">
+                        <div className="card-row">
+                          <div className="macro">
+                            CHO
+                            <div className="macro-value">
+                              {`${foodElement.food_choPerExchange
+                                * foodElement.food_exchangePerMeasure
+                              }g`}
+                            </div>
+                          </div>
+                          <div className="macro">
+                            PRO
+                            <div className="macro-value">
+                              {`${foodElement.food_proPerExchange
+                                * foodElement.food_exchangePerMeasure
+                              }g`}
+                            </div>
+                          </div>
+                          <div className="macro">
+                            FAT
+                            <div className="macro-value">
+                              {`${foodElement.food_fatPerExchange
+                                * foodElement.food_exchangePerMeasure
+                              }g`}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="card-row">
+                          <div className="total-label">
+                            Total:
+                          </div>
+                          <div className="total-label">
+                            {`${foodElement.food_directKcalPerMeasure
+                              * foodElement.food_exchangePerMeasure
+                            }kcal`}
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  </Col>
+                ))
               ) : null
             }
           </Row>
-          {
-            hasSearched && searchedFoodCount ? (
-              <div className="pagination-div">
-                <Pagination
-                  className="pagination"
-                  pageSize={defaultSize}
-                  total={searchedFoodCount}
-                  hideOnSinglePage
-                  size="small"
-                  onChange={this.handlePageChangeFromSearch}
-                />
-              </div>
-            ) : hasSearched && !searchedFoodCount && (
-              <div className="pagination-div">
-                {`NO RESULTS FOR "${confirmedSearch}"`}
-              </div>
-            )
-          }
 
           <Modal
             className="entry-modal"
@@ -677,6 +937,7 @@ class Entry extends Component {
                     key="submit"
                     type="primary"
                     onClick={this.handleAddToLog}
+                    disabled={isAddingLog}
                   >
                     {
                       !isAddingLog

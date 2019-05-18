@@ -54,8 +54,8 @@ const mapDispatchToProps = dispatch => ({
   changePage: (newPage) => {
     dispatch(changePage(newPage));
   },
-  fetchMeal: (uid) => {
-    dispatch(fetchMeal(uid));
+  fetchMeal: ({ skip, take, uid }) => {
+    dispatch(fetchMeal({ skip, take, uid }));
   },
   searchMeal: (qInfo) => {
     dispatch(searchMeal(qInfo));

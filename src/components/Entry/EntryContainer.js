@@ -14,11 +14,13 @@ import {
 import { changePage } from '../Header/duck';
 import {
   searchMeal,
-  resetSearch as resetMealSearch
+  resetSearch as resetMealSearch,
+  fetchMeal
 } from '../Meal/duck';
 import {
   addToFavorites,
-  deleteFromFavorites
+  deleteFromFavorites,
+  fetchFavorites
 } from '../Food/duck';
 
 const mapStateToProps = (state) => {
@@ -33,13 +35,19 @@ const mapStateToProps = (state) => {
     showMealModal
   } = state.entry;
   const {
+    meal,
     searchedMeal,
     isFetching: isFetchingMeal,
     searchedMealCount
   } = state.meal;
   const { user: { id: user } } = state.login;
   const { dateSelected } = state.home;
-  const { favFoodIds, isAddingToFavorites } = state.food;
+  const {
+    favFoodIds,
+    isAddingToFavorites,
+    food,
+    isFetching: isFetchingFood
+  } = state.food;
 
   return {
     period,
@@ -56,7 +64,10 @@ const mapStateToProps = (state) => {
     isAddingToFavorites,
     searchedMeal,
     searchedMealCount,
-    showMealModal
+    showMealModal,
+    food,
+    meal,
+    isFetchingFood
   };
 };
 
@@ -98,6 +109,12 @@ const mapDispatchToProps = dispatch => ({
   },
   changePage: (newPage) => {
     dispatch(changePage(newPage));
+  },
+  fetchMeal: ({ skip, take, uid }) => {
+    dispatch(fetchMeal({ skip, take, uid }));
+  },
+  fetchFavorites: ({ skip, take, uid }) => {
+    dispatch(fetchFavorites({ skip, take, uid }));
   },
   resetSearch: () => {
     dispatch(resetSearch());

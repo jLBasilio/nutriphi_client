@@ -24,6 +24,10 @@
           padding: 0 10rem;
         }
 
+        .radio-group {
+          display: flex;
+        }
+
         &:last-child {
           align-self: flex-start;
           padding-top: .5rem;
@@ -261,7 +265,7 @@
     .pagination-div {
       display: flex;
       justify-content: center;
-      padding: 1.5rem 0 2rem;
+      padding: 1rem 0 .5rem;
     }
 
     .showing {

@@ -1002,7 +1002,7 @@ class Home extends Component {
                   onClick={() => this.handleCreateMealFromLog('breakfast')}
                   disabled={!breakfast.length}
                 >
-                  Make meal
+                  Save meal
                 </Button>
               </div>
             </div>
