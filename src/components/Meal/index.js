@@ -121,8 +121,10 @@ class Meal extends Component {
   }
 
   closeMealEdit = () => {
-    const { toggleMealModal } = this.props;
-    toggleMealModal();
+    const { isDeleting, toggleMealModal } = this.props;
+    if (!isDeleting) {
+      toggleMealModal();
+    }
   }
 
   closeFoodEdit = () => {
@@ -328,8 +330,10 @@ class Meal extends Component {
   }
 
   handleNameMeal = () => {
-    const { toggleNameModal } = this.props;
-    toggleNameModal();
+    const { isDeleting, toggleNameModal } = this.props;
+    if (!isDeleting) {
+      toggleNameModal();
+    }
   }
 
   handleEditSaveMeal = async () => {

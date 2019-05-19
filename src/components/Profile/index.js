@@ -3,6 +3,7 @@ import {
   Button,
   DatePicker,
   Divider,
+  Empty,
   Icon,
   Input,
   message,
@@ -506,7 +507,7 @@ class Profile extends Component {
       isEditing,
       dayProgress,
       dateToday,
-      classDist,
+      // classDist,
       healthButtonDisabled,
       isFetchingUser,
       showGoalConfirm,
@@ -514,7 +515,10 @@ class Profile extends Component {
       weeksLeft,
       daysLeft,
       projectedKg,
-      projectedLbs
+      projectedLbs,
+      isFetchingProgress,
+      classProg,
+      tagColors
     } = this.props;
 
     const {
@@ -543,12 +547,12 @@ class Profile extends Component {
       ]
     };
 
-    const classProg = {
-      labels: [],
-      datasets: [
-        { values: [] }
-      ]
-    };
+    // const classProg = {
+    //   labels: [],
+    //   datasets: [
+    //     { values: [] }
+    //   ]
+    // };
 
     const weightProg = {
       labels: [],
@@ -562,17 +566,6 @@ class Profile extends Component {
         const date = progress.date.split('-');
         dayProg.labels.push(`${date[1]}-${date[2]}`);
         dayProg.datasets[0].values.push(progress.totalKcal);
-      });
-    }
-
-    const tagColors = [];
-    if (classDist) {
-      const classKeys = classDist && Object.keys(classDist);
-      classKeys.forEach((key) => {
-        const colKey = key === 'bev' ? 'beverage' : key;
-        classProg.labels.push(`${key} %`);
-        classProg.datasets[0].values.push(classDist[key]);
-        tagColors.push(constants.tagColorsHex[colKey]);
       });
     }
 
@@ -747,7 +740,11 @@ class Profile extends Component {
               </div>
               <div className="graph">
                 {
-                  dayProg.labels.length && dayProg.datasets.length && (
+                  isFetchingProgress ? (
+                    <div className="log-loader">
+                      <Spin />
+                    </div>
+                  ) : dayProg.labels.length && dayProg.datasets.length ? (
                     <Graph
                       title="Calorie intake in two weeks"
                       type="bar"
@@ -770,56 +767,78 @@ class Profile extends Component {
                         formatTooltipY: a => `${a} kcal`
                       }}
                     />
+                  ) : (
+                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                   )
                 }
               </div>
               <div className="graph">
                 {
-                  weightProg.labels.length
-                    && weightProg.datasets.length && (
-                    <Graph
-                      title="Weight changes"
-                      type="line"
-                      height={150}
-                      colors={['#2ecc71']}
-                      data={{
-                        labels: [...weightProg.labels],
-                        datasets: [...weightProg.datasets],
-                        yMarkers: [{
-                          label: 'Your goal weight',
-                          value: user.goalKg,
-                          options: { labelPos: 'left' }
-                        }]
-                      }}
-                      tooltipOptions={{
-                        formatTooltipX: a => `${dateToday.split('-')[0]}-${a}`,
-                        formatTooltipY: a => `${a}kg`
-                      }}
-                    />
+                  isFetchingProgress ? (
+                    <div className="log-loader">
+                      <Spin />
+                    </div>
+                  ) : weightProg.labels.length
+                      && weightProg.datasets.length ? (
+                        <Graph
+                          title="Weight changes"
+                          type="line"
+                          height={150}
+                          colors={['#2ecc71']}
+                          data={{
+                            labels: [...weightProg.labels],
+                            datasets: [...weightProg.datasets],
+                            yMarkers: [{
+                              label: 'Your goal weight',
+                              value: user.goalKg,
+                              options: { labelPos: 'left' }
+                            }]
+                          }}
+                          tooltipOptions={{
+                            formatTooltipX: a => `${dateToday.split('-')[0]}-${a}`,
+                            formatTooltipY: a => `${a}kg`
+                          }}
+                        />
+                    ) : (
+                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                    )
+                }
+                {
+                  !isFetchingProgress && (
+                    <div className="projected">
+                      {`Your projected weight in
+                      5 weeks is ${projectedKg}kg
+                      or ${projectedLbs}lbs based on your
+                      calorie consumption today.`}
+                    </div>
                   )
                 }
-                <div className="projected">
-                  {`Your projected weight in
-                    5 weeks is ${projectedKg}kg
-                    or ${projectedLbs}lbs based on your
-                    calorie consumption today.`
-                  }
-                </div>
               </div>
               <div className="graph percentage">
                 {
-                  classProg.labels.length && classProg.datasets.length && (
+                  isFetchingProgress ? (
+                    <div className="log-loader">
+                      <Spin />
+                    </div>
+                  ) : classProg.labels.length && classProg.datasets.length ? (
                     <Graph
                       title="Food class percentage"
-                      type="pie"
-                      height={300}
-                      width={300}
+                      type="percentage"
+                      height={200}
+                      width={250}
                       data={{
                         labels: [...classProg.labels],
                         datasets: [...classProg.datasets]
                       }}
                       colors={[...tagColors]}
                     />
+                  ) : (
+                    <React.Fragment>
+                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                      <div className="projected">
+                        Log some food to view the distribution
+                      </div>
+                    </React.Fragment>
                   )
                 }
               </div>

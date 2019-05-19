@@ -20,6 +20,7 @@ const mapStateToProps = (state) => {
     showHealthEdit,
     showGoalEdit,
     isEditing,
+    isFetchingProgress,
     dayProgress,
     classDist,
     healthButtonDisabled,
@@ -29,7 +30,9 @@ const mapStateToProps = (state) => {
     weeksLeft,
     daysLeft,
     projectedKg,
-    projectedLbs
+    projectedLbs,
+    classProg,
+    tagColors
   } = state.profile;
   const { dateToday } = state.home;
   return {
@@ -37,6 +40,7 @@ const mapStateToProps = (state) => {
     showHealthEdit,
     showGoalEdit,
     isEditing,
+    isFetchingProgress,
     dayProgress,
     dateToday,
     classDist,
@@ -48,7 +52,9 @@ const mapStateToProps = (state) => {
     weeksLeft,
     daysLeft,
     projectedKg,
-    projectedLbs
+    projectedLbs,
+    classProg,
+    tagColors
   };
 };
 

@@ -449,11 +449,11 @@ class Home extends Component {
   }
 
   handleNameMeal = () => {
-    const { toggleNameMealModal } = this.props;
+    const { toggleNameMealModal, isSavingMeal } = this.props;
     const { mealCart } = this.state;
     if (!mealCart.length) {
       message.error('Place some food', 4);
-    } else {
+    } else if (!isSavingMeal) {
       toggleNameMealModal();
     }
   }

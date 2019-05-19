@@ -5,6 +5,8 @@ import * as logApi from '../../api/log';
 import * as profileUtil from '../../utils/profile.util';
 import { getUser } from '../Login/duck';
 
+import * as constants from '../../constants';
+
 const actions = {
   TOGGLE_HEALTH: 'PROFILE/TOGGLE_HEALTH',
   TOGGLE_GOAL: 'PROFILE/TOGGLE_GOAL',
@@ -122,7 +124,14 @@ const initialState = {
   daysLeft: null,
   dayKcal: null,
   projectedKg: null,
-  projectedLbs: null
+  projectedLbs: null,
+  tagColors: [],
+  classProg: {
+    labels: [],
+    datasets: [
+      { values: [] }
+    ]
+  }
 };
 
 const reducer = (state = initialState, action) => {
@@ -171,10 +180,28 @@ const reducer = (state = initialState, action) => {
           ...prevState,
           isFetchingProgress: true
         }),
-        success: prevState => ({
-          ...prevState,
-          classDist: payload.data.data
-        }),
+        success: (prevState) => {
+          const classProg = {
+            labels: [],
+            datasets: [
+              { values: [] }
+            ]
+          };
+          const tagColors = [];
+          const classDist = payload.data.data;
+          const classKeys = classDist && Object.keys(classDist);
+          classKeys.forEach((key) => {
+            const colKey = key === 'bev' ? 'beverage' : key;
+            classProg.labels.push(`${key} %`);
+            classProg.datasets[0].values.push(classDist[key]);
+            tagColors.push(constants.tagColorsHex[colKey]);
+          });
+          return {
+            ...prevState,
+            classProg,
+            tagColors
+          };
+        },
         finish: prevState => ({
           ...prevState,
           isFetchingProgress: false
