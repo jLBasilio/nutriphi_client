@@ -96,32 +96,9 @@ export const fetchPeriod = ({ userId, date, period }) => (dispatch) => {
     type: actions.FETCH_PERIOD,
     promise: logApi.fetchPeriod({ userId, date, period }),
     meta: {
-      onSuccess: (res, getState) => {
+      onSuccess: () => {
         dispatch(userLogCleanup());
         dispatch(setPeriodEditing(null));
-        const [userLogs, user] = [getState().home.userLogs, getState().login.user];
-        const totalCho = userLogs.reduce((accCho, log) => accCho + log.consumed_choGrams, 0);
-        const totalPro = userLogs.reduce((accPro, log) => accPro + log.consumed_proGrams, 0);
-        const totalFat = userLogs.reduce((accFat, log) => accFat + log.consumed_fatGrams, 0);
-        const percentCho = parseFloat(((totalCho / user.choPerDay) * 100).toFixed(2));
-        const percentPro = parseFloat(((totalPro / user.proPerDay) * 100).toFixed(2));
-        const percentFat = parseFloat(((totalFat / user.fatPerDay) * 100).toFixed(2));
-        const userKcal = user.goalTEA;
-        const totalKcal = userLogs.reduce((logAcc, curr) => logAcc
-          + parseFloat(curr.consumed_totalKcalConsumed), 0);
-        if (totalKcal >= user.goalTEA) {
-          message.info('You have completed your daily calorie intake');
-        }
-        dispatch(setDayInfo({
-          totalCho,
-          totalPro,
-          totalFat,
-          totalKcal,
-          percentCho,
-          percentPro,
-          percentFat,
-          userKcal
-        }));
       }
     }
   });

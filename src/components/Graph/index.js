@@ -19,7 +19,7 @@ class Graph extends Component {
   }
 
   componentWillReceiveProps(props) {
-    // this.graph.update(props.data);
+    this.graph.update(props.data);
   }
 
   render() {
