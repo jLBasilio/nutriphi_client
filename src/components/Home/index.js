@@ -528,7 +528,6 @@ class Home extends Component {
       dateToday,
       dateSelected,
       isFetchingLogs,
-      userLogs,
       breakfast,
       lunch,
       dinner,
@@ -543,17 +542,16 @@ class Home extends Component {
       isFetching,
       showEditFoodMeal,
       showNameMealModal,
-      isSavingMeal
+      isSavingMeal,
+      totalCho,
+      totalPro,
+      totalFat,
+      totalKcal,
+      percentCho,
+      percentPro,
+      percentFat,
+      userKcal
     } = this.props;
-
-    const totalCho = userLogs.reduce((accCho, log) => accCho + log.consumed_choGrams, 0);
-    const totalPro = userLogs.reduce((accPro, log) => accPro + log.consumed_proGrams, 0);
-    const totalFat = userLogs.reduce((accFat, log) => accFat + log.consumed_fatGrams, 0);
-    const totalKcal = userLogs.reduce((kcal, log) => kcal + log.consumed_totalKcalConsumed, 0);
-    const percentCho = parseFloat(((totalCho / user.choPerDay) * 100).toFixed(2));
-    const percentPro = parseFloat(((totalPro / user.proPerDay) * 100).toFixed(2));
-    const percentFat = parseFloat(((totalFat / user.fatPerDay) * 100).toFixed(2));
-    const userKcal = user.goalTEA;
 
     let dateSelectedSplit = [];
     if (dateSelected) {

@@ -124,8 +124,9 @@ class Entry extends Component {
 
   showFoodModal = (foodIndex) => {
     const { food, toggleModal, searchedFood } = this.props;
-    const { searchType } = this.state;
+    const { currentSearched, searchType } = this.state;
     const currentFood = searchType === 'favorites'
+      && currentSearched === null
       ? food[foodIndex]
       : searchedFood[foodIndex];
     const gramsEPPerExchange = parseFloat(currentFood.food_gramsEPPerExchange);
@@ -135,7 +136,7 @@ class Entry extends Component {
       gramsml: gramsEPPerExchange ? (
         currentFood.food_exchangePerMeasure * currentFood.food_gramsEPPerExchange
       ) : currentFood.food_exchangePerMeasure * parseFloat(currentFood.food_mlEPPerExchange)
-    }, () => console.log(this.state));
+    });
     toggleModal();
   }
 

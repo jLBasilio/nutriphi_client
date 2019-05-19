@@ -51,7 +51,15 @@ const mapStateToProps = (state) => {
     showCreateMealModal,
     showEditFoodMeal,
     showNameMealModal,
-    isSavingMeal
+    isSavingMeal,
+    totalCho,
+    totalPro,
+    totalFat,
+    totalKcal,
+    percentCho,
+    percentPro,
+    percentFat,
+    userKcal
   } = state.home;
 
   return {
@@ -74,7 +82,16 @@ const mapStateToProps = (state) => {
     isFetching,
     showEditFoodMeal,
     showNameMealModal,
-    isSavingMeal
+    isSavingMeal,
+    totalCho,
+    totalPro,
+    totalFat,
+    totalKcal,
+    percentCho,
+    percentPro,
+    percentFat,
+    userKcal
+
   };
 };
 

@@ -20,7 +20,8 @@ const actions = {
   TOGGLE_MEAL: 'HOME/TOGGLE_MEAL',
   TOGGLE_MEALEDIT: 'HOME/TOGGLE_MEALEDIT',
   TOGGLE_NAMEMEAL: 'HOME/TOGGLE_NAMEMEAL',
-  ADD_MEAL: 'HOME/ADD_MEAL'
+  ADD_MEAL: 'HOME/ADD_MEAL',
+  SET_DAYINFO: 'HOME/SET_DAYINFO'
 };
 
 export const logout = () => ({
@@ -51,21 +52,40 @@ export const userLogCleanup = () => ({
   type: actions.LOG_CLEANUP
 });
 
+export const setDayInfo = logInfo => ({
+  type: actions.SET_DAYINFO,
+  payload: logInfo
+});
+
 export const fetchLogs = ({ userId, date }) => (dispatch) => {
   dispatch({
     type: actions.FETCH_LOGS,
     promise: logApi.fetchLogs({ userId, date }),
     meta: {
       onSuccess: (response, getState) => {
-        const [userLogs, userKcal] = [
-          getState().home.userLogs,
-          getState().login.user.goalTEA
-        ];
-        const dayKcal = userLogs.reduce((logAcc, curr) => logAcc
+        const [userLogs, user] = [getState().home.userLogs, getState().login.user];
+        const totalCho = userLogs.reduce((accCho, log) => accCho + log.consumed_choGrams, 0);
+        const totalPro = userLogs.reduce((accPro, log) => accPro + log.consumed_proGrams, 0);
+        const totalFat = userLogs.reduce((accFat, log) => accFat + log.consumed_fatGrams, 0);
+        const percentCho = parseFloat(((totalCho / user.choPerDay) * 100).toFixed(2));
+        const percentPro = parseFloat(((totalPro / user.proPerDay) * 100).toFixed(2));
+        const percentFat = parseFloat(((totalFat / user.fatPerDay) * 100).toFixed(2));
+        const userKcal = user.goalTEA;
+        const totalKcal = userLogs.reduce((logAcc, curr) => logAcc
           + parseFloat(curr.consumed_totalKcalConsumed), 0);
-        if (dayKcal >= userKcal) {
+        if (totalKcal >= user.goalTEA) {
           message.info('You have completed your daily calorie intake');
         }
+        dispatch(setDayInfo({
+          totalCho,
+          totalPro,
+          totalFat,
+          totalKcal,
+          percentCho,
+          percentPro,
+          percentFat,
+          userKcal
+        }));
       }
     }
   });
@@ -178,7 +198,15 @@ const initialState = {
   showCreateMealModal: false,
   showEditFoodMeal: false,
   showNameMealModal: false,
-  isSavingMeal: false
+  isSavingMeal: false,
+  totalCho: null,
+  totalPro: null,
+  totalFat: null,
+  totalKcal: null,
+  percentCho: null,
+  percentPro: null,
+  percentFat: null,
+  userKcal: null
 };
 
 const reducer = (state = initialState, action) => {
@@ -289,6 +317,19 @@ const reducer = (state = initialState, action) => {
           ...state.lunch,
           ...state.dinner
         ]
+      };
+
+    case actions.SET_DAYINFO:
+      return {
+        ...state,
+        totalCho: payload.totalCho,
+        totalPro: payload.totalPro,
+        totalFat: payload.totalFat,
+        totalKcal: payload.totalKcal,
+        percentCho: payload.percentCho,
+        percentPro: payload.percentPro,
+        percentFat: payload.percentFat,
+        userKcal: payload.userKcal
       };
 
     case actions.TOGGLE_CALENDAR:
