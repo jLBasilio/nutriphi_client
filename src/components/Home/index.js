@@ -439,17 +439,12 @@ class Home extends Component {
   handleMealModal = () => {
     const { toggleMealModal } = this.props;
     const { mealCart } = this.state;
-
-    if (!mealCart.length) {
-      this.setState({ mealTotalKcal: 0 });
-    } else {
-      const updatedMealTotalKcal = mealCart
+    let mealTotalKcal = 0;
+    if (mealCart.length) {
+      mealTotalKcal = mealCart
         .reduce((kcalAcc, curr) => kcalAcc + parseFloat(curr.totalKcalConsumed), 0);
-
-      console.log("MEAL TOTAL KCAL: ", updatedMealTotalKcal);
     }
-
-    this.setState({ showPopups: false });
+    this.setState({ mealTotalKcal, showPopups: false });
     toggleMealModal();
   }
 
