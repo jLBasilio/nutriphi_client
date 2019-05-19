@@ -383,7 +383,7 @@ class Profile extends Component {
 
     const kcalAddSubToGoal = await signupUtil.validateTimeSpan(poundDiff, weeksToComplete);
     if ((!kcalAddSubToGoal || endDate === null || weeksToComplete <= 0) && target !== 'maintain') {
-      message.error('Please increase the time span', 4);
+      message.error('Your target date is unhealthy. Please increase the time span', 4);
       return false;
     }
     // console.table({ baseTEA, goalTEA, endDate, poundDiff, weeksToComplete });

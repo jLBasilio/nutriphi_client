@@ -254,7 +254,7 @@ class Signup extends Component {
     }
 
     if (target !== 'maintain' && (!weeksToComplete || weeksToComplete <= 0)) {
-      message.error('Please fill out the fields correctly.', 4);
+      message.error('Your target date is unhealthy. Please increase the time span', 4);
       return false;
     }
 
@@ -643,12 +643,40 @@ class Signup extends Component {
                       <div className="form-title empty">
                         Lifestyle
                       </div>
-                      <Select placeholder="Select current lifestyle" onChange={this.handlelifestyleMultiplier}>
-                        <Option value={constants.BED_REST}>Bed rest</Option>
-                        <Option value={constants.SEDENTARY}>Sedentary</Option>
-                        <Option value={constants.LIGHT}>Light</Option>
-                        <Option value={constants.MODERATE}>Moderate</Option>
-                        <Option value={constants.VERY_ACTIVE}>Very Active</Option>
+                      <Select
+                        placeholder="Select current lifestyle"
+                        onChange={this.handlelifestyleMultiplier}
+                      >
+                        <Option
+                          title="Bed rest but mobile (hospital patients)"
+                          value={constants.BED_REST}
+                        >
+                          Bed rest
+                        </Option>
+                        <Option
+                          value={constants.SEDENTARY}
+                          title="Mostly sitting"
+                        >
+                          Sedentary
+                        </Option>
+                        <Option
+                          value={constants.LIGHT}
+                          title="Light work (tailor, nurse, physician, jeepney driver)"
+                        >
+                          Light
+                        </Option>
+                        <Option
+                          value={constants.MODERATE}
+                          title="Moderate work (carpenter, painter, heavy housework)"
+                        >
+                          Moderate
+                        </Option>
+                        <Option
+                          value={constants.VERY_ACTIVE}
+                          title="Heavy work (swimming, lumberman)"
+                        >
+                          Very Active
+                        </Option>
                       </Select>
                     </div>
                     {
