@@ -118,9 +118,6 @@
         }
 
         .personal-section {
-          @include for-tablet-portrait-up {
-            padding-bottom: 2rem;
-          }
           padding-bottom: .5rem;
 
           .card-title {
@@ -244,7 +241,7 @@
         color: $red;
         font-size: 1rem;
         margin-left: 0 !important;
-        padding: 0 1rem;
+        padding: .5rem 1rem;
 
         .card-title {
           margin-bottom: 0;
