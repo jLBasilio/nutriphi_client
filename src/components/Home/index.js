@@ -1091,7 +1091,7 @@ class Home extends Component {
                   onClick={() => this.handleCreateMealFromLog('lunch')}
                   disabled={!lunch.length}
                 >
-                  Make meal
+                  Save meal
                 </Button>
               </div>
             </div>
@@ -1179,7 +1179,7 @@ class Home extends Component {
                   onClick={() => this.handleCreateMealFromLog('dinner')}
                   disabled={!dinner.length}
                 >
-                  Make meal
+                  Save meal
                 </Button>
               </div>
             </div>

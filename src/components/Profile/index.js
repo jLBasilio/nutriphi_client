@@ -569,9 +569,10 @@ class Profile extends Component {
     if (classDist) {
       const classKeys = classDist && Object.keys(classDist);
       classKeys.forEach((key) => {
-        classProg.labels.push(key);
+        const colKey = key === 'bev' ? 'beverage' : key;
+        classProg.labels.push(`${key} %`);
         classProg.datasets[0].values.push(classDist[key]);
-        tagColors.push(constants.tagColorsHex[key]);
+        tagColors.push(constants.tagColorsHex[colKey]);
       });
     }
 
@@ -734,6 +735,95 @@ class Profile extends Component {
 
           </Modal>
           <div className="first-row">
+
+            <div className="profile-card">
+              <div className="personal-section">
+                <div className="card-title">
+                  <div className="icon">
+                    <Icon className="icon-left" type="line-chart" />
+                    Progress Status
+                  </div>
+                </div>
+              </div>
+              <div className="graph">
+                {
+                  dayProg.labels.length && dayProg.datasets.length && (
+                    <Graph
+                      title="Calorie intake in two weeks"
+                      type="bar"
+                      stacked
+                      data={{
+                        labels: [...dayProg.labels],
+                        datasets: [...dayProg.datasets],
+                        yMarkers: [{
+                          label: 'Your daily calorie requirement',
+                          value: user.goalTEA,
+                          options: { labelPos: 'left' }
+                        }]
+                      }}
+                      colors={['#2ecc71']}
+                      barOptions={{
+                        spaceRatio: 0.1
+                      }}
+                      tooltipOptions={{
+                        formatTooltipX: a => `${dateToday.split('-')[0]}-${a}`,
+                        formatTooltipY: a => `${a} kcal`
+                      }}
+                    />
+                  )
+                }
+              </div>
+              <div className="graph">
+                {
+                  weightProg.labels.length
+                    && weightProg.datasets.length && (
+                    <Graph
+                      title="Weight changes"
+                      type="line"
+                      height={150}
+                      colors={['#2ecc71']}
+                      data={{
+                        labels: [...weightProg.labels],
+                        datasets: [...weightProg.datasets],
+                        yMarkers: [{
+                          label: 'Your goal weight',
+                          value: user.goalKg,
+                          options: { labelPos: 'left' }
+                        }]
+                      }}
+                      tooltipOptions={{
+                        formatTooltipX: a => `${dateToday.split('-')[0]}-${a}`,
+                        formatTooltipY: a => `${a}kg`
+                      }}
+                    />
+                  )
+                }
+                <div className="projected">
+                  {`Your projected weight in
+                    5 weeks is ${projectedKg}kg
+                    or ${projectedLbs}lbs based on your
+                    calorie consumption today.`
+                  }
+                </div>
+              </div>
+              <div className="graph percentage">
+                {
+                  classProg.labels.length && classProg.datasets.length && (
+                    <Graph
+                      title="Food class percentage"
+                      type="pie"
+                      height={300}
+                      width={300}
+                      data={{
+                        labels: [...classProg.labels],
+                        datasets: [...classProg.datasets]
+                      }}
+                      colors={[...tagColors]}
+                    />
+                  )
+                }
+              </div>
+            </div>
             <div className={user.target === 'maintain'
               ? 'profile-card short'
               : 'profile-card long'}
@@ -912,7 +1002,7 @@ class Profile extends Component {
                               Goal duration
                             </div>
                             <div className="desc-value">
-                              {`${user.endDate} (${user.weeksToComplete} week/s)`}
+                              {`${user.weeksToComplete} week/s (${user.endDate})`}
                             </div>
                           </div>
 
@@ -966,6 +1056,7 @@ class Profile extends Component {
                 </div>
               </div>
             </div>
+
             <Modal
               className="edit-modal"
               title="Edit Health Information"
@@ -1227,11 +1318,36 @@ class Profile extends Component {
                           placeholder="Select current lifestyle"
                           onChange={this.handlelifestyleMultiplier}
                         >
-                          <Option value={constants.BED_REST}>Bed rest</Option>
-                          <Option value={constants.SEDENTARY}>Sedentary</Option>
-                          <Option value={constants.LIGHT}>Light</Option>
-                          <Option value={constants.MODERATE}>Moderate</Option>
-                          <Option value={constants.VERY_ACTIVE}>Very Active</Option>
+                          <Option
+                            title="Bed rest but mobile (hospital patients)"
+                            value={constants.BED_REST}
+                          >
+                            Bed rest
+                          </Option>
+                          <Option
+                            value={constants.SEDENTARY}
+                            title="Mostly sitting"
+                          >
+                            Sedentary
+                          </Option>
+                          <Option
+                            value={constants.LIGHT}
+                            title="Light work (tailor, nurse, physician, jeepney driver)"
+                          >
+                            Light
+                          </Option>
+                          <Option
+                            value={constants.MODERATE}
+                            title="Moderate work (carpenter, painter, heavy housework)"
+                          >
+                            Moderate
+                          </Option>
+                          <Option
+                            value={constants.VERY_ACTIVE}
+                            title="Heavy work (swimming, lumberman)"
+                          >
+                            Very Active
+                          </Option>
                         </Select>
                       </div>
                       <div className="edit-container">
@@ -1291,93 +1407,7 @@ class Profile extends Component {
               }
             </Modal>
 
-            <div className="profile-card">
-              <div className="personal-section">
-                <div className="card-title">
-                  <div className="icon">
-                    <Icon className="icon-left" type="line-chart" />
-                    Progress Status
-                  </div>
-                </div>
-              </div>
-              <div className="graph">
-                {
-                  dayProg.labels.length && dayProg.datasets.length && (
-                    <Graph
-                      title="Calorie intake in two weeks"
-                      type="bar"
-                      stacked
-                      data={{
-                        labels: [...dayProg.labels],
-                        datasets: [...dayProg.datasets],
-                        yMarkers: [{
-                          label: 'Your daily calorie requirement',
-                          value: user.goalTEA,
-                          options: { labelPos: 'left' }
-                        }]
-                      }}
-                      colors={['#2ecc71']}
-                      barOptions={{
-                        spaceRatio: 0.1
-                      }}
-                      tooltipOptions={{
-                        formatTooltipX: a => `${dateToday.split('-')[0]}-${a}`,
-                        formatTooltipY: a => `${a} kcal`
-                      }}
-                    />
-                  )
-                }
-              </div>
-              <div className="graph">
-                {
-                  weightProg.labels.length
-                    && weightProg.datasets.length && (
-                    <Graph
-                      title="Weight changes"
-                      type="line"
-                      height={150}
-                      colors={['#2ecc71']}
-                      data={{
-                        labels: [...weightProg.labels],
-                        datasets: [...weightProg.datasets],
-                        yMarkers: [{
-                          label: 'Your goal weight',
-                          value: user.goalKg,
-                          options: { labelPos: 'left' }
-                        }]
-                      }}
-                      tooltipOptions={{
-                        formatTooltipX: a => `${dateToday.split('-')[0]}-${a}`,
-                        formatTooltipY: a => `${a}kg`
-                      }}
-                    />
-                  )
-                }
-                <div className="projected">
-                  {`Your projected weight in
-                    5 weeks is ${projectedKg}kg
-                    or ${projectedLbs}lbs based on your
-                    calorie consumption today.`
-                  }
-                </div>
-              </div>
-              <div className="graph">
-                {
-                  classProg.labels.length && classProg.datasets.length && (
-                    <Graph
-                      title="Food class percentage"
-                      type="percentage"
-                      height={180}
-                      data={{
-                        labels: [...classProg.labels],
-                        datasets: [...classProg.datasets]
-                      }}
-                      colors={[...tagColors]}
-                    />
-                  )
-                }
-              </div>
-            </div>
+
           </div>
         </div>
       </div>

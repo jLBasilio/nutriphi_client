@@ -38,7 +38,7 @@
         padding: .5rem 1rem 1rem;
 
 
-        &.short{
+        &.short {
           @include for-tablet-portrait-up {
             max-height: 36rem;
           }
@@ -75,9 +75,38 @@
             text-align: center;
           }
 
+          &.percentage {
+            @include for-small-desktop-up {
+              height: 18rem;
+            }
+            @include for-tablet-portrait-up {
+              height: 21.5rem;
+            }
+            height: 25.5rem;
+          }
+
           .chart-container {
             .frappe-chart {
               &.chart {
+                overflow: visible;
+
+                .chart-legend {
+                  @include for-tablet-portrait-up {
+                    transform: translate(2rem, 260px);
+                  }
+                  transform: translate(3rem, 260px);
+
+                  g {
+                    .legend-dot {
+                      cx: -5;
+                    }
+
+                    .legend-dataset-text {
+                      x: -10;
+                    }
+                  }
+                }
+
                 .y-markers {
                   .line-horizontal {
                     &.dashed {
