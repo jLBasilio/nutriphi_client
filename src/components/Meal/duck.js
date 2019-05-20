@@ -69,7 +69,6 @@ export const editMeal = (mealInfo, meta) => (dispatch) => {
     meta: {
       onSuccess: () => {
         message.success('Successfully updated meal', 4);
-        console.log(meta);
         dispatch(toggleNameModal());
         dispatch(fetchMeal(meta));
       },

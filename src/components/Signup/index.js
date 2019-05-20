@@ -63,7 +63,7 @@ class Signup extends Component {
   handleChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value
-    }, () => console.log(this.state));
+    });
   }
 
   handleBirthday = (date, dateString) => {

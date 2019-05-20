@@ -282,7 +282,7 @@ class Entry extends Component {
     ));
 
     const toSend = { logs };
-    console.log(toSend);
+    // console.log(toSend);
     addMeal(toSend);
   }
 
