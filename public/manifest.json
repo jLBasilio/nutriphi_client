@@ -1,6 +1,11 @@
 {
   "short_name": "Nutriphi",
   "name": "Nutriphi",
+  "description": "Weight and Nutrition Management in Philippine Setting",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2ecc71",
   "icons": [
     {
       "src": "favicon.ico",
@@ -27,9 +32,5 @@
      "sizes": "512x512",
      "type": "image/png"
     }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#2ecc71",
-  "background_color": "#2ecc71"
+  ]
 }
