@@ -25,7 +25,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && mv ./build ../nutriphi_server/build/",
+    "build": "react-scripts build && rm -rf ../nutriphi_server/build/build && mv ./build ../nutriphi_server/build/",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
