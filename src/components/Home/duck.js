@@ -3,6 +3,7 @@ import { message } from 'antd';
 import * as authApi from '../../api/user';
 import * as logApi from '../../api/log';
 import * as mealApi from '../../api/meal';
+import * as foodApi from '../../api/food';
 
 const actions = {
   LOGOUT: 'AUTH/LOGOUT',
@@ -21,7 +22,8 @@ const actions = {
   TOGGLE_MEALEDIT: 'HOME/TOGGLE_MEALEDIT',
   TOGGLE_NAMEMEAL: 'HOME/TOGGLE_NAMEMEAL',
   ADD_MEAL: 'HOME/ADD_MEAL',
-  SET_DAYINFO: 'HOME/SET_DAYINFO'
+  SET_DAYINFO: 'HOME/SET_DAYINFO',
+  FETCH_REC: 'HOME/FETCH_REC'
 };
 
 export const logout = () => ({
@@ -57,6 +59,11 @@ export const setDayInfo = logInfo => ({
   payload: logInfo
 });
 
+export const fetchRecom = logInfo => ({
+  type: actions.FETCH_REC,
+  promise: foodApi.getRec(logInfo)
+});
+
 export const fetchLogs = ({ userId, date }) => (dispatch) => {
   dispatch({
     type: actions.FETCH_LOGS,
@@ -70,6 +77,9 @@ export const fetchLogs = ({ userId, date }) => (dispatch) => {
         const percentCho = parseFloat(((totalCho / user.choPerDay) * 100).toFixed(2));
         const percentPro = parseFloat(((totalPro / user.proPerDay) * 100).toFixed(2));
         const percentFat = parseFloat(((totalFat / user.fatPerDay) * 100).toFixed(2));
+        const choLeft = parseFloat(user.choPerDay - totalCho);
+        const proLeft = parseFloat(user.proPerDay - totalPro);
+        const fatLeft = parseFloat(user.fatPerDay - totalFat);
         const userKcal = user.goalTEA;
         const totalKcal = userLogs.reduce((logAcc, curr) => logAcc
           + parseFloat(curr.consumed_totalKcalConsumed), 0);
@@ -85,6 +95,11 @@ export const fetchLogs = ({ userId, date }) => (dispatch) => {
           percentPro,
           percentFat,
           userKcal
+        }));
+        dispatch(fetchRecom({
+          choLeft,
+          proLeft,
+          fatLeft
         }));
       }
     }
@@ -106,6 +121,9 @@ export const fetchPeriod = ({ userId, date, period }) => (dispatch) => {
         const percentCho = parseFloat(((totalCho / user.choPerDay) * 100).toFixed(2));
         const percentPro = parseFloat(((totalPro / user.proPerDay) * 100).toFixed(2));
         const percentFat = parseFloat(((totalFat / user.fatPerDay) * 100).toFixed(2));
+        const choLeft = parseFloat(user.choPerDay - totalCho);
+        const proLeft = parseFloat(user.proPerDay - totalPro);
+        const fatLeft = parseFloat(user.fatPerDay - totalFat);
         const userKcal = user.goalTEA;
         const totalKcal = userLogs.reduce((logAcc, curr) => logAcc
           + parseFloat(curr.consumed_totalKcalConsumed), 0);
@@ -121,6 +139,11 @@ export const fetchPeriod = ({ userId, date, period }) => (dispatch) => {
           percentPro,
           percentFat,
           userKcal
+        }));
+        dispatch(fetchRecom({
+          choLeft,
+          proLeft,
+          fatLeft
         }));
       }
     }
@@ -229,7 +252,8 @@ const initialState = {
   percentCho: null,
   percentPro: null,
   percentFat: null,
-  userKcal: null
+  userKcal: null,
+  recommended: []
 };
 
 const reducer = (state = initialState, action) => {
@@ -329,6 +353,22 @@ const reducer = (state = initialState, action) => {
         finish: prevState => ({
           ...prevState,
           isSavingMeal: false
+        })
+      });
+
+    case actions.FETCH_REC:
+      return handle(state, action, {
+        start: prevState => ({
+          ...prevState,
+          isFetchingLogs: true
+        }),
+        success: prevState => ({
+          ...prevState,
+          recommended: payload.data.data
+        }),
+        finish: prevState => ({
+          ...prevState,
+          isFetchingLogs: false
         })
       });
 

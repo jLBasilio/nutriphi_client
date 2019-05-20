@@ -15,3 +15,5 @@ export const searchFood = ({
 export const searchRaw = ({ q, foodClass }) => (
   axios.get(`${url}/search/raw/${foodClass}?&q=${q}`)
 );
+
+export const getRec = body => axios.post(`${url}/rec`, body);

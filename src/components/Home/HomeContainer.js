@@ -59,7 +59,8 @@ const mapStateToProps = (state) => {
     percentCho,
     percentPro,
     percentFat,
-    userKcal
+    userKcal,
+    recommended
   } = state.home;
 
   return {
@@ -90,7 +91,8 @@ const mapStateToProps = (state) => {
     percentCho,
     percentPro,
     percentFat,
-    userKcal
+    userKcal,
+    recommended
 
   };
 };

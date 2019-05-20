@@ -545,7 +545,8 @@ class Home extends Component {
       percentCho,
       percentPro,
       percentFat,
-      userKcal
+      userKcal,
+      recommended
     } = this.props;
 
     let dateSelectedSplit = [];
@@ -1244,6 +1245,54 @@ class Home extends Component {
 
           <div className="space" />
 
+          <div className="today-progress ">
+            <div className="today-title">
+                Recommended For You
+            </div>
+            {
+              isFetchingLogs ? (
+                <div className="log-loader">
+                  <Spin />
+                </div>
+              ) : recommended.length ? (
+                recommended.map((log, index) => (
+                  <div className="log" key={log.id}>
+                    <div className="log-left">
+                      {`${log.filipinoName || log.englishName} `}
+                      <Tag
+                        className="log-tag"
+                        color={
+                          constants.tagColors[log.primaryClassification.split('-')[0]]
+                        }
+                      >
+                        {log.primaryClassification.split('-')[0]}
+                      </Tag>
+                      {
+                        log.secondaryClassification && (
+                          <Tag
+                            className="log-tag"
+                            color={
+                              constants.tagColors[log.secondaryClassification]
+                            }
+                          >
+                            {log.secondaryClassification}
+                          </Tag>
+                        )
+                      }
+                    </div>
+
+                    <div className="log-right">
+
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              )
+            }
+          </div>
+
+          <div className="space" />
         </div>
 
         <Popover
