@@ -1027,11 +1027,7 @@ class Entry extends Component {
 
             <div className="info-row">
               <div className="macros">
-                {`${
-                  parseFloat(currentFood.food_gramsEPPerExchange)
-                    ? 'EP Weight'
-                    : 'EP ML'
-                }`}
+                Portion Size
               </div>
               <div className="macros-value">
                 {`${

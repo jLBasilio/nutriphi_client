@@ -562,11 +562,7 @@ class Food extends Component {
 
             <div className="info-row">
               <div className="macros">
-                {`${
-                  parseInt(currentFood.food_gramsEPPerExchange, 10)
-                    ? 'EP Weight'
-                    : 'EP ML'
-                }`}
+                Portion Size
               </div>
               <div className="macros-value">
                 {`${

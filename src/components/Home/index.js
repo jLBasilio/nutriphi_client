@@ -757,11 +757,7 @@ class Home extends Component {
 
           <div className="info-row">
             <div className="macros">
-              {`${
-                parseFloat(currentFoodMeal.gramsConsumed)
-                  ? 'EP Weight'
-                  : 'EP ML'
-              }`}
+              Portion Size
             </div>
             <div className="macros-value">
               {`${currentFoodMeal.gramsConsumed
@@ -1526,11 +1522,7 @@ class Home extends Component {
 
           <div className="info-row">
             <div className="macros">
-              {`${
-                parseFloat(currentFoodConsumed.consumed_gramsConsumed)
-                  ? 'EP Weight'
-                  : 'EP ML'
-              }`}
+              Portion Size
             </div>
             <div className="macros-value">
               {`${
