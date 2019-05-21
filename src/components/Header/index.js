@@ -149,7 +149,7 @@ class Header extends Component {
         </Row>
 
         <Drawer
-          title="NutriPhi"
+          title="NUTRIPHI"
           placement="left"
           closable
           onClose={toggleDrawer}
