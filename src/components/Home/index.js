@@ -13,7 +13,8 @@ import {
   Popover,
   Progress,
   Spin,
-  Tag
+  Tag,
+  Tooltip
 } from 'antd';
 import './home.scss';
 
@@ -680,12 +681,22 @@ class Home extends Component {
                 isAddingToFavorites ? (
                   <Icon type="loading" />
                 ) : (
-                  <Icon
-                    className="fav-icon"
-                    type="heart"
-                    theme={favFoodIds.includes(currentFoodMeal.food_id) ? 'filled' : null}
-                    onClick={() => this.handleFavorite(currentFoodMeal.food_id)}
-                  />
+                  <Tooltip
+                    title={
+                      favFoodIds.includes(currentFoodMeal.food_id)
+                        ? 'Unfavorite'
+                        : 'Set as favorite'
+                    }
+                  >
+                    <span>
+                      <Icon
+                        className="fav-icon"
+                        type="heart"
+                        theme={favFoodIds.includes(currentFoodMeal.food_id) ? 'filled' : null}
+                        onClick={() => this.handleFavorite(currentFoodMeal.food_id)}
+                      />
+                    </span>
+                  </Tooltip>
                 )
               }
             </div>
@@ -746,11 +757,7 @@ class Home extends Component {
 
           <div className="info-row">
             <div className="macros">
-              {`${
-                parseFloat(currentFoodMeal.gramsConsumed)
-                  ? 'EP Weight'
-                  : 'EP ML'
-              }`}
+              Portion Size
             </div>
             <div className="macros-value">
               {`${currentFoodMeal.gramsConsumed
@@ -1439,12 +1446,22 @@ class Home extends Component {
                 isAddingToFavorites ? (
                   <Icon type="loading" />
                 ) : (
-                  <Icon
-                    className="fav-icon"
-                    type="heart"
-                    theme={favFoodIds.includes(currentFoodConsumed.food_id) ? 'filled' : null}
-                    onClick={() => this.handleFavorite(currentFoodConsumed.food_id)}
-                  />
+                  <Tooltip
+                    title={
+                      favFoodIds.includes(currentFoodConsumed.food_id)
+                        ? 'Unfavorite'
+                        : 'Set as favorite'
+                    }
+                  >
+                    <span>
+                      <Icon
+                        className="fav-icon"
+                        type="heart"
+                        theme={favFoodIds.includes(currentFoodConsumed.food_id) ? 'filled' : null}
+                        onClick={() => this.handleFavorite(currentFoodConsumed.food_id)}
+                      />
+                    </span>
+                  </Tooltip>
                 )
               }
             </div>
@@ -1505,11 +1522,7 @@ class Home extends Component {
 
           <div className="info-row">
             <div className="macros">
-              {`${
-                parseFloat(currentFoodConsumed.consumed_gramsConsumed)
-                  ? 'EP Weight'
-                  : 'EP ML'
-              }`}
+              Portion Size
             </div>
             <div className="macros-value">
               {`${

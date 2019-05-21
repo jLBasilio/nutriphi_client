@@ -4,6 +4,7 @@ export const LOGIN = 'LOG IN';
 export const SIGNUP = 'SIGN UP';
 export const PROFILE = 'PROFILE';
 export const ABOUT = 'ABOUT';
+export const HELP = 'HELP';
 
 export const MEAL = 'MEAL';
 export const ALL = 'ALL FOOD';

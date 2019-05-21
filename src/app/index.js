@@ -60,9 +60,10 @@ class App extends Component {
                 <Route exact path="/food/free" render={() => <Food toFetch="free" title={pageTitles.FREE} />} />
                 <Route exact path="/food/beverage" render={() => <Food toFetch="beverage" title={pageTitles.BEVERAGE} />} />
                 <Route exact path="/entry" component={Entry} />
-                <Route exact path="/about" component={About} />
+                <Route exact path="/about" render={() => <About title={pageTitles.ABOUT} />} />
+                <Route exact path="/help" render={() => <About title={pageTitles.HELP} />} />
                 <Route exact path="/profile" component={Profile} />
-                <Redirect to="/profile" />
+                <Redirect to="/" />
               </Switch>
             </React.Fragment>
           ) : (

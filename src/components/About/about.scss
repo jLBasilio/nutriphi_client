@@ -1,8 +1,87 @@
 @import 'src/constants/screen';
 @import 'src/constants/color';
 
+// sass-lint:disable nesting-depth, no-ids, class-name-format, no-important
 .about {
   .about-body {
-    
+    @include for-tablet-portrait-up {
+      padding: 8rem 5rem 0;
+    }
+    @include for-small-desktop-up {
+      padding: 8rem 15rem 0;
+    }
+    @include for-big-desktop-up {
+      padding: 8rem 32rem 0;
+    }
+    padding: 7rem 1rem 0;
+
+    .one-section {
+
+      background-color: $card-bg;
+      border-radius: 8px;
+      box-shadow: $card-shadow;
+      margin-bottom: 1.5rem;
+      padding: .5rem 1rem;
+
+      .section-title {
+        border-bottom: .03rem solid $black-line;
+        font-size: 1.3rem;
+        padding-bottom: .08rem;
+      }
+
+      .section-content {
+        font-size: .9rem;
+        padding-top: .5rem;
+
+        ul {
+          @include for-tablet-portrait-up {
+            padding: .3rem .5rem .5rem 1.5rem;
+          }
+          margin: 0;
+          padding: .3rem .5rem .5rem 1rem;
+
+          ul {
+            padding-left: 1rem;
+          }
+        }
+
+        .bullet-title {
+          font-weight: bold;
+          padding-top: .8rem;
+
+          &:first-child {
+            padding-top: 0;
+          }
+        }
+      }
+
+      .ant-collapse {
+        background-color: $card-bg;
+
+        &.ant-collapse-borderless {
+          .ant-collapse-header {
+            color: $black-line;
+            font-size: 1.3rem;
+            padding: 1rem 0;
+            padding-left: 1.2rem;
+
+            .anticon {
+              &.anticon-right {
+                &.ant-collapse-arrow {
+                  left: 0;
+                }
+              }
+            }
+          }
+
+          >.ant-collapse-item {
+            &:last-child {
+              border: 0;
+            }
+          }
+        }
+      }
+
+    }
   }
 }

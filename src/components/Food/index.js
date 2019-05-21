@@ -9,7 +9,8 @@ import {
   Modal,
   Pagination,
   Row,
-  Tag
+  Tag,
+  Tooltip
 } from 'antd';
 import './food.scss';
 
@@ -494,12 +495,22 @@ class Food extends Component {
                   isAddingToFavorites ? (
                     <Icon type="loading" />
                   ) : (
-                    <Icon
-                      className="fav-icon"
-                      type="heart"
-                      theme={favFoodIds.includes(currentFood.food_id) ? 'filled' : null}
-                      onClick={() => this.handleFavorite(currentFood.food_id)}
-                    />
+                    <Tooltip
+                      title={
+                        favFoodIds.includes(currentFood.food_id)
+                          ? 'Unfavorite'
+                          : 'Set as favorite'
+                      }
+                    >
+                      <span>
+                        <Icon
+                          className="fav-icon"
+                          type="heart"
+                          theme={favFoodIds.includes(currentFood.food_id) ? 'filled' : null}
+                          onClick={() => this.handleFavorite(currentFood.food_id)}
+                        />
+                      </span>
+                    </Tooltip>
                   )
                 }
               </div>
@@ -551,11 +562,7 @@ class Food extends Component {
 
             <div className="info-row">
               <div className="macros">
-                {`${
-                  parseInt(currentFood.food_gramsEPPerExchange, 10)
-                    ? 'EP Weight'
-                    : 'EP ML'
-                }`}
+                Portion Size
               </div>
               <div className="macros-value">
                 {`${

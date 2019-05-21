@@ -611,11 +611,7 @@ class Meal extends Component {
 
             <div className="info-row">
               <div className="macros">
-                {`${
-                  parseFloat(currentFoodEditing.gramsConsumed)
-                    ? 'EP Weight'
-                    : 'EP ML'
-                }`}
+                Portion Size
               </div>
               <div className="macros-value">
                 {`${currentFoodEditing.gramsConsumed
