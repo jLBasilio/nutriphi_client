@@ -5,15 +5,15 @@
 .about {
   .about-body {
     @include for-tablet-portrait-up {
-      padding: 6rem 5rem 0;
+      padding: 8rem 5rem 0;
     }
     @include for-small-desktop-up {
-      padding: 6rem 15rem 0;
+      padding: 8rem 15rem 0;
     }
     @include for-big-desktop-up {
-      padding: 6rem 32rem 0;
+      padding: 8rem 32rem 0;
     }
-    padding: 5rem 1rem 0;
+    padding: 7rem 1rem 0;
 
     .one-section {
 
@@ -62,7 +62,7 @@
           .ant-collapse-header {
             color: $black-line;
             font-size: 1.3rem;
-            padding: .5rem 0;
+            padding: 1rem 0;
             padding-left: 1.2rem;
 
             .anticon {

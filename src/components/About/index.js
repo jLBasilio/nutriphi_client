@@ -79,10 +79,6 @@ class About extends Component {
                       signing up is based on the Appendix G
                       (WEIGHT-FOR-HEIGHT FOR FILIPINOS)
                       of the book.
-                    <li className="bullet-title">Goal weight and duration</li>
-                    If your target is to lose or gain weight, the weight to lose/gain should
-                    not exceed 2 pounds (lbs) per week. This is to ensure the healthiness
-                    of the goal.
                     <li className="bullet-title">Food displayed</li>
                     <ul>
                       <li>Name (English and Filipino)</li>
