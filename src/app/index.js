@@ -46,7 +46,7 @@ class App extends Component {
             <React.Fragment>
               <Header />
               <Switch>
-                <Route exact path="/s" component={Home} />
+                <Route exact path="/" component={Home} />
                 <Route exact path="/food/meal" component={Meal} />
                 <Route exact path="/food/favorites" render={() => <Food toFetch="favorites" title={pageTitles.FAVORITES} />} />
                 <Route exact path="/food/all" render={() => <Food toFetch="all" title={pageTitles.ALL} />} />
@@ -63,7 +63,7 @@ class App extends Component {
                 <Route exact path="/about" render={() => <About title={pageTitles.ABOUT} />} />
                 <Route exact path="/help" render={() => <About title={pageTitles.HELP} />} />
                 <Route exact path="/profile" component={Profile} />
-                <Redirect to="/about" />
+                <Redirect to="/" />
               </Switch>
             </React.Fragment>
           ) : (

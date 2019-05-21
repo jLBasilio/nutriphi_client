@@ -48,8 +48,40 @@
         .bullet-title {
           font-weight: bold;
           padding-top: .8rem;
+
+          &:first-child {
+            padding-top: 0;
+          }
         }
       }
+
+      .ant-collapse {
+        background-color: $card-bg;
+
+        &.ant-collapse-borderless {
+          .ant-collapse-header {
+            color: $black-line;
+            font-size: 1.3rem;
+            padding: .5rem 0;
+            padding-left: 1.2rem;
+
+            .anticon {
+              &.anticon-right {
+                &.ant-collapse-arrow {
+                  left: 0;
+                }
+              }
+            }
+          }
+
+          >.ant-collapse-item {
+            &:last-child {
+              border: 0;
+            }
+          }
+        }
+      }
+
     }
   }
 }
