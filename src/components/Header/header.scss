@@ -30,6 +30,9 @@
     }
 
     .burger-menu {
+      @include for-tablet-portrait-up {
+        margin-left: 2rem;
+      }
       color: $white;
       display: inline-block;
       font-size: 2rem;
