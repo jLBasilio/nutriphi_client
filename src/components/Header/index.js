@@ -117,36 +117,32 @@ class Header extends Component {
     return (
       <div className="header">
 
-        <Row gutter={24}>
+        <div className="one-cont">
+          <Icon
+            className="burger-menu"
+            onClick={toggleDrawer}
+            type="menu"
+          />
+        </div>
 
-          <Col xs={5} md={3} lg={2}>
-            <Button className="menu-button" onClick={toggleDrawer}>
-              <img className="menu-icon" src="/header/burger-menu.png" alt="burger-menu" />
-            </Button>
-          </Col>
+        <div className="one-cont">
+          <div className="header-title">
+            {currentPage}
+          </div>
+        </div>
 
-          <Col xs={13} md={18} lg={19}>
-            <div className="header-title">
-              {currentPage}
+        {
+          currentPage === pageTitles.HOME && (
+            <div className="one-cont">
+              <Icon
+                className="burger-menu calendar"
+                onClick={toggleCalendar}
+                type="calendar"
+              />
             </div>
-          </Col>
+          )
+        }
 
-          <Col xs={5} md={2} lg={2}>
-            {
-              currentPage === pageTitles.HOME ? (
-                <div className="calendar-placement">
-                  <Button
-                    type="primary"
-                    onClick={toggleCalendar}
-                  >
-                    <Icon type="calendar" />
-                  </Button>
-                </div>
-              ) : null
-            }
-          </Col>
-
-        </Row>
 
         <Drawer
           title="NUTRIPHI"
@@ -243,6 +239,7 @@ class Header extends Component {
             )
           }
         </Drawer>
+
         <Drawer
           className="calendar-drawer"
           title="Select Date"

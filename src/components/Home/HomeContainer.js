@@ -18,7 +18,8 @@ import {
   toggleMealEdit,
   toggleNameMealModal,
   addMeal,
-  toggleRecommModal
+  toggleRecommModal,
+  toggleCalendar
 } from './duck';
 import {
   addToFavorites,
@@ -116,6 +117,9 @@ const mapDispatchToProps = dispatch => ({
   },
   changeDate: (date) => {
     dispatch(changeDate(date));
+  },
+  toggleCalendar: () => {
+    dispatch(toggleCalendar());
   },
   toggleEditModal: () => {
     dispatch(toggleEditModal());

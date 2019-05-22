@@ -17,9 +17,19 @@
     padding: 5rem 1rem 0;
 
     .date {
-      font-size: 1.1rem;
+      font-size: 1.5rem;
       font-weight: bold;
       padding-bottom: .5rem;
+
+      .calendar {
+        @include for-tablet-portrait-up {
+          color: $base-kahel;
+          display: inline-block;
+          font-size: 1.6rem;
+          margin-left: 1rem;
+        }
+        display: none;
+      }
     }
 
     .period {
@@ -115,7 +125,6 @@
           text-align: right;
 
           .icon-container {
-
             &:last-child {
               padding-left: 1rem;
             }

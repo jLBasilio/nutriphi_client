@@ -638,7 +638,8 @@ class Home extends Component {
       userKcal,
       recommended,
       showRecommModal,
-      isAddingLog
+      isAddingLog,
+      toggleCalendar
     } = this.props;
 
     let dateSelectedSplit = [];
@@ -1194,6 +1195,11 @@ class Home extends Component {
                 `${constants.months[dateSelectedSplit[1]]} ${dateSelectedSplit[2]}, ${dateSelectedSplit[0]}`
               )
             }
+            <Icon
+              className="calendar"
+              onClick={toggleCalendar}
+              type="calendar"
+            />
           </div>
           <div className="today-progress">
             <div className="today-title">
