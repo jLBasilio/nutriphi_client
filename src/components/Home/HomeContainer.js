@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import Home from '.';
 
 import { logout } from '../Login/duck';
-import { setPeriod } from '../Entry/duck';
+import { addToLog, setPeriod } from '../Entry/duck';
 import { changePage } from '../Header/duck';
 import {
   fetchLogs,
@@ -17,7 +17,8 @@ import {
   toggleMealModal,
   toggleMealEdit,
   toggleNameMealModal,
-  addMeal
+  addMeal,
+  toggleRecommModal
 } from './duck';
 import {
   addToFavorites,
@@ -30,6 +31,7 @@ import {
 
 const mapStateToProps = (state) => {
   const { user } = state.login;
+  const { isAddingLog } = state.entry;
   const {
     searchedFood,
     favFoodIds,
@@ -60,7 +62,8 @@ const mapStateToProps = (state) => {
     percentPro,
     percentFat,
     userKcal,
-    recommended
+    recommended,
+    showRecommModal
   } = state.home;
 
   return {
@@ -92,8 +95,9 @@ const mapStateToProps = (state) => {
     percentPro,
     percentFat,
     userKcal,
-    recommended
-
+    recommended,
+    showRecommModal,
+    isAddingLog
   };
 };
 
@@ -160,6 +164,12 @@ const mapDispatchToProps = dispatch => ({
   },
   resetSearch: () => {
     dispatch(resetSearch());
+  },
+  toggleRecommModal: (toggle) => {
+    dispatch(toggleRecommModal(toggle));
+  },
+  addToLog: (foodInfo) => {
+    dispatch(addToLog(foodInfo));
   }
 });
 
