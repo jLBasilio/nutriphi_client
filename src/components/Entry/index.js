@@ -12,6 +12,7 @@ import {
   Pagination,
   Radio,
   Row,
+  Select,
   Tag,
   Tooltip
 } from 'antd';
@@ -23,6 +24,7 @@ import * as dateUtil from '../../utils/date.util';
 
 const { Search } = Input;
 const { Group: RadioGroup } = Radio;
+const { Option } = Select;
 class Entry extends Component {
   constructor(props) {
     super(props);
@@ -904,7 +906,20 @@ class Entry extends Component {
                     * measure).toFixed(2)}kcal`}
                 </div>
               </div>,
-
+              <div className="macro-update period" key="macro-period">
+                <div className="total-kcal">
+                  Period
+                </div>
+                <Select
+                  disabled
+                  className="total-kcal"
+                  value={period}
+                >
+                  <Option value="breakfast"> Breakfast</Option>
+                  <Option value="lunch"> Lunch</Option>
+                  <Option value="dinner"> Dinner</Option>
+                </Select>
+              </div>,
               <div className="input-container" key="input-log">
                 <div className="input-label">
                   Measure
