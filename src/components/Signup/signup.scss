@@ -31,12 +31,15 @@
     }
 
     .one-row {
-      @include for-tablet-portrait-up {
-        flex-direction: row;
-      }
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
+
+      &.button-last {
+        align-items: flex-end;
+        flex-direction: row;
+        padding-bottom: 2.5rem;
+      }
 
       .one-form {
         @include for-tablet-portrait-up {

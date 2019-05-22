@@ -189,7 +189,6 @@ class Entry extends Component {
       let presentTime = await dateUtil.generatePresent();
       [, presentTime] = presentTime.split('T');
       dateConsumed = `${dateConsumed}T${presentTime}`;
-
       addToLog({
         user,
         period,
