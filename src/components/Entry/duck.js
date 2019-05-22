@@ -4,6 +4,8 @@ import * as foodApi from '../../api/food';
 import * as logApi from '../../api/log';
 import * as favoriteApi from '../../api/favorite';
 
+import * as homeDuck from '../Home/duck';
+
 const actions = {
   SET_PERIOD: 'ENTRY/SET_PERIOD',
   SEARCH_FOOD: 'ENTRY/SEARCH_FOOD',
@@ -52,14 +54,25 @@ export const searchFavorites = ({
   }
 });
 
-export const addToLog = logInfo => ({
-  type: actions.ADD_LOG,
-  promise: logApi.addToLog(logInfo),
-  meta: {
-    onSuccess: () => message.success('Successfully added to log', 4),
-    onFailure: () => message.error('Server error', 4)
-  }
-});
+export const addToLog = logInfo => (dispatch) => {
+  dispatch({
+    type: actions.ADD_LOG,
+    promise: logApi.addToLog(logInfo),
+    meta: {
+      onSuccess: () => {
+        message.success('Successfully added to log', 4);
+        dispatch(homeDuck.setPeriodEditing(logInfo.period));
+        dispatch(homeDuck.fetchPeriod({
+          userId: logInfo.user,
+          date: logInfo.dateConsumed.split('T')[0],
+          period: logInfo.period
+        }));
+        dispatch(homeDuck.toggleRecommModal(false));
+      },
+      onFailure: () => message.error('Server error', 4)
+    }
+  });
+};
 
 export const addMeal = ({ logs }) => ({
   type: actions.ADD_MEAL,

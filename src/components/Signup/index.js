@@ -571,7 +571,7 @@ class Signup extends Component {
               </div>
             </div>
           </div>
-          <div className="one-row">
+          <div className="one-row button-last">
             <div className="button-container">
               <Button
                 className="next-button"
@@ -694,7 +694,7 @@ class Signup extends Component {
                     }
                   </div>
                 </div>
-                <div className="one-row">
+                <div className="one-row button-last">
                   <div className="button-container">
                     <Button
                       className="next-button back-button"

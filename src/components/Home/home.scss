@@ -87,6 +87,10 @@
           background-color: $default-bg;
         }
 
+        &.recomm {
+          cursor: pointer;
+        }
+
         .log-left {
           float: left;
           text-align: left;

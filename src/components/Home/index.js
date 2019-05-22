@@ -12,6 +12,7 @@ import {
   Modal,
   Popover,
   Progress,
+  Select,
   Spin,
   Tag,
   Tooltip
@@ -20,7 +21,9 @@ import './home.scss';
 
 import * as constants from '../../constants';
 import * as pageTitles from '../../constants/pages';
+import * as dateUtil from '../../utils/date.util';
 
+const { Option } = Select;
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -30,6 +33,7 @@ class Home extends Component {
       skip: 0,
       take: 16,
       currentFoodConsumed: 'default',
+      period: null,
       gramsml: null,
       measure: null,
       deleting: false,
@@ -39,7 +43,8 @@ class Home extends Component {
       currentFoodMeal: 'default',
       currentFoodMealIndex: null,
       mealTotalKcal: 0,
-      mealName: null
+      mealName: null,
+      recommendedFood: 'default'
     };
   }
 
@@ -108,6 +113,7 @@ class Home extends Component {
     }
     const gramsml = logs[index].consumed_mlConsumed || logs[index].consumed_gramsConsumed;
     this.setState({
+      period,
       deleting,
       currentFoodConsumed: logs[index],
       gramsml,
@@ -149,7 +155,8 @@ class Home extends Component {
     const {
       currentFoodConsumed,
       gramsml: gramsmlConsumed,
-      measure
+      measure,
+      period: editPeriod
     } = this.state;
     const {
       consumed_dateConsumed: dateConsumed,
@@ -163,14 +170,15 @@ class Home extends Component {
       || currentFoodConsumed.consumed_mlConsumed;
     if (measure <= 0 || gramsmlConsumed <= 0) {
       message.error('Input something!', 4);
-    } else if (gramsmlConsumed === currentFoodGramsML) {
+    } else if (gramsmlConsumed === currentFoodGramsML && editPeriod === period) {
       toggleEditModal();
     } else {
       editLog({
         dateConsumed,
         foodId,
         id,
-        period,
+        period: editPeriod,
+        prevPeriod: period,
         userId,
         gramsmlConsumed
       });
@@ -180,6 +188,7 @@ class Home extends Component {
   handleModalClose = () => {
     const { toggleEditModal, setPeriodEditing } = this.props;
     toggleEditModal();
+    this.setState({ period: null })
     setPeriodEditing(null);
   }
 
@@ -302,6 +311,10 @@ class Home extends Component {
           / parseFloat(foodToEdit.food_gramsEPPerExchange)
           / parseFloat(foodToEdit.food_exchangePerMeasure)).toFixed(2))
     }, () => toggleMealEdit());
+  }
+
+  handleEditChangePeriod = (period) => {
+    this.setState({ period });
   }
 
   handleMeasureCart = (measure) => {
@@ -506,6 +519,80 @@ class Home extends Component {
     }
   }
 
+  showFoodModal = (foodIndex) => {
+    const { recommended, toggleRecommModal } = this.props;
+    const recommendedFood = recommended[foodIndex];
+    const gramsEPPerExchange = parseFloat(recommendedFood.gramsEPPerExchange);
+    this.setState({
+      recommendedFood,
+      measure: 1,
+      gramsml: gramsEPPerExchange ? (
+        recommendedFood.exchangePerMeasure * recommendedFood.gramsEPPerExchange
+      ) : recommendedFood.exchangePerMeasure * parseFloat(recommendedFood.mlEPPerExchange),
+      period: null
+    }, () => toggleRecommModal(true));
+  }
+
+  handleAddToLog = async () => {
+    const {
+      user,
+      addToLog
+    } = this.props;
+    const {
+      recommendedFood: { id: foodId },
+      gramsml: gramsmlConsumed,
+      measure,
+      period
+    } = this.state;
+
+    if (measure <= 0 || gramsmlConsumed <= 0 || !period) {
+      message.error('Please fill all fields!', 4);
+    } else {
+      let { dateSelected: dateConsumed } = this.props;
+      let presentTime = await dateUtil.generatePresent();
+      [, presentTime] = presentTime.split('T');
+      dateConsumed = `${dateConsumed}T${presentTime}`;
+
+      await addToLog({
+        user: user.id,
+        period,
+        foodId,
+        gramsmlConsumed,
+        dateConsumed
+      });
+    }
+  }
+
+  handleMeasureRec = (measure) => {
+    const { recommendedFood } = this.state;
+    const gramsmlEPPerExchange = parseFloat(recommendedFood.gramsEPPerExchange
+      || recommendedFood.mlEPPerExchange);
+    const gramsml = recommendedFood.exchangePerMeasure * gramsmlEPPerExchange;
+    this.setState({
+      measure,
+      gramsml: parseFloat((gramsml * measure).toFixed(2))
+    });
+  }
+
+  handleGramsMLRec = (gramsml) => {
+    const { recommendedFood } = this.state;
+    const gramsmlEPPerExchange = parseFloat(recommendedFood.gramsEPPerExchange
+      || recommendedFood.mlEPPerExchange);
+    const measure = gramsml / gramsmlEPPerExchange;
+    this.setState({
+      gramsml,
+      measure: parseFloat((measure / recommendedFood.exchangePerMeasure).toFixed(2))
+    });
+  }
+
+  handleRecommClose = () => {
+    const { isAddingLog } = this.props;
+    if (!isAddingLog) {
+      const { toggleRecommModal } = this.props;
+      toggleRecommModal(false);
+    }
+  }
+
   render() {
     const {
       showPopups,
@@ -518,7 +605,9 @@ class Home extends Component {
       foodSearched,
       currentFoodMeal,
       mealName,
-      mealTotalKcal
+      mealTotalKcal,
+      period,
+      recommendedFood
     } = this.state;
     const {
       dateToday,
@@ -547,7 +636,9 @@ class Home extends Component {
       percentPro,
       percentFat,
       userKcal,
-      recommended
+      recommended,
+      showRecommModal,
+      isAddingLog
     } = this.props;
 
     let dateSelectedSplit = [];
@@ -559,6 +650,195 @@ class Home extends Component {
 
     return (
       <div className="home">
+
+        <Modal
+          className="entry-modal"
+          title={recommendedFood.filipinoName || recommendedFood.englishName}
+          visible={showRecommModal}
+          onCancel={this.handleRecommClose}
+          footer={[
+            <div className="macro-update" key="macro-display">
+              <div className="macro-one">
+                {`CHO: ${parseFloat((recommendedFood.choPerExchange * measure).toFixed(2))}g`}
+              </div>
+              <div className="macro-one">
+                {`PRO: ${parseFloat((recommendedFood.proPerExchange * measure).toFixed(2))}g`}
+              </div>
+              <div className="macro-one">
+                {`FAT: ${parseFloat((recommendedFood.fatPerExchange * measure).toFixed(2))}g`}
+              </div>
+            </div>,
+            <div className="macro-update" key="macro-kcal">
+              <div className="total-kcal">
+                Total
+              </div>
+              <div className="total-kcal">
+                {`${(recommendedFood.exchangePerMeasure
+                  * recommendedFood.directKcalPerMeasure
+                  * measure).toFixed(2)}kcal`}
+              </div>
+            </div>,
+            <div className="macro-update period" key="macro-period">
+              <div className="total-kcal">
+                Period
+              </div>
+              <Select
+                className="total-kcal"
+                value={period || 'Select period'}
+                onChange={this.handleEditChangePeriod}
+              >
+                <Option value="breakfast"> Breakfast</Option>
+                <Option value="lunch"> Lunch</Option>
+                <Option value="dinner"> Dinner</Option>
+              </Select>
+            </div>,
+            <div className="input-container" key="input-log">
+              <div className="input-label">
+                Measure
+                <InputNumber
+                  className="input-measure"
+                  onChange={this.handleMeasureRec}
+                  min={0}
+                  type="number"
+                  value={measure}
+                />
+              </div>
+              <div className="input-label">
+                OR
+              </div>
+              <div className="input-label">
+                {`${
+                  parseFloat(recommendedFood.gramsEPPerExchange)
+                    ? 'Grams'
+                    : 'ml'
+                }`}
+                <InputNumber
+                  className="input-measure"
+                  min={0}
+                  onChange={this.handleGramsMLRec}
+                  type="number"
+                  value={gramsml}
+                />
+              </div>
+              <div className="input-label submit-button">
+                <Button
+                  key="submit"
+                  type="primary"
+                  onClick={this.handleAddToLog}
+                  disabled={isAddingLog}
+                >
+                  {
+                    !isAddingLog
+                      ? <Icon type="check" />
+                      : <Icon type="loading" />
+                  }
+                </Button>
+              </div>
+            </div>
+          ]}
+        >
+          <div className="label-container">
+            <div className="label">
+              {recommendedFood.englishName}
+            </div>
+            <div className="label">
+              {
+                isAddingToFavorites ? (
+                  <Icon type="loading" />
+                ) : (
+                  <Tooltip
+                    title={
+                      favFoodIds.includes(recommendedFood.id)
+                        ? 'Unfavorite'
+                        : 'Set as favorite'
+                    }
+                  >
+                    <span>
+                      <Icon
+                        className="fav-icon"
+                        type="heart"
+                        theme={favFoodIds.includes(recommendedFood.id) ? 'filled' : null}
+                        onClick={() => this.handleFavorite(recommendedFood.id)}
+                      />
+                    </span>
+                  </Tooltip>
+                )
+              }
+            </div>
+          </div>
+
+          <Divider />
+
+          <div className="nut-info">
+            Nutritional Info
+            <div className="nut-subinfo">
+              (Per exchange)
+            </div>
+          </div>
+
+          <Divider />
+
+          <div className="info-row">
+            <div className="macros">
+              Carbohydrate (CHO)
+            </div>
+            <div className="macros-value">
+              {`${recommendedFood.choPerExchange}g`}
+            </div>
+          </div>
+
+          <Divider />
+
+          <div className="info-row">
+            <div className="macros">
+              Protein (PRO)
+            </div>
+            <div className="macros-value">
+              {`${recommendedFood.proPerExchange}g`}
+            </div>
+          </div>
+
+          <Divider />
+
+          <div className="info-row">
+            <div className="macros">
+              Fat (FAT)
+            </div>
+            <div className="macros-value">
+              {`${recommendedFood.fatPerExchange}g`}
+            </div>
+          </div>
+
+          <Divider />
+
+          <div className="info-row">
+            <div className="macros">
+              Portion Size
+            </div>
+            <div className="macros-value">
+              {`${
+                parseFloat(recommendedFood.gramsEPPerExchange)
+                  ? recommendedFood.gramsEPPerExchange
+                  : recommendedFood.mlEPPerExchange
+              }${
+                parseFloat(recommendedFood.gramsEPPerExchange)
+                  ? 'g'
+                  : 'ml'
+              }`}
+            </div>
+          </div>
+
+          <Divider />
+
+          <div className="info-row">
+            <div className="macros">
+              Measurement
+            </div>
+            <div className="macros-value">
+              {recommendedFood.food_servingMeasurement || 'N/A'}
+            </div>
+          </div>
+        </Modal>
 
         <Modal
           title="Meal Name"
@@ -1263,35 +1543,37 @@ class Home extends Component {
                 </div>
               ) : recommended.length ? (
                 recommended.map((log, index) => (
-                  <div className="log" key={log.id}>
-                    <div className="log-left">
-                      {`${log.filipinoName || log.englishName} `}
-                      <Tag
-                        className="log-tag"
-                        color={
-                          constants.tagColors[log.primaryClassification.split('-')[0]]
+                  <Tooltip title="Add to log" key={log.id}>
+                    <div
+                      className="log recomm"
+                      role="none"
+                      onClick={() => this.showFoodModal(index)}
+                    >
+                      <div className="log-left">
+                        {`${log.filipinoName || log.englishName} `}
+                        <Tag
+                          className="log-tag"
+                          color={
+                            constants.tagColors[log.primaryClassification.split('-')[0]]
+                          }
+                        >
+                          {log.primaryClassification.split('-')[0]}
+                        </Tag>
+                        {
+                          log.secondaryClassification && (
+                            <Tag
+                              className="log-tag"
+                              color={
+                                constants.tagColors[log.secondaryClassification]
+                              }
+                            >
+                              {log.secondaryClassification}
+                            </Tag>
+                          )
                         }
-                      >
-                        {log.primaryClassification.split('-')[0]}
-                      </Tag>
-                      {
-                        log.secondaryClassification && (
-                          <Tag
-                            className="log-tag"
-                            color={
-                              constants.tagColors[log.secondaryClassification]
-                            }
-                          >
-                            {log.secondaryClassification}
-                          </Tag>
-                        )
-                      }
+                      </div>
                     </div>
-
-                    <div className="log-right">
-
-                    </div>
-                  </div>
+                  </Tooltip>
                 ))
               ) : (
                 <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -1374,6 +1656,20 @@ class Home extends Component {
                   * currentFoodConsumed.food_directKcalPerMeasure
                   * measure).toFixed(2)}kcal`}
               </div>
+            </div>,
+            <div className="macro-update period" key="macro-period">
+              <div className="total-kcal">
+                Period
+              </div>
+              <Select
+                className="total-kcal"
+                value={period}
+                onChange={this.handleEditChangePeriod}
+              >
+                <Option value="breakfast"> Breakfast</Option>
+                <Option value="lunch"> Lunch</Option>
+                <Option value="dinner"> Dinner</Option>
+              </Select>
             </div>,
             <div className="input-container" key="input-log">
               <div className="input-label">

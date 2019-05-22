@@ -23,7 +23,9 @@ const actions = {
   TOGGLE_NAMEMEAL: 'HOME/TOGGLE_NAMEMEAL',
   ADD_MEAL: 'HOME/ADD_MEAL',
   SET_DAYINFO: 'HOME/SET_DAYINFO',
-  FETCH_REC: 'HOME/FETCH_REC'
+  FETCH_REC: 'HOME/FETCH_REC',
+  DELETE_LOCAL: 'HOME/DELETE_LOCAL',
+  TOGGLE_RECOM: 'HOME/TOGGLE_RECOM'
 };
 
 export const logout = () => ({
@@ -33,6 +35,11 @@ export const logout = () => ({
 
 export const toggleCalendar = () => ({
   type: actions.TOGGLE_CALENDAR
+});
+
+export const toggleRecommModal = toggle => ({
+  type: actions.TOGGLE_RECOM,
+  payload: toggle
 });
 
 export const setTodayDate = date => ({
@@ -57,6 +64,11 @@ export const userLogCleanup = () => ({
 export const setDayInfo = logInfo => ({
   type: actions.SET_DAYINFO,
   payload: logInfo
+});
+
+export const deleteLocal = ({ period, logId }) => ({
+  type: actions.DELETE_LOCAL,
+  payload: { period, logId }
 });
 
 export const fetchRecom = logInfo => ({
@@ -196,6 +208,8 @@ export const editLog = logInfo => (dispatch) => {
     meta: {
       onSuccess: () => {
         message.success('Success in editing log', 4);
+        dispatch(setPeriodEditing(logInfo.period));
+        dispatch(deleteLocal({ period: logInfo.prevPeriod, logId: logInfo.id }));
         dispatch(fetchPeriod({
           userId: logInfo.userId,
           date: logInfo.dateConsumed.split('T')[0],
@@ -253,7 +267,8 @@ const initialState = {
   percentPro: null,
   percentFat: null,
   userKcal: null,
-  recommended: []
+  recommended: [],
+  showRecommModal: false
 };
 
 const reducer = (state = initialState, action) => {
@@ -372,6 +387,12 @@ const reducer = (state = initialState, action) => {
         })
       });
 
+    case actions.DELETE_LOCAL:
+      return {
+        ...state,
+        [payload.period]: state[payload.period].filter(log => log.consumed_id !== payload.logId)
+      };
+
     case actions.LOG_CLEANUP:
       return {
         ...state,
@@ -405,6 +426,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         showEditModal: !state.showEditModal
+      };
+
+    case actions.TOGGLE_RECOM:
+      return {
+        ...state,
+        showRecommModal: payload
       };
 
     case actions.TOGGLE_DELETE:
