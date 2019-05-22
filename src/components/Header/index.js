@@ -125,7 +125,7 @@ class Header extends Component {
           />
         </div>
 
-        <div className="one-cont">
+        <div className="one-cont title">
           <div className="header-title">
             {currentPage}
           </div>
