@@ -191,7 +191,11 @@ const reducer = (state = initialState, action) => {
           const classDist = payload.data.data;
           const classKeys = classDist && Object.keys(classDist);
           classKeys.forEach((key) => {
-            const colKey = key === 'bev' ? 'beverage' : key;
+            const colKey = key === 'bev'
+              ? 'beverage'
+              : key === 'veg'
+                ? 'vegetable'
+                : key;
             classProg.labels.push(`${key} %`);
             classProg.datasets[0].values.push(classDist[key]);
             tagColors.push(constants.tagColorsHex[colKey]);
