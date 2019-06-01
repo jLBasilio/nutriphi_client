@@ -2,7 +2,7 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 // import logger from 'redux-logger';
 import { middleware as pack } from 'redux-pack';
-import reducers from '../components';
+import reducers from '../pages';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 

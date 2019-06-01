@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import App from '.';
 
-import { login, getSession } from '../components/Login/duck';
+import { login, getSession } from '../pages/Login/duck';
 
 const mapStateToProps = (state) => {
   const {

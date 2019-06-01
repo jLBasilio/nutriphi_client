@@ -8,16 +8,16 @@ import {
 import 'antd/dist/antd.css';
 import 'frappe-charts/dist/frappe-charts.min.css';
 
-import Entry from '../components/Entry/EntryContainer';
-import Food from '../components/Food/FoodContainer';
-import Home from '../components/Home/HomeContainer';
-import Header from '../components/Header/HeaderContainer';
-import Loader from '../components/Loader';
-import Login from '../components/Login/LoginContainer';
-import Signup from '../components/Signup/SignupContainer';
-import Profile from '../components/Profile/ProfileContainer';
-import About from '../components/About/AboutContainer';
-import Meal from '../components/Meal/MealContainer';
+import Entry from '../pages/Entry/EntryContainer';
+import Food from '../pages/Food/FoodContainer';
+import Home from '../pages/Home/HomeContainer';
+import Header from '../pages/Header/HeaderContainer';
+import Loader from '../pages/Loader';
+import Login from '../pages/Login/LoginContainer';
+import Signup from '../pages/Signup/SignupContainer';
+import Profile from '../pages/Profile/ProfileContainer';
+import About from '../pages/About/AboutContainer';
+import Meal from '../pages/Meal/MealContainer';
 
 import * as pageTitles from '../constants/pages';
 
