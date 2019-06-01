@@ -21,5 +21,5 @@ cd nutriphi_client
 ```
 yarn
 ```
-5.1. For production, use ```yarn build```. It assumes that the client and server folders are on the same level.
-5.2. For dev, ```yarn start```
+4. For production, use ```yarn build```. Client and server folder should be on the same level.
+5. For dev, ```yarn start```
