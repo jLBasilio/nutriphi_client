@@ -594,7 +594,7 @@ class Entry extends Component {
                   </Col>
                 ))
               ) : searchedMeal.length && !isFetching ? (
-                searchedMeal.map((mealElement, index) => (
+                searchedMeal.map(mealElement => (
                   <Col
                     key={mealElement.id}
                     className="meal-col"
@@ -688,7 +688,7 @@ class Entry extends Component {
                   </Col>
                 ))
               ) : searchType === 'meal' && meal.length && !isFetching ? (
-                meal.map((mealElement, index) => (
+                meal.map(mealElement => (
                   <Col
                     key={mealElement.id}
                     className="meal-col"
