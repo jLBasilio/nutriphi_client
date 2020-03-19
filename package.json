@@ -5,7 +5,7 @@
   "sasslintConfig": "/.sasslintrc.json",
   "dependencies": {
     "antd": "^3.16.3",
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "babel-loader": "8.0.4",
     "eslint": "5.6.0",
     "eslint-config-airbnb": "^17.1.0",
